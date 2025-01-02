@@ -33,7 +33,7 @@ public class ReservationController {
                         List.of(new ReservationCompletedSeatDto(1L, 10000L)),
                         100000L,
                         ReservationStatus.PAYMENT_WAITING
-                ), HttpStatus.OK);
+                ), HttpStatus.CREATED);
     }
 
 }
