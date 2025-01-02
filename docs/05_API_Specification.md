@@ -28,7 +28,7 @@
   "expiredAt" : "2025-01-01 00:10:00"
 }
 ```
-
+- **HttpsStatus** : `201`
 - **Response**:
     - `token`: String (토큰 UUID)
     - `createdAt`: DateTime (생성 시각)
@@ -65,6 +65,7 @@
   "remainingQueueCount" : 5
 }
 ```
+- **HttpsStatus** : `200`
 - **Response**:
     - `status`: Enum (`WAITING` : 대기)
     - `remainingQueueCount`: Long (남은 대기열 수)
@@ -91,7 +92,7 @@
 
 ### Request
 
-- URI : `/api/concerts/{concertId}/schedule`
+- URI : `/api/concert/{concertId}/schedule`
 - Method : GET
 - Path Variable :
     - `concertId` : Long (콘서트 ID)
@@ -112,6 +113,7 @@
   ]
 }
 ```
+- **HttpsStatus** : `200`
 - **Response**:
     - `concertId`: Long (콘서트 ID)
     - `schedule`: List (콘서트 스케쥴 리스트)
@@ -172,6 +174,7 @@
   ]
 }
 ```
+- **HttpsStatus** : `200`
 - **Response**:
     - `concertId`: Long (콘서트 ID)
     - `concertTime`: LocalDateTime (콘서트 시간)
@@ -252,6 +255,7 @@
   "reservationStatus" : "PAYMENT_WAITING"
 }
 ```
+- **HttpsStatus** : `201`
 - **Response**:
     - `reservationId`: Long (예약 ID)
     - `concertId`: Long (콘서트 ID)
@@ -309,7 +313,7 @@
 
 ### Request
 
-- URI : `/api/concert/payment`
+- URI : `/api/payment`
 - Method : POST
 - Headers :
     - `Token` : String (유저 토큰 UUID)
@@ -333,6 +337,7 @@
   "paymentStatus" : "COMPLETED"
 }
 ```
+- **HttpsStatus** : `201`
 - **Response**:
     - `paymentId`: Long (결제 ID)
     - `amount`: Long (결제 금액)
@@ -401,6 +406,7 @@
   "currentAmount" : 100000
 }
 ```
+- **HttpsStatus** : `200`
 - **Response**:
     - `userId`: Long (유저 ID)
     - `currentAmount`: Long (충전 후 금액)
@@ -448,6 +454,7 @@
   "currentAmount" : 100000
 }
 ```
+- **HttpsStatus** : `200` 
 - **Response**:
     - `userId`: Long (유저 ID)
     - `currentAmount`: Long (충전 후 금액)
