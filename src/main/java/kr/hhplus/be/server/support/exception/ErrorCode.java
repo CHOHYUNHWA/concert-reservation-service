@@ -8,7 +8,9 @@ import org.springframework.http.HttpStatus;
 @AllArgsConstructor
 public enum ErrorCode {
 
-    INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "서버 에러가 발생하였습니다.");
+    INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "서버 에러가 발생하였습니다."),
+    UNAUTHORIZED(HttpStatus.UNAUTHORIZED, "유효하지 않는 토큰 입니다." ),
+    TOKEN_NOT_FOUND(HttpStatus.NOT_FOUND,"없는 토큰 입니다." );
 
     private final HttpStatus httpStatus;
     private final String message;
