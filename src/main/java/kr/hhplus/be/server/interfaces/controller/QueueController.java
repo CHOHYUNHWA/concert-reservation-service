@@ -1,45 +1,44 @@
 package kr.hhplus.be.server.interfaces.controller;
 
-import kr.hhplus.be.server.interfaces.dto.TokenRequestDto;
-import kr.hhplus.be.server.interfaces.dto.QueueResponseDto;
-import kr.hhplus.be.server.interfaces.dto.TokenResponseDto;
-import kr.hhplus.be.server.support.type.QueueStatus;
+import kr.hhplus.be.server.application.facade.QueueFacade;
+import kr.hhplus.be.server.domain.entity.Queue;
+import kr.hhplus.be.server.interfaces.dto.Queue.QueueHttpDto;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDateTime;
-
 @RestController
 @RequestMapping("/api/queue")
+@RequiredArgsConstructor
 public class QueueController {
+
+    private final QueueFacade queueFacade;
 
     /**
      * 토큰 발급
      */
     @PostMapping("/token")
-    public ResponseEntity<TokenResponseDto> issueToken(@RequestBody TokenRequestDto tokenRequestDto) {
+    public ResponseEntity<QueueHttpDto.CreatedTokenResponseDto> issueToken(
+            @RequestBody QueueHttpDto.CreateTokenRequestDto createTokenRequestDto) {
 
-        return new ResponseEntity<>(
-                new TokenResponseDto(
-                        "7b3366bc-6c19-41d8-a97f-6ac312479aa9",
-                        LocalDateTime.now(),
-                        LocalDateTime.now()),
-                HttpStatus.CREATED);
+        Queue token = queueFacade.createToken(createTokenRequestDto.getUserId());
+        QueueHttpDto.CreatedTokenResponseDto createdTokenResponseDto = QueueHttpDto.CreatedTokenResponseDto.of(token);
+
+        return new ResponseEntity<>(createdTokenResponseDto, HttpStatus.CREATED);
     }
 
     /**
      * 대기열 조회
      */
     @GetMapping("/status")
-    public ResponseEntity<QueueResponseDto> getStatus(
+    public ResponseEntity<QueueHttpDto.QueueStatusResponseDto> getStatus(
             @RequestHeader("Token") String token,
             @RequestParam("userId") Long userId
             ) {
-        return new ResponseEntity<>(
-                new QueueResponseDto(
-                        QueueStatus.WAITING,
-                        10L),
-                HttpStatus.OK);
+
+        QueueHttpDto.QueueStatusResponseDto queueRemainingCount = queueFacade.getQueueRemainingCount(token, userId);
+
+        return new ResponseEntity<>(queueRemainingCount, HttpStatus.OK);
     }
 }

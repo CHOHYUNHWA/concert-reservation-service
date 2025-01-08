@@ -3,12 +3,14 @@ package kr.hhplus.be.server.interfaces.dto.Queue;
 import kr.hhplus.be.server.domain.entity.Queue;
 import kr.hhplus.be.server.support.type.QueueStatus;
 import lombok.Builder;
+import lombok.Data;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
 
 public class QueueHttpDto {
 
+    @Data
     @Builder
     public static class QueueStatusResponseDto {
         private QueueStatus status;
@@ -27,6 +29,7 @@ public class QueueHttpDto {
         private Long userId;
     }
 
+    @Data
     @Builder
     public static class CreatedTokenResponseDto {
         private String token;
