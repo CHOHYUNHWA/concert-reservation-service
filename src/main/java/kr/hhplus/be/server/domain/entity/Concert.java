@@ -29,4 +29,8 @@ public class Concert {
     @Enumerated(EnumType.STRING)
     private ConcertStatus status;
 
+    public boolean checkStatus(){
+        return this.status.equals(ConcertStatus.OPEN);
+    }
+
 }
