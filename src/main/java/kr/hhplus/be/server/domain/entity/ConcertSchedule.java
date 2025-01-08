@@ -1,6 +1,8 @@
 package kr.hhplus.be.server.domain.entity;
 
 import jakarta.persistence.*;
+import kr.hhplus.be.server.support.exception.CustomException;
+import kr.hhplus.be.server.support.exception.ErrorCode;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -29,4 +31,12 @@ public class ConcertSchedule {
     @Column(name = "CONCERT_ID", nullable = false)
     private Long concertId;
 
+    public void checkStatus() {
+        if(LocalDateTime.now().isBefore(this.availableReservationTime)){
+            throw new CustomException(ErrorCode.BEFORE_AVAILABLE_RESERVATION_AT);
+        }
+        if(LocalDateTime.now().isAfter(this.concertTime)){
+            throw new CustomException(ErrorCode.ALREADY_CONCERT_START);
+        }
+    }
 }
