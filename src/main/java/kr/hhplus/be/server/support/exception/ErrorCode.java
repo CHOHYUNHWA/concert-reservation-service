@@ -14,7 +14,8 @@ public enum ErrorCode {
     USER_NOT_FOUND(HttpStatus.NOT_FOUND, "없는 유저 입니다." ),
     INVALID_AMOUNT(HttpStatus.BAD_REQUEST, "잘못된 포인트 값 입니다." ),
     BEFORE_AVAILABLE_RESERVATION_AT(HttpStatus.BAD_REQUEST,"예약 가능시간 전 입니다."),
-    ALREADY_CONCERT_START(HttpStatus.BAD_REQUEST,"이미 시작한 콘서트 입니다." );
+    ALREADY_CONCERT_START(HttpStatus.BAD_REQUEST,"이미 시작한 콘서트 입니다." ),
+    ALREADY_RESERVED_SEAT(HttpStatus.BAD_REQUEST, "이미 예약된 좌석입니다." );
 
     private final HttpStatus httpStatus;
     private final String message;

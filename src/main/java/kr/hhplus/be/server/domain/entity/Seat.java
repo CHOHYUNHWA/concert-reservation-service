@@ -1,6 +1,8 @@
 package kr.hhplus.be.server.domain.entity;
 
 import jakarta.persistence.*;
+import kr.hhplus.be.server.support.exception.CustomException;
+import kr.hhplus.be.server.support.exception.ErrorCode;
 import kr.hhplus.be.server.support.type.SeatStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -37,4 +39,16 @@ public class Seat {
     @Column(name = "CONCERT_SCHEDULE_ID", nullable = false)
     private Long concertScheduleId;
 
+    public void checkStatus() {
+        if(this.seatStatus.equals(SeatStatus.NOT_AVAILABLE)){
+            throw new CustomException(ErrorCode.ALREADY_RESERVED_SEAT);
+        }
+    }
+
+    public Seat assign(){
+
+        this.seatStatus = SeatStatus.NOT_AVAILABLE;
+        this.reservedAt = LocalDateTime.now();
+        return this;
+    }
 }
