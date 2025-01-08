@@ -1,15 +1,20 @@
 package kr.hhplus.be.server.interfaces.controller;
 
+import kr.hhplus.be.server.application.facade.PointFacade;
 import kr.hhplus.be.server.interfaces.dto.ChargePointRequestDto;
 import kr.hhplus.be.server.interfaces.dto.ChargePointResponseDto;
 import kr.hhplus.be.server.interfaces.dto.GetPointResponseDto;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/user")
+@RequiredArgsConstructor
 public class PointController {
+
+    private final PointFacade pointFacade;
 
     /**
      * 포인트 충전
@@ -19,7 +24,10 @@ public class PointController {
             @PathVariable("userId") Long userId,
             @RequestBody ChargePointRequestDto chargePointRequestDto
     ){
-        return new ResponseEntity<>(new ChargePointResponseDto(1L, 100000L), HttpStatus.OK);
+
+        ChargePointResponseDto chargePointResponseDto = pointFacade.chargePoint(userId, chargePointRequestDto.getAmount());
+
+        return new ResponseEntity<>(chargePointResponseDto, HttpStatus.OK);
     }
 
     /**
@@ -27,6 +35,9 @@ public class PointController {
      */
     @GetMapping("/{userId}/point")
     public ResponseEntity<GetPointResponseDto> getPoint(@PathVariable("userId") Long userId){
-        return new ResponseEntity<>(new GetPointResponseDto(1L, 100000L), HttpStatus.OK);
+
+        GetPointResponseDto getPointResponseDto = pointFacade.getPoint(userId);
+
+        return new ResponseEntity<>(getPointResponseDto, HttpStatus.OK);
     }
 }

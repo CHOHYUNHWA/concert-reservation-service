@@ -1,6 +1,8 @@
 package kr.hhplus.be.server.domain.entity;
 
 import jakarta.persistence.*;
+import kr.hhplus.be.server.support.exception.CustomException;
+import kr.hhplus.be.server.support.exception.ErrorCode;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -28,4 +30,26 @@ public class Point {
 
     @Column(name = "USER_ID", nullable = false)
     private Long userId;
+
+
+    public Point charge(Long chargeAmount) {
+
+        if(chargeAmount <= 0){
+            throw new CustomException(ErrorCode.INVALID_AMOUNT);
+        }
+        this.amount += chargeAmount;
+        this.updatedAt = LocalDateTime.now();
+
+        return this;
+    }
+
+    public Point usePoint(Long useAmount) {
+        if(useAmount <= 0 || useAmount > this.amount){
+            throw new CustomException(ErrorCode.INVALID_AMOUNT);
+        }
+        this.amount -= useAmount;
+        this.updatedAt = LocalDateTime.now();
+
+        return this;
+    }
 }
