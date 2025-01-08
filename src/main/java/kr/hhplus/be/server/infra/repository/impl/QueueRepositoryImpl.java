@@ -19,7 +19,12 @@ public class QueueRepositoryImpl implements QueueRepository {
 
     @Override
     public Queue findQueue(String token) {
-        return queueJpaRepository.findByToken(token).orElseThrow(() -> new CustomException(ErrorCode.TOKEN_NOT_FOUND));
+        Queue queue = queueJpaRepository.findByToken(token).orElseThrow(() -> new CustomException(ErrorCode.TOKEN_NOT_FOUND));
+
+        if(queue.getStatus().equals(QueueStatus.EXPIRED)){
+            throw new CustomException(ErrorCode.UNAUTHORIZED);
+        }
+        return queue;
     }
 
     @Override
