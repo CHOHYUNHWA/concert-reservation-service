@@ -5,8 +5,7 @@ import kr.hhplus.be.server.domain.entity.Point;
 import kr.hhplus.be.server.domain.entity.User;
 import kr.hhplus.be.server.infra.repository.jpa.PointJpaRepository;
 import kr.hhplus.be.server.infra.repository.jpa.UserJpaRepository;
-import kr.hhplus.be.server.interfaces.dto.ChargePointResponseDto;
-import kr.hhplus.be.server.interfaces.dto.GetPointResponseDto;
+import kr.hhplus.be.server.interfaces.dto.Point.PointHttpDto;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -58,7 +57,7 @@ public class PointFacadeTest {
         Long chargeAmount = 1000L;
         Long expectedAmount = 1000L;
         //when
-        ChargePointResponseDto chargePointResponseDto = pointFacade.chargePoint(savedUserId, chargeAmount);
+        PointHttpDto.ChargePointResponseDto chargePointResponseDto = pointFacade.chargePoint(savedUserId, chargeAmount);
 
         //then
         assertThat(chargePointResponseDto).isNotNull();
@@ -81,7 +80,7 @@ public class PointFacadeTest {
 
 
         //when
-        GetPointResponseDto getPointResponseDto = pointFacade.getPoint(savedUserId);
+        PointHttpDto.GetPointResponseDto getPointResponseDto = pointFacade.getPoint(savedUserId);
 
         //then
         assertThat(getPointResponseDto).isNotNull();
