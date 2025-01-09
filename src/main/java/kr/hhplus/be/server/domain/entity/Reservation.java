@@ -70,14 +70,8 @@ public class Reservation {
 
     //상태 변경
     public Reservation changeCompletedStatus(){
-        return Reservation.builder()
-                .concertId(this.concertId)
-                .concertScheduleId(this.concertScheduleId)
-                .seatId(this.seatId)
-                .userId(this.userId)
-                .status(ReservationStatus.PAYMENT_COMPLETED)
-                .reservedAt(LocalDateTime.now())
-                .build();
+        this.status = ReservationStatus.PAYMENT_COMPLETED;
+        return this;
     }
 
 }
