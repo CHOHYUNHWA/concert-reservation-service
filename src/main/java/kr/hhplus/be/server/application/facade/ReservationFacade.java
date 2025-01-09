@@ -1,5 +1,6 @@
 package kr.hhplus.be.server.application.facade;
 
+import jakarta.transaction.Transactional;
 import kr.hhplus.be.server.domain.entity.Concert;
 import kr.hhplus.be.server.domain.entity.ConcertSchedule;
 import kr.hhplus.be.server.domain.entity.Reservation;
@@ -16,6 +17,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
+@Transactional
 public class ReservationFacade {
 
     private final QueueService queueService;

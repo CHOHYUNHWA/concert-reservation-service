@@ -10,12 +10,12 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Component
 @RequiredArgsConstructor
-@Transactional(readOnly = true)
 public class PointFacade {
 
     private final PointService pointService;
     private final UserService userService;
 
+    @Transactional
     public PointHttpDto.ChargePointResponseDto chargePoint(Long userId, Long chargeAmount) {
         userService.existsUser(userId);
 
