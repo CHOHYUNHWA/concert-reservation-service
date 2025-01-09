@@ -18,7 +18,9 @@ public enum ErrorCode {
     ALREADY_RESERVED_SEAT(HttpStatus.BAD_REQUEST, "이미 예약된 좌석입니다." ),
     ALREADY_CONCERT_DONE(HttpStatus.BAD_REQUEST, "이미 종료된 콘서트 입니다."),
     CONCERT_NOT_FOUND(HttpStatus.NOT_FOUND, "없는 콘서트 입니다."),
-    CONCERT_SCHEDULE_NOT_FOUND(HttpStatus.NOT_FOUND,"없는 콘서트 시간 입니다." ), SEAT_NOT_FOUND(HttpStatus.NOT_FOUND,"없는 좌석 입니다." );
+    CONCERT_SCHEDULE_NOT_FOUND(HttpStatus.NOT_FOUND,"없는 콘서트 시간 입니다." ), SEAT_NOT_FOUND(HttpStatus.NOT_FOUND,"없는 좌석 입니다." ),
+    PAYMENT_USER_MISMATCH(HttpStatus.BAD_REQUEST,"예약자가 일치하지 않습니다." ), PAYMENT_TIMEOUT(HttpStatus.REQUEST_TIMEOUT,"결제요청 시간이 초과하였습니다."),
+    RESERVATION_NOT_FOUND(HttpStatus.NOT_FOUND, "예약 정보를 찾을 수 없습니다."),;
 
     private final HttpStatus httpStatus;
     private final String message;
