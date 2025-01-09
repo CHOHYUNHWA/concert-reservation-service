@@ -1,5 +1,6 @@
 package kr.hhplus.be.server.domain.scheduler;
 
+import jakarta.transaction.Transactional;
 import kr.hhplus.be.server.domain.entity.Queue;
 import kr.hhplus.be.server.domain.repository.QueueRepository;
 import kr.hhplus.be.server.support.type.QueueStatus;
@@ -11,6 +12,7 @@ import java.util.List;
 
 @Component
 @RequiredArgsConstructor
+@Transactional
 public class TokenScheduler {
 
     private final QueueRepository queueRepository;
