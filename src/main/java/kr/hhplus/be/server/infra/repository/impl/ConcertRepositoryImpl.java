@@ -2,13 +2,16 @@ package kr.hhplus.be.server.infra.repository.impl;
 
 import kr.hhplus.be.server.domain.entity.Concert;
 import kr.hhplus.be.server.domain.entity.ConcertSchedule;
+import kr.hhplus.be.server.domain.entity.Reservation;
 import kr.hhplus.be.server.domain.entity.Seat;
 import kr.hhplus.be.server.domain.repository.ConcertRepository;
 import kr.hhplus.be.server.infra.repository.jpa.ConcertJpaRepository;
 import kr.hhplus.be.server.infra.repository.jpa.ConcertScheduleJpaRepository;
+import kr.hhplus.be.server.infra.repository.jpa.ReservationJpaRepository;
 import kr.hhplus.be.server.infra.repository.jpa.SeatJpaRepository;
 import kr.hhplus.be.server.support.exception.CustomException;
 import kr.hhplus.be.server.support.exception.ErrorCode;
+import kr.hhplus.be.server.support.type.ReservationStatus;
 import kr.hhplus.be.server.support.type.SeatStatus;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
@@ -23,6 +26,7 @@ public class ConcertRepositoryImpl implements ConcertRepository {
     private final ConcertJpaRepository concertJpaRepository;
     private final ConcertScheduleJpaRepository concertScheduleJpaRepository;
     private final SeatJpaRepository seatJpaRepository;
+    private final ReservationJpaRepository reservationJpaRepository;
 
     @Override
     public List<Concert> findConcertsAll() {
@@ -52,13 +56,19 @@ public class ConcertRepositoryImpl implements ConcertRepository {
     }
 
     @Override
-    public void saveSeat(Seat assignedSeat) {
+    public Seat saveSeat(Seat assignedSeat) {
         seatJpaRepository.save(assignedSeat);
+        return assignedSeat;
     }
 
     @Override
     public Seat findSeatById(Long seatId) {
         return seatJpaRepository.findById(seatId).orElseThrow(() -> new CustomException(ErrorCode.SEAT_NOT_FOUND));
+    }
+
+    @Override
+    public List<Reservation> findExpiredReservation(ReservationStatus reservationStatus, LocalDateTime localDateTime) {
+        return reservationJpaRepository.findByStatusAndReservedAtBefore(reservationStatus, localDateTime);
     }
 
 }

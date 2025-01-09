@@ -74,4 +74,8 @@ public class Reservation {
         return this;
     }
 
+    public Reservation changeExpiredStatus() {
+        this.status = ReservationStatus.EXPIRED;
+        return this;
+    }
 }

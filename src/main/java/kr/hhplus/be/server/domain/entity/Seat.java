@@ -51,4 +51,9 @@ public class Seat {
         this.reservedAt = LocalDateTime.now();
         return this;
     }
+
+    public Seat toAvailable(){
+        this.seatStatus = SeatStatus.AVAILABLE;
+        return this;
+    }
 }

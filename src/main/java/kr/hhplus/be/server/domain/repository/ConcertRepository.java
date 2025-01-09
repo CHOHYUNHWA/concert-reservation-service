@@ -2,8 +2,11 @@ package kr.hhplus.be.server.domain.repository;
 
 import kr.hhplus.be.server.domain.entity.Concert;
 import kr.hhplus.be.server.domain.entity.ConcertSchedule;
+import kr.hhplus.be.server.domain.entity.Reservation;
 import kr.hhplus.be.server.domain.entity.Seat;
+import kr.hhplus.be.server.support.type.ReservationStatus;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 public interface ConcertRepository {
@@ -18,7 +21,9 @@ public interface ConcertRepository {
 
     ConcertSchedule findConcertScheduleByConcertScheduleId(Long concertScheduleId);
 
-    void saveSeat(Seat assignedSeat);
+    Seat saveSeat(Seat assignedSeat);
 
     Seat findSeatById(Long seatId);
+
+    List<Reservation> findExpiredReservation(ReservationStatus reservationStatus, LocalDateTime localDateTime);
 }
