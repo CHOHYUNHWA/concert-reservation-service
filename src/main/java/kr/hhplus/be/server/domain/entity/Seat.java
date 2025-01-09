@@ -33,21 +33,21 @@ public class Seat {
     @Enumerated(EnumType.STRING)
     private SeatStatus seatStatus;
 
-    @Column(name = "RESERVED_AT", nullable = false)
+    @Column(name = "RESERVED_AT")
     private LocalDateTime reservedAt;
 
     @Column(name = "CONCERT_SCHEDULE_ID", nullable = false)
     private Long concertScheduleId;
 
     public void checkStatus() {
-        if(this.seatStatus.equals(SeatStatus.NOT_AVAILABLE)){
+        if(this.seatStatus.equals(SeatStatus.UNAVAILABLE)){
             throw new CustomException(ErrorCode.ALREADY_RESERVED_SEAT);
         }
     }
 
     public Seat assign(){
 
-        this.seatStatus = SeatStatus.NOT_AVAILABLE;
+        this.seatStatus = SeatStatus.UNAVAILABLE;
         this.reservedAt = LocalDateTime.now();
         return this;
     }
