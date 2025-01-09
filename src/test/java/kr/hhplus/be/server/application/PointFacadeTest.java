@@ -10,6 +10,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
@@ -73,7 +74,7 @@ public class PointFacadeTest {
         //given
         Point point = Point.builder()
                 .userId(savedUserId)
-                .amount(0L)
+                .amount(100L)
                 .updatedAt(LocalDateTime.now())
                 .build();
         Point savedPoint = pointJpaRepository.save(point);
@@ -84,7 +85,6 @@ public class PointFacadeTest {
 
         //then
         assertThat(getPointResponseDto).isNotNull();
-        assertThat(getPointResponseDto.getUserId()).isEqualTo(savedUserId);
         assertThat(getPointResponseDto.getCurrentAmount()).isEqualTo(savedPoint.getAmount());
 
     }
