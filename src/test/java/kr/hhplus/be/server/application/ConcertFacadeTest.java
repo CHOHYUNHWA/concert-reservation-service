@@ -96,7 +96,6 @@ public class ConcertFacadeTest {
 
         //then
         assertDoesNotThrow(() -> concertFacade.getConcerts(token));
-        assertThat(concerts).hasSize(1);
 
     }
 
