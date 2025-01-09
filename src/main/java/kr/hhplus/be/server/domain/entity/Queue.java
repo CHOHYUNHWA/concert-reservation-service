@@ -53,6 +53,11 @@ public class Queue {
                 .build();
     }
 
+    public Queue activate(){
+        this.status = QueueStatus.ACTIVE;
+        return this;
+    }
+
     public Queue expiredToken(){
         this.status = QueueStatus.EXPIRED;
         return this;

@@ -7,8 +7,12 @@ import kr.hhplus.be.server.support.exception.CustomException;
 import kr.hhplus.be.server.support.exception.ErrorCode;
 import kr.hhplus.be.server.support.type.QueueStatus;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -48,5 +52,16 @@ public class QueueRepositoryImpl implements QueueRepository {
 
         return latestActiveQueue.map(Queue::getId) // 값이 있으면 id 반환
                 .orElse(queueId);
+    }
+
+    @Override
+    public List<Queue> findExpiredTokens(LocalDateTime now, QueueStatus queueStatus) {
+        return queueJpaRepository.findByExpiredAtBeforeAndStatus(now, queueStatus);
+    }
+
+    @Override
+    public List<Queue> findWaitingTokens(long forChangeTokenCount) {
+        Pageable pageable = PageRequest.of(0, (int) forChangeTokenCount);
+        return queueJpaRepository.findWaitingTokens(pageable).getContent();
     }
 }
