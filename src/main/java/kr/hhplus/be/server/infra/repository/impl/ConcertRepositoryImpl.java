@@ -56,4 +56,9 @@ public class ConcertRepositoryImpl implements ConcertRepository {
         seatJpaRepository.save(assignedSeat);
     }
 
+    @Override
+    public Seat findSeatById(Long seatId) {
+        return seatJpaRepository.findById(seatId).orElseThrow(() -> new CustomException(ErrorCode.SEAT_NOT_FOUND));
+    }
+
 }

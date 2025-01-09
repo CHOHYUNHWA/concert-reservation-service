@@ -44,6 +44,11 @@ public class ConcertService {
         return concertRepository.findSeatsAllByConcertScheduleId(concertScheduleId);
     }
 
+    //좌석 단건 조회
+    public Seat getSeat(Long seatId){
+        return concertRepository.findSeatById(seatId);
+    }
+
     //예약 가능 좌석 인지 확인
     public void isAvailableReservationSeat(ConcertSchedule concertSchedule, Seat seat){
         concertSchedule.checkStatus();
