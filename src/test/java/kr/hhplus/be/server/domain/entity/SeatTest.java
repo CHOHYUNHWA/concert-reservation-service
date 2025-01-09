@@ -21,7 +21,7 @@ public class SeatTest {
                 .concertScheduleId(1L)
                 .seatNumber(1L)
                 .seatPrice(10000L)
-                .seatStatus(SeatStatus.NOT_AVAILABLE)
+                .seatStatus(SeatStatus.UNAVAILABLE)
                 .reservedAt(LocalDateTime.now())
                 .build();
 
@@ -34,7 +34,7 @@ public class SeatTest {
     @Test
     void 콘서트_좌석_배정_성공(){
         //given
-        SeatStatus expectedSeatStatus = SeatStatus.NOT_AVAILABLE;
+        SeatStatus expectedSeatStatus = SeatStatus.UNAVAILABLE;
 
         Seat seat = Seat.builder()
                 .id(1L)
