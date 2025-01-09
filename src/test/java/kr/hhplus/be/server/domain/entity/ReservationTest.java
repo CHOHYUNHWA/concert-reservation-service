@@ -67,7 +67,7 @@ public class ReservationTest {
         //when //then
         assertThatThrownBy(() -> reservation.validateReservation(userId))
                 .isInstanceOf(CustomException.class)
-                .hasMessage(ErrorCode.ALREADY_RESERVED_SEAT.getMessage());
+                .hasMessage(ErrorCode.ALREADY_PAID.getMessage());
     }
 
     @Test

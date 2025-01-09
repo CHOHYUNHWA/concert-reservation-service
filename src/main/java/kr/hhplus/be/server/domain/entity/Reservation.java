@@ -56,8 +56,8 @@ public class Reservation {
 
     //유효성 검증
     public void validateReservation(Long userId){
-        if(!this.status.equals(ReservationStatus.PAYMENT_WAITING)){
-            throw new CustomException(ErrorCode.ALREADY_RESERVED_SEAT);
+        if(this.status.equals(ReservationStatus.PAYMENT_COMPLETED)){
+            throw new CustomException(ErrorCode.ALREADY_PAID);
         }
         if(this.reservedAt.isBefore(LocalDateTime.now().minusMinutes(5))){
             throw new CustomException(ErrorCode.PAYMENT_TIMEOUT);
