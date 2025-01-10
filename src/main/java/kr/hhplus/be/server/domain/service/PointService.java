@@ -4,9 +4,11 @@ import kr.hhplus.be.server.domain.entity.Point;
 import kr.hhplus.be.server.domain.repository.PointRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class PointService {
 
     private final PointRepository pointRepository;
