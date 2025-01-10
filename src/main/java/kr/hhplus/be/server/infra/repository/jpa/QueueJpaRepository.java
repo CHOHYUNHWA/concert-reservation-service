@@ -1,5 +1,6 @@
 package kr.hhplus.be.server.infra.repository.jpa;
 
+import jakarta.persistence.LockModeType;
 import kr.hhplus.be.server.domain.entity.Queue;
 import kr.hhplus.be.server.support.type.QueueStatus;
 import org.springframework.data.domain.Page;

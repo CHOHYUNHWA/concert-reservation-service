@@ -5,6 +5,7 @@ import kr.hhplus.be.server.domain.repository.QueueRepository;
 import kr.hhplus.be.server.support.type.QueueStatus;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -16,6 +17,7 @@ public class QueueService {
         return queueRepository.findQueue(token);
     }
 
+    @Transactional
     public Queue createToken(){
         Long activeCount = queueRepository.countByStatus(QueueStatus.ACTIVE);
         Queue token = Queue.createToken(activeCount);

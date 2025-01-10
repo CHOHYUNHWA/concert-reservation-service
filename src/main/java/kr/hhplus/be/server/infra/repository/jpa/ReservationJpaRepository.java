@@ -18,4 +18,6 @@ public interface ReservationJpaRepository extends JpaRepository<Reservation, Lon
     Optional<Reservation> findByUserId(Long userId);
 
     List<Reservation> findByStatusAndReservedAtBefore(ReservationStatus reservationStatus, LocalDateTime localDateTime);
+
+    List<Reservation> findByConcertIdAndConcertScheduleIdAndSeatId(long concertId, long concertScheduleId, long seatId);
 }

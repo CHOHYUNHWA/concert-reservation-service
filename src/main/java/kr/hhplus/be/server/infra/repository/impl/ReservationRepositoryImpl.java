@@ -8,6 +8,8 @@ import kr.hhplus.be.server.support.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 @Repository
 @RequiredArgsConstructor
 public class ReservationRepositoryImpl implements ReservationRepository {
@@ -27,5 +29,10 @@ public class ReservationRepositoryImpl implements ReservationRepository {
     @Override
     public Reservation findById(Long reservationId) {
         return reservationJpaRepository.findById(reservationId).orElseThrow(() -> new CustomException(ErrorCode.RESERVATION_NOT_FOUND));
+    }
+
+    @Override
+    public List<Reservation> findByConcertIdAndConcertScheduleIdAndSeatId(long concertId, long concertScheduleId, long seatId) {
+        return reservationJpaRepository.findByConcertIdAndConcertScheduleIdAndSeatId(concertId, concertScheduleId, seatId);
     }
 }
