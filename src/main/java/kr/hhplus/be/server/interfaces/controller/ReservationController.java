@@ -30,7 +30,7 @@ public class ReservationController {
                         1L,
                         "콘서트",
                         LocalDateTime.now(),
-                        List.of(new ReservationCompletedSeatDto(1L, 10000L)),
+                        new ReservationCompletedSeatDto(1L, 10000L),
                         100000L,
                         ReservationStatus.PAYMENT_WAITING
                 ), HttpStatus.CREATED);

@@ -1,9 +1,7 @@
 package kr.hhplus.be.server.interfaces.controller;
 
-import kr.hhplus.be.server.interfaces.dto.AvailableReservationConcertDateResponse;
-import kr.hhplus.be.server.interfaces.dto.AvailableReservationConcertSeatResponse;
-import kr.hhplus.be.server.interfaces.dto.ScheduleDto;
-import kr.hhplus.be.server.interfaces.dto.SeatDto;
+import kr.hhplus.be.server.interfaces.dto.*;
+import kr.hhplus.be.server.support.type.ConcertStatus;
 import kr.hhplus.be.server.support.type.SeatStatus;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,11 +14,27 @@ import java.util.List;
 @RequestMapping("/api/concert")
 public class ConcertController {
 
+    /**
+     * 예약 가능 콘서트 리스트 조회
+     */
+    @GetMapping
+    public ResponseEntity<List<AvailableReservationConcertResponse>> getAvailableReservationConcertSeats(
+            @RequestHeader("Token") String token
+    ){
+        return new ResponseEntity<>(
+                List.of(
+                        new AvailableReservationConcertResponse(1L,
+                                "콘서트타이틀",
+                                "콘서트설명",
+                                ConcertStatus.OPEN)),
+                HttpStatus.OK);
+    }
+
 
     /**
      * 예약 가능 콘서트 날짜 조회
      */
-    @GetMapping("/{concertId}/schedule")
+    @GetMapping("/{concertId}/schedules")
     public ResponseEntity<AvailableReservationConcertDateResponse> getAvailableConcertDate(
             @RequestHeader("Token") String token,
             @PathVariable("concertId") String concertId
