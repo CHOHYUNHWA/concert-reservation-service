@@ -36,14 +36,14 @@ public class PointServiceTest {
                 .updatedAt(LocalDateTime.now())
                 .build();
 
-        given(pointRepository.findPoint(userId)).willReturn(point);
+        given(pointRepository.findPointWithLock(userId)).willReturn(point);
 
         //when
         Point result = pointService.getPoint(userId);
 
         //then
         assertThat(result).isEqualTo(point);
-        verify(pointRepository, times(1)).findPoint(userId);
+        verify(pointRepository, times(1)).findPointWithLock(userId);
     }
 
     @Test
@@ -62,7 +62,7 @@ public class PointServiceTest {
 
         Long expectedAmount = point.getAmount() - useAmount;
 
-        given(pointRepository.findPoint(userId)).willReturn(point);
+        given(pointRepository.findPointWithLock(userId)).willReturn(point);
         given(pointRepository.save(point)).willReturn(usedPoint);
 
         //when
@@ -70,7 +70,7 @@ public class PointServiceTest {
 
         //then
         assertThat(result.getAmount()).isEqualTo(expectedAmount);
-        verify(pointRepository, times(1)).findPoint(userId);
+        verify(pointRepository, times(1)).findPointWithLock(userId);
         verify(pointRepository, times(1)).save(point);
     }
 
@@ -91,7 +91,7 @@ public class PointServiceTest {
 
         Long expectedAmount = point.getAmount() + chargeAmount;
 
-        given(pointRepository.findPoint(userId)).willReturn(point);
+        given(pointRepository.findPointWithLock(userId)).willReturn(point);
         given(pointRepository.save(point)).willReturn(chargedPoint);
         //when
 
@@ -99,7 +99,7 @@ public class PointServiceTest {
 
         //then
         assertThat(result.getAmount()).isEqualTo(expectedAmount);
-        verify(pointRepository, times(1)).findPoint(userId);
+        verify(pointRepository, times(1)).findPointWithLock(userId);
         verify(pointRepository, times(1)).save(point);
     }
 

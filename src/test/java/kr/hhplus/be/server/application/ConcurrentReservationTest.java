@@ -100,7 +100,7 @@ public class ConcurrentReservationTest {
 
         List<Reservation> reservations = reservationRepository.findByConcertIdAndConcertScheduleIdAndSeatId(1L, 1L, 1L);
         assertThat(reservations.size()).isOne();
-        assertThat(concertRepository.findSeatById(1L).getSeatStatus()).isEqualTo(SeatStatus.UNAVAILABLE);
+        assertThat(concertRepository.findSeatByIdWithLock(1L).getSeatStatus()).isEqualTo(SeatStatus.UNAVAILABLE);
     }
 
 }

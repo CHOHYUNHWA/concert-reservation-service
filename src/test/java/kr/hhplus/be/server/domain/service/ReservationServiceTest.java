@@ -63,7 +63,7 @@ public class ReservationServiceTest {
                         .status(ReservationStatus.PAYMENT_WAITING)
                         .build();
 
-        given(reservationRepository.findById(reservation.getId())).willReturn(reservation);
+        given(reservationRepository.findByIdWithLock(reservation.getId())).willReturn(reservation);
 
         //when
         Reservation result = reservationService.validateReservation(reservation.getId(), userId);

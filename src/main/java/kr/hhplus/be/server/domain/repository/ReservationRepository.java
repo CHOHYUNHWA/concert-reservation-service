@@ -9,7 +9,7 @@ public interface ReservationRepository {
 
     Reservation findByUserId(Long userId);
 
-    Reservation findById(Long reservationId);
+    Reservation findByIdWithLock(Long reservationId);
 
     List<Reservation> findByConcertIdAndConcertScheduleIdAndSeatId(long concertId, long concertScheduleId, long seatId);
 }

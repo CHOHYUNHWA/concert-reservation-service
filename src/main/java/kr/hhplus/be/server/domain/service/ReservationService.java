@@ -26,7 +26,7 @@ public class ReservationService {
 
     //예약 상태 검증
     public Reservation validateReservation(Long reservationId, Long userId){
-        Reservation reservation = reservationRepository.findById(reservationId);
+        Reservation reservation = reservationRepository.findByIdWithLock(reservationId);
         reservation.validateReservation(userId);
 
         return reservation;

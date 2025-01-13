@@ -15,13 +15,13 @@ public class PointService {
 
     //포인트 조회
     public Point getPoint(Long userId) {
-        return pointRepository.findPoint(userId);
+        return pointRepository.findPointWithLock(userId);
     }
 
     //포인트 사용
     public Point usePoint(Long userId, Long useAmount) {
 
-        Point point = pointRepository.findPoint(userId);
+        Point point = pointRepository.findPointWithLock(userId);
         Point usedPoint = point.usePoint(useAmount);
 
         return pointRepository.save(usedPoint);
@@ -30,7 +30,7 @@ public class PointService {
     //포인트 충전
     public Point chargePoint(Long userId, Long chargeAmount) {
 
-        Point point = pointRepository.findPoint(userId);
+        Point point = pointRepository.findPointWithLock(userId);
         Point chargedPoint = point.charge(chargeAmount);
 
         return pointRepository.save(chargedPoint);
