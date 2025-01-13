@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/concert")
+@RequestMapping("/api/reservations")
 public class ReservationController {
 
     private final ReservationFacade reservationFacade;
@@ -21,7 +21,7 @@ public class ReservationController {
     /**
      * 콘서트 예약
      */
-    @PostMapping("/reservation")
+    @PostMapping
     public ResponseEntity<ReservationHttpDto.ReservationCompletedResponse> reserveConcert(
             @RequestHeader("Token") String token,
             @RequestBody ReservationHttpDto.ReservationRequest reservationRequest

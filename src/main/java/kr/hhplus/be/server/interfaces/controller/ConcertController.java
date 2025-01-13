@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/concert")
+@RequestMapping("/api/concerts")
 @RequiredArgsConstructor
 public class ConcertController {
 
@@ -47,7 +47,7 @@ public class ConcertController {
     /**
      * 예약 가능 콘서트 좌석 조회
      */
-    @GetMapping("/{concertId}/schedule/{concertScheduleId}/seats")
+    @GetMapping("/{concertId}/schedules/{concertScheduleId}/seats")
     public ResponseEntity<ConcertHttpDto.AvailableReservationConcertSeatResponse> getAvailableConcertSeats(
             @RequestHeader("Token") String token,
             @PathVariable("concertId") Long concertId,
