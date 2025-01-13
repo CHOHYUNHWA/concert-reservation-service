@@ -1,4 +1,4 @@
-package kr.hhplus.be.server.interfaces.dto.Point;
+package kr.hhplus.be.server.interfaces.dto.point;
 
 import kr.hhplus.be.server.domain.entity.Point;
 import lombok.Builder;

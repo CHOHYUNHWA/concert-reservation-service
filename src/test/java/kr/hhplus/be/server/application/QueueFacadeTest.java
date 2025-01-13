@@ -7,7 +7,7 @@ import kr.hhplus.be.server.domain.repository.QueueRepository;
 import kr.hhplus.be.server.domain.service.QueueService;
 import kr.hhplus.be.server.infra.repository.jpa.QueueJpaRepository;
 import kr.hhplus.be.server.infra.repository.jpa.UserJpaRepository;
-import kr.hhplus.be.server.interfaces.dto.Queue.QueueHttpDto;
+import kr.hhplus.be.server.interfaces.dto.queue.QueueHttpDto;
 import kr.hhplus.be.server.support.exception.CustomException;
 import kr.hhplus.be.server.support.exception.ErrorCode;
 import kr.hhplus.be.server.support.type.QueueStatus;

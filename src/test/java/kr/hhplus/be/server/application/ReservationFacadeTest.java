@@ -12,19 +12,16 @@ import kr.hhplus.be.server.infra.repository.jpa.ConcertJpaRepository;
 import kr.hhplus.be.server.infra.repository.jpa.ConcertScheduleJpaRepository;
 import kr.hhplus.be.server.infra.repository.jpa.SeatJpaRepository;
 import kr.hhplus.be.server.infra.repository.jpa.UserJpaRepository;
-import kr.hhplus.be.server.interfaces.dto.ReservationCompletedResponse;
-import kr.hhplus.be.server.interfaces.dto.ReservationRequest;
+import kr.hhplus.be.server.interfaces.dto.reservation.ReservationHttpDto;
 import kr.hhplus.be.server.support.exception.CustomException;
 import kr.hhplus.be.server.support.exception.ErrorCode;
 import kr.hhplus.be.server.support.type.ConcertStatus;
 import kr.hhplus.be.server.support.type.ReservationStatus;
 import kr.hhplus.be.server.support.type.SeatStatus;
-import org.junit.Before;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 
@@ -109,7 +106,12 @@ public class ReservationFacadeTest {
         seatJpaRepository.save(seat);
 
 
-        ReservationRequest reservationRequest = new ReservationRequest(USER_ID, concert.getId(), concertSchedule.getId(), seat.getId());
+        ReservationHttpDto.ReservationRequest reservationRequest = ReservationHttpDto.ReservationRequest.builder()
+                .userId(USER_ID)
+                .concertId(concert.getId())
+                .concertScheduleId(concertSchedule.getId())
+                .seatId(seat.getId())
+                .build();
 
 
         // when & then
@@ -155,7 +157,12 @@ public class ReservationFacadeTest {
         seatJpaRepository.save(seat);
 
 
-        ReservationRequest reservationRequest = new ReservationRequest(USER_ID, concert.getId(), concertSchedule.getId(), seat.getId());
+        ReservationHttpDto.ReservationRequest reservationRequest = ReservationHttpDto.ReservationRequest.builder()
+                .userId(USER_ID)
+                .concertId(concert.getId())
+                .concertScheduleId(concertSchedule.getId())
+                .seatId(seat.getId())
+                .build();
 
 
         // when & then
@@ -202,7 +209,12 @@ public class ReservationFacadeTest {
         seatJpaRepository.save(seat);
 
 
-        ReservationRequest reservationRequest = new ReservationRequest(USER_ID, concert.getId(), concertSchedule.getId(), seat.getId());
+        ReservationHttpDto.ReservationRequest reservationRequest = ReservationHttpDto.ReservationRequest.builder()
+                .userId(USER_ID)
+                .concertId(concert.getId())
+                .concertScheduleId(concertSchedule.getId())
+                .seatId(seat.getId())
+                .build();
 
 
         // when & then
@@ -248,11 +260,15 @@ public class ReservationFacadeTest {
         seatJpaRepository.save(seat);
 
 
-        ReservationRequest reservationRequest = new ReservationRequest(USER_ID, concert.getId(), concertSchedule.getId(), seat.getId());
-
+        ReservationHttpDto.ReservationRequest reservationRequest = ReservationHttpDto.ReservationRequest.builder()
+                .userId(USER_ID)
+                .concertId(concert.getId())
+                .concertScheduleId(concertSchedule.getId())
+                .seatId(seat.getId())
+                .build();
 
         // when
-        ReservationCompletedResponse reservation = reservationFacade.reservation(reservationRequest, token);
+        ReservationHttpDto.ReservationCompletedResponse reservation = reservationFacade.reservation(reservationRequest, token);
 
         //then
         assertThat(reservation).isNotNull();

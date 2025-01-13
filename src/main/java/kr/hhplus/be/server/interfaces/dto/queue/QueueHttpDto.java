@@ -1,4 +1,4 @@
-package kr.hhplus.be.server.interfaces.dto.Queue;
+package kr.hhplus.be.server.interfaces.dto.queue;
 
 import kr.hhplus.be.server.domain.entity.Queue;
 import kr.hhplus.be.server.support.type.QueueStatus;

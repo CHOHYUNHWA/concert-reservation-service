@@ -3,7 +3,7 @@ package kr.hhplus.be.server.application.facade;
 import kr.hhplus.be.server.domain.entity.Queue;
 import kr.hhplus.be.server.domain.service.QueueService;
 import kr.hhplus.be.server.domain.service.UserService;
-import kr.hhplus.be.server.interfaces.dto.Queue.QueueHttpDto;
+import kr.hhplus.be.server.interfaces.dto.queue.QueueHttpDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
