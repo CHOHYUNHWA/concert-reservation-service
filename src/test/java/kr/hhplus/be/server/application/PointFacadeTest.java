@@ -5,12 +5,11 @@ import kr.hhplus.be.server.domain.entity.Point;
 import kr.hhplus.be.server.domain.entity.User;
 import kr.hhplus.be.server.infra.repository.jpa.PointJpaRepository;
 import kr.hhplus.be.server.infra.repository.jpa.UserJpaRepository;
-import kr.hhplus.be.server.interfaces.dto.Point.PointHttpDto;
+import kr.hhplus.be.server.interfaces.dto.point.PointHttpDto;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;

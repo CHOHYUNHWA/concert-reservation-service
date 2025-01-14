@@ -27,7 +27,7 @@ public class ReservationRepositoryImpl implements ReservationRepository {
     }
 
     @Override
-    public Reservation findById(Long reservationId) {
+    public Reservation findByIdWithLock(Long reservationId) {
         return reservationJpaRepository.findById(reservationId).orElseThrow(() -> new CustomException(ErrorCode.RESERVATION_NOT_FOUND));
     }
 

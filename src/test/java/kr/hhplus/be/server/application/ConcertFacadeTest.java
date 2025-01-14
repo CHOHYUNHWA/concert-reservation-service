@@ -4,7 +4,7 @@ import kr.hhplus.be.server.application.facade.ConcertFacade;
 import kr.hhplus.be.server.application.facade.QueueFacade;
 import kr.hhplus.be.server.domain.entity.*;
 import kr.hhplus.be.server.infra.repository.jpa.*;
-import kr.hhplus.be.server.interfaces.dto.*;
+import kr.hhplus.be.server.interfaces.dto.concert.*;
 import kr.hhplus.be.server.support.exception.CustomException;
 import kr.hhplus.be.server.support.exception.ErrorCode;
 import kr.hhplus.be.server.support.type.ConcertStatus;
@@ -92,7 +92,7 @@ public class ConcertFacadeTest {
         String token = queue.getToken();
 
         //when
-        List<AvailableReservationConcertResponse> concerts = concertFacade.getConcerts(token);
+        List<ConcertHttpDto.AvailableReservationConcertResponse> concerts = concertFacade.getConcerts(token);
 
         //then
         assertDoesNotThrow(() -> concertFacade.getConcerts(token));
@@ -119,13 +119,13 @@ public class ConcertFacadeTest {
         Queue queue = queueFacade.createToken(savedUser.getId());
 
         //when
-        AvailableReservationConcertDateResponse result = concertFacade.getConcertSchedules(queue.getToken(), savedConcert.getId());
-        List<ScheduleDto> concertSchedules = result.getSchedules();
+        ConcertHttpDto.AvailableReservationConcertDateResponse result = concertFacade.getConcertSchedules(queue.getToken(), savedConcert.getId());
+        List<ConcertHttpDto.ScheduleDto> concertSchedules = result.getSchedules();
 
         //then
         LocalDateTime now = LocalDateTime.now();
         assertThat(result.getConcertId()).isEqualTo(savedConcert.getId());
-        for (ScheduleDto concertSchedule : concertSchedules) {
+        for (ConcertHttpDto.ScheduleDto concertSchedule : concertSchedules) {
             assertThat(concertSchedule.getConcertTime()).isAfter(now);
             assertThat(concertSchedule.getAvailableReservationTime()).isBefore(now);
         }
@@ -139,12 +139,12 @@ public class ConcertFacadeTest {
         Queue queue = queueFacade.createToken(savedUser.getId());
 
         //when
-        AvailableReservationConcertSeatResponse concertSeats = concertFacade.getConcertSeats(queue.getToken(), savedConcert.getId(), savedConcertSchedule.getId());
-        List<SeatDto> seats = concertSeats.getSeats();
+        ConcertHttpDto.AvailableReservationConcertSeatResponse concertSeats = concertFacade.getConcertSeats(queue.getToken(), savedConcert.getId(), savedConcertSchedule.getId());
+        List<ConcertHttpDto.SeatDto> seats = concertSeats.getSeats();
 
         //then
         assertThat(concertSeats.getConcertId()).isEqualTo(savedConcert.getId());
-        for (SeatDto seat : seats) {
+        for (ConcertHttpDto.SeatDto seat : seats) {
             assertThat(seat.getStatus()).isEqualTo(SeatStatus.AVAILABLE);
         }
     }

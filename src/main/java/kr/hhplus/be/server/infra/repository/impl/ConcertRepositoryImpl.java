@@ -62,7 +62,7 @@ public class ConcertRepositoryImpl implements ConcertRepository {
     }
 
     @Override
-    public Seat findSeatById(Long seatId) {
+    public Seat findSeatByIdWithLock(Long seatId) {
         return seatJpaRepository.findById(seatId).orElseThrow(() -> new CustomException(ErrorCode.SEAT_NOT_FOUND));
     }
 

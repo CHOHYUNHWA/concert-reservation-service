@@ -2,14 +2,14 @@ package kr.hhplus.be.server.interfaces.controller;
 
 import kr.hhplus.be.server.application.facade.QueueFacade;
 import kr.hhplus.be.server.domain.entity.Queue;
-import kr.hhplus.be.server.interfaces.dto.Queue.QueueHttpDto;
+import kr.hhplus.be.server.interfaces.dto.queue.QueueHttpDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/queue")
+@RequestMapping("/api/queues")
 @RequiredArgsConstructor
 public class QueueController {
 

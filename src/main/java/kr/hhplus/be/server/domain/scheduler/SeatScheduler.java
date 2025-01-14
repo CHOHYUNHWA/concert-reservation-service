@@ -25,7 +25,7 @@ public class SeatScheduler {
                 concertRepository.findExpiredReservation(ReservationStatus.PAYMENT_WAITING, LocalDateTime.now().minusMinutes(5));
 
         for (Reservation notPaidReservation : notPaidReservations) {
-            Seat seat = concertRepository.findSeatById(notPaidReservation.getSeatId());
+            Seat seat = concertRepository.findSeatByIdWithLock(notPaidReservation.getSeatId());
 
             Seat availableUpdateSeat = seat.toAvailable();
             concertRepository.saveSeat(availableUpdateSeat);

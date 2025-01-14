@@ -4,14 +4,8 @@ import jakarta.transaction.Transactional;
 import kr.hhplus.be.server.domain.entity.*;
 import kr.hhplus.be.server.domain.repository.ConcertRepository;
 import kr.hhplus.be.server.domain.repository.ReservationRepository;
-import kr.hhplus.be.server.infra.repository.jpa.ConcertJpaRepository;
-import kr.hhplus.be.server.infra.repository.jpa.ConcertScheduleJpaRepository;
-import kr.hhplus.be.server.infra.repository.jpa.PointJpaRepository;
-import kr.hhplus.be.server.infra.repository.jpa.UserJpaRepository;
-import kr.hhplus.be.server.support.type.ConcertStatus;
 import kr.hhplus.be.server.support.type.ReservationStatus;
 import kr.hhplus.be.server.support.type.SeatStatus;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -61,10 +55,10 @@ public class SeatSchedulerTest {
         seatScheduler.changeAvailableSeat();
 
         // then
-        Seat updatedSeat = concertRepository.findSeatById(savedSeat.getId());
+        Seat updatedSeat = concertRepository.findSeatByIdWithLock(savedSeat.getId());
         assertThat(updatedSeat.getSeatStatus()).isEqualTo(SeatStatus.AVAILABLE);
 
-        Reservation updatedReservation = reservationRepository.findById(savedReservation.getId());
+        Reservation updatedReservation = reservationRepository.findByIdWithLock(savedReservation.getId());
         assertThat(updatedReservation.getStatus()).isEqualTo(ReservationStatus.EXPIRED);
     }
 }

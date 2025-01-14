@@ -46,7 +46,7 @@ public class ConcertService {
 
     //좌석 단건 조회
     public Seat getSeat(Long seatId){
-        return concertRepository.findSeatById(seatId);
+        return concertRepository.findSeatByIdWithLock(seatId);
     }
 
     //예약 가능 좌석 인지 확인

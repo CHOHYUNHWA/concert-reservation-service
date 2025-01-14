@@ -3,7 +3,7 @@ package kr.hhplus.be.server.application.facade;
 import kr.hhplus.be.server.domain.entity.Point;
 import kr.hhplus.be.server.domain.service.PointService;
 import kr.hhplus.be.server.domain.service.UserService;
-import kr.hhplus.be.server.interfaces.dto.Point.PointHttpDto;
+import kr.hhplus.be.server.interfaces.dto.point.PointHttpDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;

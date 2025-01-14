@@ -8,10 +8,8 @@ import kr.hhplus.be.server.domain.repository.ReservationRepository;
 import kr.hhplus.be.server.domain.service.ConcertService;
 import kr.hhplus.be.server.domain.service.QueueService;
 import kr.hhplus.be.server.infra.repository.jpa.*;
-import kr.hhplus.be.server.interfaces.dto.ReservationRequest;
-import kr.hhplus.be.server.support.type.ConcertStatus;
+import kr.hhplus.be.server.interfaces.dto.reservation.ReservationHttpDto;
 import kr.hhplus.be.server.support.type.SeatStatus;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,7 +18,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
@@ -30,7 +27,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
 @Transactional
-@DirtiesContext
 public class ConcurrentReservationTest {
 
     private final Long USER_ID = 1L;
@@ -79,7 +75,7 @@ public class ConcurrentReservationTest {
 
         for (long l = 1; l <= threadCount; l++) {
 
-            ReservationRequest reservationRequest = ReservationRequest.builder()
+            ReservationHttpDto.ReservationRequest reservationRequest = ReservationHttpDto.ReservationRequest.builder()
                     .userId(l)
                     .concertId(1L)
                     .concertScheduleId(1L)
@@ -103,7 +99,7 @@ public class ConcurrentReservationTest {
 
         List<Reservation> reservations = reservationRepository.findByConcertIdAndConcertScheduleIdAndSeatId(1L, 1L, 1L);
         assertThat(reservations.size()).isOne();
-        assertThat(concertRepository.findSeatById(1L).getSeatStatus()).isEqualTo(SeatStatus.UNAVAILABLE);
+        assertThat(concertRepository.findSeatByIdWithLock(1L).getSeatStatus()).isEqualTo(SeatStatus.UNAVAILABLE);
     }
 
 }

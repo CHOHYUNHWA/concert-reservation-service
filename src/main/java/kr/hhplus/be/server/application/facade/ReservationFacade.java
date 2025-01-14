@@ -8,9 +8,7 @@ import kr.hhplus.be.server.domain.entity.Seat;
 import kr.hhplus.be.server.domain.service.ConcertService;
 import kr.hhplus.be.server.domain.service.QueueService;
 import kr.hhplus.be.server.domain.service.ReservationService;
-import kr.hhplus.be.server.interfaces.dto.ReservationCompletedResponse;
-import kr.hhplus.be.server.interfaces.dto.ReservationCompletedSeatDto;
-import kr.hhplus.be.server.interfaces.dto.ReservationRequest;
+import kr.hhplus.be.server.interfaces.dto.reservation.ReservationHttpDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -24,7 +22,7 @@ public class ReservationFacade {
     private final ConcertService concertService;
     private final ReservationService reservationService;
 
-    public ReservationCompletedResponse reservation(ReservationRequest reservationRequest, String token) {
+    public ReservationHttpDto.ReservationCompletedResponse reservation(ReservationHttpDto.ReservationRequest reservationRequest, String token) {
         //토큰 검증
         queueService.validateToken(token);
 
@@ -47,8 +45,8 @@ public class ReservationFacade {
         concertService.assignSeat(findSeat);
 
 
-        ReservationCompletedSeatDto seat = ReservationCompletedSeatDto.of(findSeat.getSeatNumber(), findSeat.getSeatPrice());
-        return ReservationCompletedResponse.of(
+        ReservationHttpDto.ReservationCompletedSeatDto seat = ReservationHttpDto.ReservationCompletedSeatDto.of(findSeat.getSeatNumber(), findSeat.getSeatPrice());
+        return ReservationHttpDto.ReservationCompletedResponse.of(
                 reservation.getId(),
                 concert.getId(),
                 concert.getTitle(),

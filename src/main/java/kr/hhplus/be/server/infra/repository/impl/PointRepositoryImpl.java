@@ -16,7 +16,7 @@ public class PointRepositoryImpl implements PointRepository {
     private final PointJpaRepository pointJpaRepository;
 
     @Override
-    public Point findPoint(Long userId) {
+    public Point findPointWithLock(Long userId) {
         return pointJpaRepository.findByUserId(userId).orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
     }
 
