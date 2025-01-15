@@ -87,7 +87,7 @@ public class ConcurrentReservationTest {
                 Queue queue = queueService.createToken();
 
                 try {
-                    reservationFacade.reservation(reservationRequest,queue.getToken());
+                    reservationFacade.reservation(reservationRequest);
                 } catch (Exception e) {
                 } finally {
                     countDownLatch.countDown();

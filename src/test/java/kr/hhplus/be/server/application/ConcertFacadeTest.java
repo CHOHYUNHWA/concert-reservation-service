@@ -30,9 +30,6 @@ public class ConcertFacadeTest {
     private ConcertFacade concertFacade;
 
     @Autowired
-    private QueueFacade queueFacade;
-
-    @Autowired
     private ConcertJpaRepository concertJpaRepository;
 
     @Autowired
@@ -44,8 +41,6 @@ public class ConcertFacadeTest {
     @Autowired
     private SeatJpaRepository seatJpaRepository;
 
-    @Autowired
-    private QueueJpaRepository queueJpaRepository;
 
     private User savedUser;
     private Concert savedConcert;
@@ -87,46 +82,20 @@ public class ConcertFacadeTest {
 
     @Test
     @Transactional
-    void 토큰이_유효하면_전체_콘서트_조회_성공(){
+    void 전체_콘서트_조회_성공(){
         //given
-        Queue queue = queueFacade.createToken(savedUser.getId());
-        String token = queue.getToken();
-
-        //when
-        List<ConcertHttpDto.AvailableReservationConcertResponse> concerts = concertFacade.getConcerts(token);
-
-        //then
-        assertDoesNotThrow(() -> concertFacade.getConcerts(token));
-
-    }
-
-    @Test
-    @Transactional
-    void 토큰이_유효하지_않으면_콘서트_조회_실패(){
-        //given
-        Queue queue = Queue.builder()
-                .token("test")
-                .createdAt(LocalDateTime.now().minusMinutes(10))
-                .expiredAt(LocalDateTime.now().minusMinutes(5))
-                .status(QueueStatus.EXPIRED)
-                .build();
-
-        queueJpaRepository.save(queue);
 
         //when //then
-        assertThatThrownBy(() -> concertFacade.getConcerts(queue.getToken()))
-                .isInstanceOf(CustomException.class)
-                .hasMessage(ErrorType.INVALID_TOKEN.getMessage());
+        assertDoesNotThrow(() -> concertFacade.getConcerts());
     }
 
     @Test
     @Transactional
     void 예약_가능한_콘서트_스케쥴_조회_성공(){
         //given
-        Queue queue = queueFacade.createToken(savedUser.getId());
 
         //when
-        ConcertHttpDto.AvailableReservationConcertDateResponse result = concertFacade.getConcertSchedules(queue.getToken(), savedConcert.getId());
+        ConcertHttpDto.AvailableReservationConcertDateResponse result = concertFacade.getConcertSchedules(savedConcert.getId());
         List<ConcertHttpDto.ScheduleDto> concertSchedules = result.getSchedules();
 
         //then
@@ -143,10 +112,9 @@ public class ConcertFacadeTest {
     @Transactional
     void 예약_가능한_좌석_조회_성공(){
         //given
-        Queue queue = queueFacade.createToken(savedUser.getId());
 
         //when
-        ConcertHttpDto.AvailableReservationConcertSeatResponse concertSeats = concertFacade.getConcertSeats(queue.getToken(), savedConcert.getId(), savedConcertSchedule.getId());
+        ConcertHttpDto.AvailableReservationConcertSeatResponse concertSeats = concertFacade.getConcertSeats(savedConcert.getId(), savedConcertSchedule.getId());
         List<ConcertHttpDto.SeatDto> seats = concertSeats.getSeats();
 
         //then

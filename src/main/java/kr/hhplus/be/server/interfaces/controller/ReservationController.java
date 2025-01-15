@@ -26,7 +26,7 @@ public class ReservationController {
             @RequestHeader("Token") String token,
             @RequestBody ReservationHttpDto.ReservationRequest reservationRequest
     ){
-        ReservationHttpDto.ReservationCompletedResponse reservation = reservationFacade.reservation(reservationRequest, token);
+        ReservationHttpDto.ReservationCompletedResponse reservation = reservationFacade.reservation(reservationRequest);
         return new ResponseEntity<>(reservation, HttpStatus.CREATED);
     }
 

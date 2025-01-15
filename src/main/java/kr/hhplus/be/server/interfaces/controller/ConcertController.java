@@ -26,7 +26,7 @@ public class ConcertController {
     public ResponseEntity<List<ConcertHttpDto.AvailableReservationConcertResponse>> getAvailableReservationConcertSeats(
             @RequestHeader("Token") String token
     ) {
-        List<ConcertHttpDto.AvailableReservationConcertResponse> availableReservationConcerts = concertFacade.getConcerts(token);
+        List<ConcertHttpDto.AvailableReservationConcertResponse> availableReservationConcerts = concertFacade.getConcerts();
         return new ResponseEntity<>(availableReservationConcerts, HttpStatus.OK);
     }
 
@@ -39,7 +39,7 @@ public class ConcertController {
             @RequestHeader("Token") String token,
             @PathVariable("concertId") Long concertId
     ) {
-        ConcertHttpDto.AvailableReservationConcertDateResponse availableReservationConcertSchedules = concertFacade.getConcertSchedules(token, concertId);
+        ConcertHttpDto.AvailableReservationConcertDateResponse availableReservationConcertSchedules = concertFacade.getConcertSchedules(concertId);
         return new ResponseEntity<>(availableReservationConcertSchedules, HttpStatus.OK);
     }
 
@@ -53,7 +53,7 @@ public class ConcertController {
             @PathVariable("concertId") Long concertId,
             @PathVariable("concertScheduleId") Long concertScheduleId
     ) {
-        ConcertHttpDto.AvailableReservationConcertSeatResponse availableReservationConcertSeats = concertFacade.getConcertSeats(token, concertId, concertScheduleId);
+        ConcertHttpDto.AvailableReservationConcertSeatResponse availableReservationConcertSeats = concertFacade.getConcertSeats(concertId, concertScheduleId);
         return new ResponseEntity<>(availableReservationConcertSeats, HttpStatus.OK);
     }
 }
