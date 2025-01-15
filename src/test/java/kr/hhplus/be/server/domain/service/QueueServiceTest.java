@@ -3,13 +3,12 @@ package kr.hhplus.be.server.domain.service;
 import kr.hhplus.be.server.domain.entity.Queue;
 import kr.hhplus.be.server.domain.repository.QueueRepository;
 import kr.hhplus.be.server.support.exception.CustomException;
-import kr.hhplus.be.server.support.exception.ErrorCode;
+import kr.hhplus.be.server.support.exception.ErrorType;
 import kr.hhplus.be.server.support.type.QueueStatus;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
@@ -84,7 +83,7 @@ public class QueueServiceTest {
         CustomException exception = assertThrows(CustomException.class,
                 () -> queueService.checkQueueStatus(expiredToken));
 
-        assertThat(exception.getErrorCode()).isEqualTo(ErrorCode.UNAUTHORIZED);
+        assertThat(exception.getErrorType()).isEqualTo(ErrorType.INVALID_TOKEN);
     }
 
     @Test
@@ -125,7 +124,7 @@ public class QueueServiceTest {
         String token = "testToken";
         Queue queue = mock(Queue.class);
         given(queueRepository.findQueue(token)).willReturn(queue);
-        doThrow(new CustomException(ErrorCode.UNAUTHORIZED)).when(queue).validateToken();
+        doThrow(new CustomException(ErrorType.INVALID_TOKEN, "현재 토큰 상태: " +queue.getStatus())).when(queue).validateToken();
 
         //when
         //then

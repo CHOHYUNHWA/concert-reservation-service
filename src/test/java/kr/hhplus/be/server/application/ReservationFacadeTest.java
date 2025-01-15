@@ -14,7 +14,7 @@ import kr.hhplus.be.server.infra.repository.jpa.SeatJpaRepository;
 import kr.hhplus.be.server.infra.repository.jpa.UserJpaRepository;
 import kr.hhplus.be.server.interfaces.dto.reservation.ReservationHttpDto;
 import kr.hhplus.be.server.support.exception.CustomException;
-import kr.hhplus.be.server.support.exception.ErrorCode;
+import kr.hhplus.be.server.support.exception.ErrorType;
 import kr.hhplus.be.server.support.type.ConcertStatus;
 import kr.hhplus.be.server.support.type.ReservationStatus;
 import kr.hhplus.be.server.support.type.SeatStatus;
@@ -117,7 +117,7 @@ public class ReservationFacadeTest {
         // when & then
         assertThatThrownBy(() -> reservationFacade.reservation(reservationRequest, token))
                 .isInstanceOf(CustomException.class)
-                .hasMessage(ErrorCode.BEFORE_AVAILABLE_RESERVATION_AT.getMessage());
+                .hasMessage(ErrorType.BEFORE_AVAILABLE_RESERVATION_AT.getMessage());
 
     }
 
@@ -168,7 +168,7 @@ public class ReservationFacadeTest {
         // when & then
         assertThatThrownBy(() -> reservationFacade.reservation(reservationRequest, token))
                 .isInstanceOf(CustomException.class)
-                .hasMessage(ErrorCode.ALREADY_CONCERT_START.getMessage());
+                .hasMessage(ErrorType.ALREADY_CONCERT_START.getMessage());
 
 
     }
@@ -220,7 +220,7 @@ public class ReservationFacadeTest {
         // when & then
         assertThatThrownBy(() -> reservationFacade.reservation(reservationRequest, token))
                 .isInstanceOf(CustomException.class)
-                .hasMessage(ErrorCode.ALREADY_RESERVED_SEAT.getMessage());
+                .hasMessage(ErrorType.ALREADY_RESERVED_SEAT.getMessage());
 
     }
 

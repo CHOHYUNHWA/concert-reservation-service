@@ -1,7 +1,7 @@
 package kr.hhplus.be.server.domain.entity;
 
 import kr.hhplus.be.server.support.exception.CustomException;
-import kr.hhplus.be.server.support.exception.ErrorCode;
+import kr.hhplus.be.server.support.exception.ErrorType;
 import kr.hhplus.be.server.support.type.QueueStatus;
 import org.junit.jupiter.api.Test;
 
@@ -77,7 +77,7 @@ public class QueueTest {
         //when //then
         assertThatThrownBy(token::checkStatus)
                 .isInstanceOf(CustomException.class)
-                .hasMessage(ErrorCode.UNAUTHORIZED.getMessage());
+                .hasMessage(ErrorType.INVALID_TOKEN.getMessage());
     }
 
     @Test
@@ -90,7 +90,7 @@ public class QueueTest {
         //when //then
         assertThatThrownBy(token::validateToken)
                 .isInstanceOf(CustomException.class)
-                .hasMessage(ErrorCode.UNAUTHORIZED.getMessage());
+                .hasMessage(ErrorType.INVALID_TOKEN.getMessage());
     }
 
 }

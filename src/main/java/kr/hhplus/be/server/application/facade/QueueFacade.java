@@ -16,7 +16,7 @@ public class QueueFacade {
     private final QueueService queueService;
     private final UserService userService;
 
-    @Transactional(readOnly = false)
+    @Transactional
     public Queue createToken(Long userId){
         userService.existsUser(userId);
         return queueService.createToken();
@@ -26,6 +26,7 @@ public class QueueFacade {
         userService.existsUser(userId);
 
         Queue findToken = queueService.getToken(tokenString);
+        queueService.checkQueueStatus(findToken);
         Long remainingQueueCount  = queueService.checkRemainingQueueCount(findToken);
 
         return QueueHttpDto.QueueStatusResponseDto.of(findToken.getStatus(), remainingQueueCount);

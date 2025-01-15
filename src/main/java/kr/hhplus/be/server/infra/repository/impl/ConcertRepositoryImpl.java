@@ -10,7 +10,7 @@ import kr.hhplus.be.server.infra.repository.jpa.ConcertScheduleJpaRepository;
 import kr.hhplus.be.server.infra.repository.jpa.ReservationJpaRepository;
 import kr.hhplus.be.server.infra.repository.jpa.SeatJpaRepository;
 import kr.hhplus.be.server.support.exception.CustomException;
-import kr.hhplus.be.server.support.exception.ErrorCode;
+import kr.hhplus.be.server.support.exception.ErrorType;
 import kr.hhplus.be.server.support.type.ReservationStatus;
 import kr.hhplus.be.server.support.type.SeatStatus;
 import lombok.RequiredArgsConstructor;
@@ -47,12 +47,12 @@ public class ConcertRepositoryImpl implements ConcertRepository {
 
     @Override
     public Concert findConcertByConcertId(Long concertId) {
-        return concertJpaRepository.findById(concertId).orElseThrow(() -> new CustomException(ErrorCode.CONCERT_NOT_FOUND));
+        return concertJpaRepository.findById(concertId).orElseThrow(() -> new CustomException(ErrorType.RESOURCE_NOT_FOUND, "검색한 CONCERT ID: " +concertId));
     }
 
     @Override
     public ConcertSchedule findConcertScheduleByConcertScheduleId(Long concertScheduleId) {
-        return concertScheduleJpaRepository.findById(concertScheduleId).orElseThrow(() -> new CustomException(ErrorCode.CONCERT_SCHEDULE_NOT_FOUND));
+        return concertScheduleJpaRepository.findById(concertScheduleId).orElseThrow(() -> new CustomException(ErrorType.RESOURCE_NOT_FOUND,"검색한 CONCERT SCHEDULE ID: " + concertScheduleId));
     }
 
     @Override
@@ -63,7 +63,7 @@ public class ConcertRepositoryImpl implements ConcertRepository {
 
     @Override
     public Seat findSeatByIdWithLock(Long seatId) {
-        return seatJpaRepository.findById(seatId).orElseThrow(() -> new CustomException(ErrorCode.SEAT_NOT_FOUND));
+        return seatJpaRepository.findById(seatId).orElseThrow(() -> new CustomException(ErrorType.RESOURCE_NOT_FOUND,"검색한 SEAT ID: " + seatId));
     }
 
     @Override

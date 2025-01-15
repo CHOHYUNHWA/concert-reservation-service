@@ -1,7 +1,7 @@
 package kr.hhplus.be.server.domain.entity;
 
 import kr.hhplus.be.server.support.exception.CustomException;
-import kr.hhplus.be.server.support.exception.ErrorCode;
+import kr.hhplus.be.server.support.exception.ErrorType;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDateTime;
@@ -47,7 +47,7 @@ public class PointTest {
         //when //then
         assertThatThrownBy(() -> point.charge(chargeAmount))
                 .isInstanceOf(CustomException.class)
-                .hasMessage(ErrorCode.INVALID_AMOUNT.getMessage());
+                .hasMessage(ErrorType.INVALID_AMOUNT.getMessage());
     }
 
     @Test
@@ -86,7 +86,7 @@ public class PointTest {
         //when //then
         assertThatThrownBy(() -> point.usePoint(useAmount))
                 .isInstanceOf(CustomException.class)
-                .hasMessage(ErrorCode.INVALID_AMOUNT.getMessage());
+                .hasMessage(ErrorType.INVALID_AMOUNT.getMessage());
     }
 
     @Test
@@ -104,6 +104,6 @@ public class PointTest {
         //when //then
         assertThatThrownBy(() -> point.usePoint(useAmount))
                 .isInstanceOf(CustomException.class)
-                .hasMessage(ErrorCode.INVALID_AMOUNT.getMessage());
+                .hasMessage(ErrorType.INVALID_AMOUNT.getMessage());
     }
 }

@@ -5,11 +5,13 @@ import lombok.Getter;
 @Getter
 public class CustomException extends RuntimeException {
 
-    private final ErrorCode errorCode;
+    private final ErrorType errorType;
+    private final Object payload;
 
-    public CustomException(ErrorCode errorCode) {
-        super(errorCode.getMessage());
-        this.errorCode = errorCode;
+    public CustomException(ErrorType errorType, Object payload) {
+        super(errorType.getMessage());
+        this.errorType = errorType;
+        this.payload = payload;
     }
 
 }

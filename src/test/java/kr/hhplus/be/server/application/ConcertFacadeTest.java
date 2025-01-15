@@ -6,8 +6,9 @@ import kr.hhplus.be.server.domain.entity.*;
 import kr.hhplus.be.server.infra.repository.jpa.*;
 import kr.hhplus.be.server.interfaces.dto.concert.*;
 import kr.hhplus.be.server.support.exception.CustomException;
-import kr.hhplus.be.server.support.exception.ErrorCode;
+import kr.hhplus.be.server.support.exception.ErrorType;
 import kr.hhplus.be.server.support.type.ConcertStatus;
+import kr.hhplus.be.server.support.type.QueueStatus;
 import kr.hhplus.be.server.support.type.SeatStatus;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -103,13 +104,19 @@ public class ConcertFacadeTest {
     @Transactional
     void 토큰이_유효하지_않으면_콘서트_조회_실패(){
         //given
-        Queue queue = queueFacade.createToken(savedUser.getId());
-        queue.expiredToken();
+        Queue queue = Queue.builder()
+                .token("test")
+                .createdAt(LocalDateTime.now().minusMinutes(10))
+                .expiredAt(LocalDateTime.now().minusMinutes(5))
+                .status(QueueStatus.EXPIRED)
+                .build();
+
+        queueJpaRepository.save(queue);
 
         //when //then
         assertThatThrownBy(() -> concertFacade.getConcerts(queue.getToken()))
                 .isInstanceOf(CustomException.class)
-                .hasMessage(ErrorCode.UNAUTHORIZED.getMessage());
+                .hasMessage(ErrorType.INVALID_TOKEN.getMessage());
     }
 
     @Test

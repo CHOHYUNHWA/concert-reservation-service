@@ -2,6 +2,7 @@ package kr.hhplus.be.server.domain.scheduler;
 
 import kr.hhplus.be.server.domain.entity.Queue;
 import kr.hhplus.be.server.domain.repository.QueueRepository;
+import kr.hhplus.be.server.interfaces.scheduler.TokenScheduler;
 import kr.hhplus.be.server.support.type.QueueStatus;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
