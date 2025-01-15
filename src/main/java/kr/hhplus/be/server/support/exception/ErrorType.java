@@ -16,6 +16,7 @@ public enum ErrorType {
     RESOURCE_NOT_FOUND(ErrorCode.NOT_FOUND, "리소스를 찾을 수 없습니다.", LogLevel.WARN ),
 
     //비즈니스
+    NOT_EXIST_TOKEN(ErrorCode.CLIENT_ERROR, "발급받은 토큰이 없습니다.", LogLevel.ERROR),
     INVALID_TOKEN(ErrorCode.TOKEN_ERROR, "유효하지 않는 토큰 입니다.",LogLevel.WARN),
     TOKEN_NOT_FOUND(ErrorCode.TOKEN_ERROR,"없는 토큰 입니다.", LogLevel.WARN),
     INVALID_AMOUNT(ErrorCode.BUSINESS_ERROR, "잘못된 포인트 값 입니다." , LogLevel.INFO),

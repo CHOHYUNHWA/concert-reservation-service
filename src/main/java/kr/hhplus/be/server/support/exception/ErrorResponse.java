@@ -1,13 +1,14 @@
 package kr.hhplus.be.server.support.exception;
 
 import lombok.Builder;
+import lombok.Getter;
 import org.springframework.http.ResponseEntity;
 
 import java.util.Map;
 
 @Builder
+@Getter
 public class ErrorResponse {
-    private int status;
     private String errorCode;
     private String message;
     private Object payload;
