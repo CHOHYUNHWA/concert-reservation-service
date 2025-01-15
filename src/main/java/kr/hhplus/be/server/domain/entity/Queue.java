@@ -14,7 +14,7 @@ import java.util.UUID;
 
 @Entity
 @Getter
-@Table(name = "QUEUE")
+@Table(name = "queue")
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
