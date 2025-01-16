@@ -6,17 +6,10 @@ import lombok.*;
 public class PaymentHttpDto {
 
     @Getter
+    @Builder
     public static class PaymentRequestDto {
         private Long userId;
         private Long reservationId;
-
-        @Builder
-        public static PaymentRequestDto of(Long userId, Long reservationId) {
-            return PaymentRequestDto.builder()
-                    .userId(userId)
-                    .reservationId(reservationId)
-                    .build();
-        }
     }
 
     @Data
