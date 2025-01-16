@@ -1,4 +1,4 @@
-package kr.hhplus.be.server.application.intergration;
+package kr.hhplus.be.server.application.integration;
 
 import kr.hhplus.be.server.application.facade.ConcertFacade;
 import kr.hhplus.be.server.domain.entity.*;
@@ -11,7 +11,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;

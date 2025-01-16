@@ -1,13 +1,7 @@
-package kr.hhplus.be.server.application.intergration;
+package kr.hhplus.be.server.application.integration;
 
 import kr.hhplus.be.server.application.facade.ReservationFacade;
 import kr.hhplus.be.server.domain.entity.*;
-import kr.hhplus.be.server.domain.repository.ConcertRepository;
-import kr.hhplus.be.server.domain.repository.QueueRepository;
-import kr.hhplus.be.server.domain.repository.ReservationRepository;
-import kr.hhplus.be.server.domain.service.ConcertService;
-import kr.hhplus.be.server.domain.service.QueueService;
-import kr.hhplus.be.server.domain.service.ReservationService;
 import kr.hhplus.be.server.infra.repository.jpa.ConcertJpaRepository;
 import kr.hhplus.be.server.infra.repository.jpa.ConcertScheduleJpaRepository;
 import kr.hhplus.be.server.infra.repository.jpa.SeatJpaRepository;

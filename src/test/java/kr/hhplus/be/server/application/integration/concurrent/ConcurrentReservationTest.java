@@ -1,4 +1,4 @@
-package kr.hhplus.be.server.application.intergration.concurrent;
+package kr.hhplus.be.server.application.integration.concurrent;
 
 import kr.hhplus.be.server.application.facade.ReservationFacade;
 import kr.hhplus.be.server.domain.entity.*;
