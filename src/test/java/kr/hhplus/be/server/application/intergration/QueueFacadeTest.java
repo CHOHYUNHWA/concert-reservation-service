@@ -11,6 +11,8 @@ import kr.hhplus.be.server.interfaces.dto.queue.QueueHttpDto;
 import kr.hhplus.be.server.support.exception.CustomException;
 import kr.hhplus.be.server.support.exception.ErrorType;
 import kr.hhplus.be.server.support.type.QueueStatus;
+import kr.hhplus.be.server.util.DatabaseCleanUp;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -25,34 +27,35 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 @SpringBootTest
 public class QueueFacadeTest {
 
-    private final Logger log = Logger.getLogger(QueueFacadeTest.class.getName());
+    private User user;
 
+    @Autowired
+    private DatabaseCleanUp databaseCleanUp;
     @Autowired
     private QueueFacade queueFacade;
-
     @Autowired
-    private QueueService queueService;
-
+    private UserJpaRepository userJpaRepository;
     @Autowired
     private QueueRepository queueRepository;
 
-    @Autowired
-    private QueueJpaRepository queueJpaRepository;
 
-    @Autowired
-    private UserJpaRepository userJpaRepository;
+    @BeforeEach
+    void setUp(){
+        databaseCleanUp.execute();
 
-    @Test
-    @Transactional
-    void 대기열이_없어_ACTIVE_토큰_발급_성공(){
-        //given
-        User user = User.builder()
+        user = User.builder()
                 .name("테스트")
                 .build();
-        User savedUser = userJpaRepository.save(user);
+        userJpaRepository.save(user);
+
+    }
+
+    @Test
+    void 대기열이_없어_ACTIVE_토큰_발급_성공(){
+        //given
 
         //when
-        Queue activeToken = queueFacade.createToken(savedUser.getId());
+        Queue activeToken = queueFacade.createToken(user.getId());
 
         //then
         assertThat(activeToken).isNotNull();
@@ -62,13 +65,7 @@ public class QueueFacadeTest {
 
 
     @Test
-    @Transactional
     void 대기열이_30명_이상_WAITING_토큰_발급_성공(){
-        User user = User.builder()
-                .name("테스트")
-                .build();
-        User savedUser = userJpaRepository.save(user);
-
         //given
         for(int i = 0; i < 30; i++) {
             Queue queue = Queue.builder()
@@ -83,7 +80,7 @@ public class QueueFacadeTest {
         }
 
         //when
-        Queue token = queueFacade.createToken(savedUser.getId());
+        Queue token = queueFacade.createToken(user.getId());
 
         //then
         assertThat(token).isNotNull();
@@ -91,15 +88,9 @@ public class QueueFacadeTest {
     }
 
     @Test
-    @Transactional
     void 대기열_조회_성공(){
         //given
-        User user = User.builder()
-                .name("테스트")
-                .build();
-        User savedUser = userJpaRepository.save(user);
-
-        Queue token = queueFacade.createToken(savedUser.getId());
+        queueFacade.createToken(user.getId());
         for(int i = 0; i < 30; i++) {
             Queue queue = Queue.builder()
                     .token("test")
@@ -112,10 +103,10 @@ public class QueueFacadeTest {
             queueRepository.save(queue);
         }
 
-        Queue generatedToken = queueFacade.createToken(savedUser.getId());
+        Queue generatedToken = queueFacade.createToken(user.getId());
 
         //when
-        QueueHttpDto.QueueStatusResponseDto queueRemainingCount = queueFacade.getQueueRemainingCount(generatedToken.getToken(), savedUser.getId());
+        QueueHttpDto.QueueStatusResponseDto queueRemainingCount = queueFacade.getQueueRemainingCount(generatedToken.getToken(), user.getId());
 
         //then
         assertThat(queueRemainingCount).isNotNull();
@@ -125,14 +116,8 @@ public class QueueFacadeTest {
     }
 
     @Test
-    @Transactional
     void 만료된_토큰으로_대기열_조회시_예외_던지기(){
         //given
-        User user = User.builder()
-                .name("테스트")
-                .build();
-        User savedUser = userJpaRepository.save(user);
-
         Queue token = Queue.builder()
                 .token("test")
                 .createdAt(LocalDateTime.now().minusMinutes(10))
@@ -144,7 +129,7 @@ public class QueueFacadeTest {
         Queue expiredToken = queueRepository.save(token);
 
         //when //then
-        assertThatThrownBy(() -> queueFacade.getQueueRemainingCount(expiredToken.getToken(), savedUser.getId()))
+        assertThatThrownBy(() -> queueFacade.getQueueRemainingCount(expiredToken.getToken(), user.getId()))
                 .isInstanceOf(CustomException.class)
                 .hasMessage(ErrorType.INVALID_TOKEN.getMessage());
     }
