@@ -32,8 +32,8 @@ public class SeatScheduler {
             Seat availableUpdateSeat = seat.toAvailable();
             concertRepository.saveSeat(availableUpdateSeat);
 
-            Reservation expiredReservation = notPaidReservation.changeExpiredStatus();
-            reservationRepository.save(expiredReservation);
+            notPaidReservation.changeExpiredStatus();
+            reservationRepository.save(notPaidReservation);
         }
     }
 

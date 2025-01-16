@@ -84,10 +84,10 @@ public class ReservationTest {
                 .build();
 
         //when
-        Reservation reservedReservation = reservation.changeCompletedStatus();
+        reservation.changeCompletedStatus();
 
         //then
-        assertThat(reservedReservation.getStatus()).isEqualTo(ReservationStatus.PAYMENT_COMPLETED);
+        assertThat(reservation.getStatus()).isEqualTo(ReservationStatus.PAYMENT_COMPLETED);
     }
 
 }
