@@ -1,6 +1,5 @@
-package kr.hhplus.be.server.application;
+package kr.hhplus.be.server.application.intergration.concurrent;
 
-import jakarta.persistence.EntityManager;
 import kr.hhplus.be.server.application.facade.ReservationFacade;
 import kr.hhplus.be.server.domain.entity.*;
 import kr.hhplus.be.server.domain.repository.ConcertRepository;
@@ -12,8 +11,6 @@ import kr.hhplus.be.server.support.type.SeatStatus;
 import kr.hhplus.be.server.util.DatabaseCleanUp;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 

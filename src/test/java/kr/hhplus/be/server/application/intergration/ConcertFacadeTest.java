@@ -1,14 +1,10 @@
-package kr.hhplus.be.server.application;
+package kr.hhplus.be.server.application.intergration;
 
 import kr.hhplus.be.server.application.facade.ConcertFacade;
-import kr.hhplus.be.server.application.facade.QueueFacade;
 import kr.hhplus.be.server.domain.entity.*;
 import kr.hhplus.be.server.infra.repository.jpa.*;
 import kr.hhplus.be.server.interfaces.dto.concert.*;
-import kr.hhplus.be.server.support.exception.CustomException;
-import kr.hhplus.be.server.support.exception.ErrorType;
 import kr.hhplus.be.server.support.type.ConcertStatus;
-import kr.hhplus.be.server.support.type.QueueStatus;
 import kr.hhplus.be.server.support.type.SeatStatus;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

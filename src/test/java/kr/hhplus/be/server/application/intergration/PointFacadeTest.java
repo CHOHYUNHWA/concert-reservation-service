@@ -1,4 +1,4 @@
-package kr.hhplus.be.server.application;
+package kr.hhplus.be.server.application.intergration;
 
 import kr.hhplus.be.server.application.facade.PointFacade;
 import kr.hhplus.be.server.domain.entity.Point;

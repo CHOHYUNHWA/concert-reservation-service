@@ -1,4 +1,4 @@
-package kr.hhplus.be.server.application;
+package kr.hhplus.be.server.application.intergration;
 
 import kr.hhplus.be.server.application.facade.QueueFacade;
 import kr.hhplus.be.server.domain.entity.Queue;

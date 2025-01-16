@@ -1,4 +1,4 @@
-package kr.hhplus.be.server.application;
+package kr.hhplus.be.server.application.intergration;
 
 import jakarta.transaction.Transactional;
 import kr.hhplus.be.server.application.facade.PaymentFacade;

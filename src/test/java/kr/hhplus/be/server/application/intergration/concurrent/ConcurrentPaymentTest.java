@@ -1,4 +1,4 @@
-package kr.hhplus.be.server.application;
+package kr.hhplus.be.server.application.intergration.concurrent;
 
 import kr.hhplus.be.server.application.facade.PaymentFacade;
 import kr.hhplus.be.server.domain.entity.*;
@@ -6,7 +6,6 @@ import kr.hhplus.be.server.domain.service.PointService;
 import kr.hhplus.be.server.domain.service.QueueService;
 import kr.hhplus.be.server.infra.repository.jpa.*;
 import kr.hhplus.be.server.support.type.ConcertStatus;
-import kr.hhplus.be.server.support.type.QueueStatus;
 import kr.hhplus.be.server.support.type.ReservationStatus;
 import kr.hhplus.be.server.support.type.SeatStatus;
 import kr.hhplus.be.server.util.DatabaseCleanUp;
@@ -20,7 +19,6 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.logging.Logger;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
