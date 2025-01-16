@@ -58,12 +58,10 @@ public class PointServiceTest {
                 .build();
 
         Long useAmount = 400L;
-        Point usedPoint = point.usePoint(useAmount);
-
         Long expectedAmount = point.getAmount() - useAmount;
 
         given(pointRepository.findPointWithLock(userId)).willReturn(point);
-        given(pointRepository.save(point)).willReturn(usedPoint);
+        given(pointRepository.save(point)).willReturn(point);
 
         //when
         Point result = pointService.usePoint(userId, useAmount);
@@ -87,12 +85,12 @@ public class PointServiceTest {
                 .build();
 
         Long chargeAmount = 2000L;
-        Point chargedPoint = point.charge(chargeAmount);
+        point.charge(chargeAmount);
 
         Long expectedAmount = point.getAmount() + chargeAmount;
 
         given(pointRepository.findPointWithLock(userId)).willReturn(point);
-        given(pointRepository.save(point)).willReturn(chargedPoint);
+        given(pointRepository.save(point)).willReturn(point);
         //when
 
         Point result = pointService.chargePoint(userId, chargeAmount);

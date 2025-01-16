@@ -22,18 +22,18 @@ public class PointService {
     public Point usePoint(Long userId, Long useAmount) {
 
         Point point = pointRepository.findPointWithLock(userId);
-        Point usedPoint = point.usePoint(useAmount);
+        point.usePoint(useAmount);
 
-        return pointRepository.save(usedPoint);
+        return pointRepository.save(point);
     }
 
     //포인트 충전
     public Point chargePoint(Long userId, Long chargeAmount) {
 
         Point point = pointRepository.findPointWithLock(userId);
-        Point chargedPoint = point.charge(chargeAmount);
+        point.charge(chargeAmount);
 
-        return pointRepository.save(chargedPoint);
+        return pointRepository.save(point);
     }
 
 }
