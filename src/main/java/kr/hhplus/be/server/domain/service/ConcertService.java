@@ -57,8 +57,8 @@ public class ConcertService {
 
     //좌석 배정
     public void assignSeat(Seat seat){
-        Seat assignedSeat = seat.assign();
-        concertRepository.saveSeat(assignedSeat);
+        seat.assign();
+        concertRepository.saveSeat(seat);
     }
 
 }

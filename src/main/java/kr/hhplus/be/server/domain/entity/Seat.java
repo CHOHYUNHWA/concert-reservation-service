@@ -45,15 +45,13 @@ public class Seat {
         }
     }
 
-    public Seat assign(){
+    public void assign(){
 
         this.seatStatus = SeatStatus.UNAVAILABLE;
         this.reservedAt = LocalDateTime.now();
-        return this;
     }
 
-    public Seat toAvailable(){
+    public void toAvailable(){
         this.seatStatus = SeatStatus.AVAILABLE;
-        return this;
     }
 }
