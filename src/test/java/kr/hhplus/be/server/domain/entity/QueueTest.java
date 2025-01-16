@@ -49,10 +49,10 @@ public class QueueTest {
                 .expiredAt(LocalDateTime.now().minusMinutes(5))
                 .build();
 
-        Queue expiredToken = token.expiredToken();
+        token.expiredToken();
 
-        assertThat(expiredToken.getStatus()).isEqualTo(QueueStatus.EXPIRED);
-        assertThat(expiredToken.getExpiredAt()).isBeforeOrEqualTo(LocalDateTime.now());
+        assertThat(token.getStatus()).isEqualTo(QueueStatus.EXPIRED);
+        assertThat(token.getExpiredAt()).isBeforeOrEqualTo(LocalDateTime.now());
     }
 
     @Test

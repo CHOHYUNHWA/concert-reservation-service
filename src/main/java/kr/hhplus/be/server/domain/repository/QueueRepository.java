@@ -13,8 +13,6 @@ public interface QueueRepository {
 
     Queue save(Queue token);
 
-    void expireToken(Queue expiredToken);
-
     Long findLatestActiveQueueIdByStatus(Long queueId);
 
     List<Queue> findExpiredTokens(LocalDateTime now, QueueStatus queueStatus);

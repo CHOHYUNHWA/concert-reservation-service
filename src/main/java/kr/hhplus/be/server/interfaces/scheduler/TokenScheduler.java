@@ -26,8 +26,8 @@ public class TokenScheduler {
         List<Queue> expiredTokens = queueRepository.findExpiredTokens(now, QueueStatus.ACTIVE);
 
         for (Queue token : expiredTokens) {
-            Queue expiredToken = token.expiredToken();
-            queueRepository.save(expiredToken);
+            token.expiredToken();
+            queueRepository.save(token);
         }
     }
 

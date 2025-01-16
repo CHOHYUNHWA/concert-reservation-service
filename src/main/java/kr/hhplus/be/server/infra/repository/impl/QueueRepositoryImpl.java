@@ -37,11 +37,6 @@ public class QueueRepositoryImpl implements QueueRepository {
     }
 
     @Override
-    public void expireToken(Queue expiredToken) {
-        queueJpaRepository.save(expiredToken);
-    }
-
-    @Override
     public Long findLatestActiveQueueIdByStatus(Long queueId) {
         Optional<Queue> latestActiveQueue = queueJpaRepository.findTopByStatusOrderByIdDesc(QueueStatus.ACTIVE);
 

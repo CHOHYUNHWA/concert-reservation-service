@@ -25,8 +25,8 @@ public class QueueService {
     }
 
     public void expireToken(Queue token) {
-        Queue expiredToken = token.expiredToken();
-        queueRepository.expireToken(expiredToken);
+        token.expiredToken();
+        queueRepository.save(token);
     }
 
     public boolean checkQueueStatus(Queue queue) {
