@@ -9,6 +9,8 @@ import kr.hhplus.be.server.support.type.ConcertStatus;
 import kr.hhplus.be.server.support.type.QueueStatus;
 import kr.hhplus.be.server.support.type.ReservationStatus;
 import kr.hhplus.be.server.support.type.SeatStatus;
+import kr.hhplus.be.server.util.DatabaseCleanUp;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -25,45 +27,41 @@ import static org.assertj.core.api.Assertions.assertThat;
 @SpringBootTest
 public class ConcurrentPaymentTest {
 
-    private final Long USER_ID = 1L;
     private Queue token;
-    private Point point;
     private User user;
-    private Concert concert;
     private Reservation reservation;
-    private ConcertSchedule concertSchedule;
-    private Seat seat;
 
-    private final Logger log = Logger.getLogger(ConcurrentPaymentTest.class.getName());
-
+    //데이터 비우기
     @Autowired
-    private QueueJpaRepository queueJpaRepository;
+    private DatabaseCleanUp databaseCleanUp;
 
+    //주요 비즈니스 테스트 대상
     @Autowired
     private PaymentFacade paymentFacade;
 
-    @Autowired
-    private PointService pointService;
+    //사전 객체 생성 요소
     @Autowired
     private UserJpaRepository userJpaRepository;
     @Autowired
     private PointJpaRepository pointJpaRepository;
     @Autowired
-    private QueueService queueService;
-    @Autowired
     private ConcertJpaRepository concertJpaRepository;
+    @Autowired
+    private ConcertScheduleJpaRepository concertScheduleJpaRepository;
     @Autowired
     private ReservationJpaRepository reservationJpaRepository;
     @Autowired
     private SeatJpaRepository seatJpaRepository;
     @Autowired
-    private ConcertScheduleJpaRepository concertScheduleJpaRepository;
+    private PointService pointService;
+    @Autowired
+    private QueueService queueService;
 
-    @Test
-    void 사용자가_동시에_여러_번_결제를_요청하면_한_번만_성공한다() throws InterruptedException {
-        // given
-        Queue queue = queueService.createToken();
-        token = queue;
+    @BeforeEach
+    void setUp(){
+        databaseCleanUp.execute();
+
+        token = queueService.createToken();
 
         user = User.builder()
                 .name("유저")
@@ -71,14 +69,14 @@ public class ConcurrentPaymentTest {
 
         userJpaRepository.save(user);
 
-        point = Point.builder()
+        Point point = Point.builder()
                 .userId(user.getId())
                 .amount(0L)
                 .build();
 
         pointJpaRepository.save(point);
 
-        concert = Concert.builder()
+        Concert concert = Concert.builder()
                 .title("콘서트")
                 .description("콘서트내용")
                 .status(ConcertStatus.OPEN)
@@ -86,7 +84,7 @@ public class ConcurrentPaymentTest {
 
         concertJpaRepository.save(concert);
 
-        concertSchedule = ConcertSchedule.builder()
+        ConcertSchedule concertSchedule = ConcertSchedule.builder()
                 .concertId(concert.getId())
                 .availableReservationTime(LocalDateTime.now().minusDays(5))
                 .concertTime(LocalDateTime.now().plusDays(30))
@@ -94,7 +92,7 @@ public class ConcurrentPaymentTest {
 
         concertScheduleJpaRepository.save(concertSchedule);
 
-        seat = Seat.builder()
+        Seat seat = Seat.builder()
                 .seatNumber(1L)
                 .seatPrice(100L)
                 .seatStatus(SeatStatus.AVAILABLE)
@@ -118,6 +116,14 @@ public class ConcurrentPaymentTest {
 
         pointService.chargePoint(user.getId(), 100_000L);
 
+
+    }
+
+
+    @Test
+    void 사용자가_동시에_여러_번_결제를_요청하면_한_번만_성공한다() throws InterruptedException {
+        // given
+
         // when
         AtomicInteger successCnt = new AtomicInteger(0);
         AtomicInteger failCnt = new AtomicInteger(0);
@@ -128,9 +134,6 @@ public class ConcurrentPaymentTest {
 
         for (int i = 0; i < threadCount; i++) {
             executorService.submit(() -> {
-
-                log.info(token.getStatus().toString());
-
                 try {
                     paymentFacade.payment(token.getToken(), reservation.getId(), user.getId());
                     successCnt.incrementAndGet();
@@ -141,13 +144,12 @@ public class ConcurrentPaymentTest {
                 }
             });
         }
+
+
         countDownLatch.await();
-
-        Thread.sleep(1000);
-
-        // 결제 요청이 한 번만 수행됐는지 검증한다.
+        // 결제 요청이 한번만 성공했는지 검증
         assertThat(successCnt.intValue()).isOne();
-        // 실패한 횟수가 threadCount 에서 성공한 횟수를 뺀 값과 같은지 검증한다.
+        // 실패한 횟수가 threadCount 에서 성공한 횟수를 뺀 값과 같은지 검증
         assertThat(failCnt.intValue()).isEqualTo(threadCount - successCnt.intValue());
     }
 }
