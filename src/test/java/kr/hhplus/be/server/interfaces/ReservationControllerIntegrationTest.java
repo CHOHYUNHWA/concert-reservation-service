@@ -6,6 +6,7 @@ import kr.hhplus.be.server.infra.repository.jpa.*;
 import kr.hhplus.be.server.interfaces.dto.reservation.ReservationHttpDto;
 import kr.hhplus.be.server.support.type.ConcertStatus;
 import kr.hhplus.be.server.support.type.QueueStatus;
+import kr.hhplus.be.server.support.type.ReservationStatus;
 import kr.hhplus.be.server.support.type.SeatStatus;
 import kr.hhplus.be.server.util.DatabaseCleanUp;
 import org.junit.jupiter.api.BeforeEach;
@@ -27,6 +28,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class ReservationControllerIntegrationTest {
     private Queue queue;
     private Queue expiredQueue;
+    private Concert concert;
+    private ConcertSchedule concertSchedule;
+    private Seat seat;
     private ReservationHttpDto.ReservationRequest request;
 
 
@@ -87,7 +91,7 @@ public class ReservationControllerIntegrationTest {
 
         pointJpaRepository.save(point);
 
-        Concert concert = Concert.builder()
+        concert = Concert.builder()
                 .title("콘서트")
                 .description("콘서트내용")
                 .status(ConcertStatus.OPEN)
@@ -95,7 +99,7 @@ public class ReservationControllerIntegrationTest {
 
         concertJpaRepository.save(concert);
 
-        ConcertSchedule concertSchedule = ConcertSchedule.builder()
+        concertSchedule = ConcertSchedule.builder()
                 .concertId(concert.getId())
                 .availableReservationTime(LocalDateTime.now().minusDays(5))
                 .concertTime(LocalDateTime.now().plusDays(30))
@@ -103,7 +107,7 @@ public class ReservationControllerIntegrationTest {
 
         concertScheduleJpaRepository.save(concertSchedule);
 
-        Seat seat = Seat.builder()
+        seat = Seat.builder()
                 .seatNumber(1L)
                 .seatPrice(100L)
                 .seatStatus(SeatStatus.AVAILABLE)
@@ -131,7 +135,15 @@ public class ReservationControllerIntegrationTest {
                         .header("Token", queue.getToken())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
-                .andExpect(status().isCreated());
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.reservationId").value(1L))
+                .andExpect(jsonPath("$.concertId").value(concert.getId()))
+                .andExpect(jsonPath("$.title").value(concert.getTitle()))
+                .andExpect(jsonPath("$.concertTime").value(concertSchedule.getConcertTime().toString()))
+                .andExpect(jsonPath("$.seat.seatPrice").value(seat.getSeatPrice()))
+                .andExpect(jsonPath("$.seat.seatNumber").value(seat.getSeatNumber()))
+                .andExpect(jsonPath("$.totalPrice").value(seat.getSeatPrice()))
+                .andExpect(jsonPath("$.reservationStatus").value(ReservationStatus.PAYMENT_WAITING.toString()));
     }
 
     @Test
