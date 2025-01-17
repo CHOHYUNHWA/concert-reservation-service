@@ -30,6 +30,7 @@ public class ConcertControllerIntegrationTest {
     private Queue expiredQueue;
     private Concert concert;
     private ConcertSchedule concertSchedule;
+    private Seat seat;
 
 
     @Autowired
@@ -107,7 +108,7 @@ public class ConcertControllerIntegrationTest {
 
         concertScheduleJpaRepository.save(concertSchedule);
 
-        Seat seat = Seat.builder()
+        seat = Seat.builder()
                 .seatNumber(1L)
                 .seatPrice(100L)
                 .seatStatus(SeatStatus.AVAILABLE)
@@ -136,7 +137,12 @@ public class ConcertControllerIntegrationTest {
         //when//then
         mvc.perform(get("/api/concerts")
                         .header("Token", queue.getToken()))
-                .andExpect(status().isOk());
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.length()").value(1)) // 리스트 크기 검증
+                .andExpect(jsonPath("$[0].id").value(concert.getId()))
+                .andExpect(jsonPath("$[0].title").value(concert.getTitle()))
+                .andExpect(jsonPath("$[0].description").value(concert.getDescription()))
+                .andExpect(jsonPath("$[0].status").value(concert.getStatus().toString()));
     }
 
     @Test
@@ -170,7 +176,11 @@ public class ConcertControllerIntegrationTest {
         //when//then
         mvc.perform(get("/api/concerts/{concertId}/schedules", concert.getId())
                         .header("Token", queue.getToken()))
-                .andExpect(status().isOk());
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.concertId").value(concert.getId()))
+                .andExpect(jsonPath("$.schedules[0].scheduleId").value(concertSchedule.getId()))
+                .andExpect(jsonPath("$.schedules[0].concertTime").value(concertSchedule.getConcertTime().toString()))
+                .andExpect(jsonPath("$.schedules[0].availableReservationTime").value(concertSchedule.getAvailableReservationTime().toString()));
     }
 
     @Test
@@ -201,7 +211,15 @@ public class ConcertControllerIntegrationTest {
         //when//then
         mvc.perform(get("/api/concerts/{concertId}/schedules/{concertScheduleId}/seats", concert.getId(), concertSchedule.getId())
                         .header("Token", queue.getToken()))
-                .andExpect(status().isOk());
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.concertId").value(concert.getId()))
+                .andExpect(jsonPath("$.concertTime").value(concertSchedule.getConcertTime().toString()))
+                .andExpect(jsonPath("$.totalSeats").value(1))
+                .andExpect(jsonPath("$.seats[0].seatId").value(seat.getId()))
+                .andExpect(jsonPath("$.seats[0].seatNumber").value(seat.getSeatNumber()))
+                .andExpect(jsonPath("$.seats[0].status").value(seat.getSeatStatus().toString()))
+                .andExpect(jsonPath("$.seats[0].seatPrice").value(seat.getSeatPrice()));
+
     }
 
     @Test
