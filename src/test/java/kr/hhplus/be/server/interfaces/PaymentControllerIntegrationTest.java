@@ -5,10 +5,7 @@ import kr.hhplus.be.server.domain.entity.*;
 import kr.hhplus.be.server.infra.repository.impl.ReservationRepositoryImpl;
 import kr.hhplus.be.server.infra.repository.jpa.*;
 import kr.hhplus.be.server.interfaces.dto.payment.PaymentHttpDto;
-import kr.hhplus.be.server.support.type.ConcertStatus;
-import kr.hhplus.be.server.support.type.QueueStatus;
-import kr.hhplus.be.server.support.type.ReservationStatus;
-import kr.hhplus.be.server.support.type.SeatStatus;
+import kr.hhplus.be.server.support.type.*;
 import kr.hhplus.be.server.util.DatabaseCleanUp;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -30,6 +27,7 @@ public class PaymentControllerIntegrationTest {
 
     private Queue queue;
     private Queue expiredQueue;
+    private Seat seat;
     private PaymentHttpDto.PaymentRequestDto request;
 
     @Autowired
@@ -107,7 +105,7 @@ public class PaymentControllerIntegrationTest {
 
         concertScheduleJpaRepository.save(concertSchedule);
 
-        Seat seat = Seat.builder()
+        seat = Seat.builder()
                 .seatNumber(1L)
                 .seatPrice(100L)
                 .seatStatus(SeatStatus.AVAILABLE)
@@ -144,7 +142,10 @@ public class PaymentControllerIntegrationTest {
                         .header("Token", queue.getToken())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
-                .andExpect(status().isCreated());
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.paymentId").value(1L))
+                .andExpect(jsonPath("$.amount").value(seat.getSeatPrice()))
+                .andExpect(jsonPath("$.paymentStatus").value(PaymentStatus.COMPLETED.toString()));
     }
 
     @Test
