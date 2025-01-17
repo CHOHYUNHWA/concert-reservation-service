@@ -1,4 +1,4 @@
-package kr.hhplus.be.server.interfaces.interceptor.integration;
+package kr.hhplus.be.server.interfaces;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import kr.hhplus.be.server.domain.entity.*;
