@@ -2,7 +2,7 @@ package kr.hhplus.be.server.domain.entity;
 
 
 import kr.hhplus.be.server.support.exception.CustomException;
-import kr.hhplus.be.server.support.exception.ErrorCode;
+import kr.hhplus.be.server.support.exception.ErrorType;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDateTime;
@@ -25,7 +25,7 @@ public class ConcertScheduleTest {
         //when //then
         assertThatThrownBy(concertSchedule::checkStatus)
                 .isInstanceOf(CustomException.class)
-                .hasMessage(ErrorCode.BEFORE_AVAILABLE_RESERVATION_AT.getMessage());
+                .hasMessage(ErrorType.BEFORE_AVAILABLE_RESERVATION_AT.getMessage());
     }
 
     @Test
@@ -42,6 +42,6 @@ public class ConcertScheduleTest {
         //when //then
         assertThatThrownBy(concertSchedule::checkStatus)
                 .isInstanceOf(CustomException.class)
-                .hasMessage(ErrorCode.ALREADY_CONCERT_START.getMessage());
+                .hasMessage(ErrorType.ALREADY_CONCERT_START.getMessage());
     }
 }

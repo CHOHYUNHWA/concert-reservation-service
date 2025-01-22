@@ -4,7 +4,7 @@ import kr.hhplus.be.server.domain.entity.Reservation;
 import kr.hhplus.be.server.domain.repository.ReservationRepository;
 import kr.hhplus.be.server.infra.repository.jpa.ReservationJpaRepository;
 import kr.hhplus.be.server.support.exception.CustomException;
-import kr.hhplus.be.server.support.exception.ErrorCode;
+import kr.hhplus.be.server.support.exception.ErrorType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
@@ -23,12 +23,12 @@ public class ReservationRepositoryImpl implements ReservationRepository {
 
     @Override
     public Reservation findByUserId(Long userId) {
-        return reservationJpaRepository.findByUserId(userId).orElseThrow(() -> new CustomException(ErrorCode.RESERVATION_NOT_FOUND));
+        return reservationJpaRepository.findByUserId(userId).orElseThrow(() -> new CustomException(ErrorType.RESOURCE_NOT_FOUND, "검색한 USER ID: " + userId));
     }
 
     @Override
     public Reservation findByIdWithLock(Long reservationId) {
-        return reservationJpaRepository.findById(reservationId).orElseThrow(() -> new CustomException(ErrorCode.RESERVATION_NOT_FOUND));
+        return reservationJpaRepository.findById(reservationId).orElseThrow(() -> new CustomException(ErrorType.RESOURCE_NOT_FOUND, "검색한 RESERVATION ID: " +reservationId));
     }
 
     @Override

@@ -2,7 +2,7 @@ package kr.hhplus.be.server.domain.entity;
 
 import jakarta.persistence.*;
 import kr.hhplus.be.server.support.exception.CustomException;
-import kr.hhplus.be.server.support.exception.ErrorCode;
+import kr.hhplus.be.server.support.exception.ErrorType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -33,10 +33,10 @@ public class ConcertSchedule {
 
     public void checkStatus() {
         if(LocalDateTime.now().isBefore(this.availableReservationTime)){
-            throw new CustomException(ErrorCode.BEFORE_AVAILABLE_RESERVATION_AT);
+            throw new CustomException(ErrorType.BEFORE_AVAILABLE_RESERVATION_AT, "예약 가능 시간 : " + this.availableReservationTime);
         }
         if(LocalDateTime.now().isAfter(this.concertTime)){
-            throw new CustomException(ErrorCode.ALREADY_CONCERT_START);
+            throw new CustomException(ErrorType.ALREADY_CONCERT_START, "예약 마감 시간 : " + this.concertTime);
         }
     }
 }

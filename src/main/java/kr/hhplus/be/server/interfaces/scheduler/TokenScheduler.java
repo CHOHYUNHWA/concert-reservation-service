@@ -1,10 +1,11 @@
-package kr.hhplus.be.server.domain.scheduler;
+package kr.hhplus.be.server.interfaces.scheduler;
 
 import jakarta.transaction.Transactional;
 import kr.hhplus.be.server.domain.entity.Queue;
 import kr.hhplus.be.server.domain.repository.QueueRepository;
 import kr.hhplus.be.server.support.type.QueueStatus;
 import lombok.RequiredArgsConstructor;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
@@ -18,6 +19,8 @@ public class TokenScheduler {
     private final QueueRepository queueRepository;
 
     //만료 토큰 상태 변경
+    @Transactional
+    @Scheduled(cron = "0 * * * * *")
     public void expireTokens(){
         LocalDateTime now = LocalDateTime.now();
         List<Queue> expiredTokens = queueRepository.findExpiredTokens(now, QueueStatus.ACTIVE);

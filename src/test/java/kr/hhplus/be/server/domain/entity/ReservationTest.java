@@ -1,7 +1,7 @@
 package kr.hhplus.be.server.domain.entity;
 
 import kr.hhplus.be.server.support.exception.CustomException;
-import kr.hhplus.be.server.support.exception.ErrorCode;
+import kr.hhplus.be.server.support.exception.ErrorType;
 import kr.hhplus.be.server.support.type.ReservationStatus;
 import org.junit.jupiter.api.Test;
 
@@ -29,7 +29,7 @@ public class ReservationTest {
         //when //then
         assertThatThrownBy(() -> reservation.validateReservation(wrongUserId))
                 .isInstanceOf(CustomException.class)
-                .hasMessage(ErrorCode.PAYMENT_USER_MISMATCH.getMessage());
+                .hasMessage(ErrorType.PAYMENT_USER_MISMATCH.getMessage());
     }
 
     @Test
@@ -48,7 +48,7 @@ public class ReservationTest {
         //when //then
         assertThatThrownBy(() -> reservation.validateReservation(userId))
                 .isInstanceOf(CustomException.class)
-                .hasMessage(ErrorCode.PAYMENT_TIMEOUT.getMessage());
+                .hasMessage(ErrorType.PAYMENT_TIMEOUT.getMessage());
     }
 
     @Test
@@ -67,7 +67,7 @@ public class ReservationTest {
         //when //then
         assertThatThrownBy(() -> reservation.validateReservation(userId))
                 .isInstanceOf(CustomException.class)
-                .hasMessage(ErrorCode.ALREADY_PAID.getMessage());
+                .hasMessage(ErrorType.ALREADY_PAID.getMessage());
     }
 
     @Test
