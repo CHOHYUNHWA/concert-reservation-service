@@ -24,12 +24,12 @@ public class PointTest {
                 .build();
 
         //when
-        Point chargedPoint = point.charge(chargeAmount);
+        point.charge(chargeAmount);
 
 
         //then
-        assertThat(chargedPoint).isNotNull();
-        assertThat(chargedPoint.getAmount()).isEqualTo(currentAmount+chargeAmount);
+        assertThat(point).isNotNull();
+        assertThat(point.getAmount()).isEqualTo(currentAmount+chargeAmount);
     }
 
     @Test
@@ -64,11 +64,11 @@ public class PointTest {
                 .build();
 
         //when
-        Point usedPoint = point.usePoint(useAmount);
+        point.usePoint(useAmount);
 
         //then
-        assertThat(usedPoint).isNotNull();
-        assertThat(usedPoint.getAmount()).isEqualTo(currentAmount-useAmount);
+        assertThat(point).isNotNull();
+        assertThat(point.getAmount()).isEqualTo(currentAmount-useAmount);
     }
 
     @Test

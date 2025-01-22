@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "POINT")
+@Table(name = "point")
 @Getter
 @Builder
 @NoArgsConstructor
@@ -32,24 +32,20 @@ public class Point {
     private Long userId;
 
 
-    public Point charge(Long chargeAmount) {
+    public void charge(Long chargeAmount) {
 
         if(chargeAmount <= 0){
             throw new CustomException(ErrorType.INVALID_AMOUNT, "현재 잔액: " + this.amount + " 충전 요청 금액: " + chargeAmount);
         }
         this.amount += chargeAmount;
         this.updatedAt = LocalDateTime.now();
-
-        return this;
     }
 
-    public Point usePoint(Long useAmount) {
+    public void usePoint(Long useAmount) {
         if(useAmount <= 0 || useAmount > this.amount){
             throw new CustomException(ErrorType.INVALID_AMOUNT, "현재 잔액: " + this.amount + " 결제 요청 금액: " + useAmount);
         }
         this.amount -= useAmount;
         this.updatedAt = LocalDateTime.now();
-
-        return this;
     }
 }

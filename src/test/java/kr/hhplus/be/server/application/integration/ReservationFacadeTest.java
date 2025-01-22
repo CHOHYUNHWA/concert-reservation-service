@@ -1,13 +1,7 @@
-package kr.hhplus.be.server.application;
+package kr.hhplus.be.server.application.integration;
 
 import kr.hhplus.be.server.application.facade.ReservationFacade;
 import kr.hhplus.be.server.domain.entity.*;
-import kr.hhplus.be.server.domain.repository.ConcertRepository;
-import kr.hhplus.be.server.domain.repository.QueueRepository;
-import kr.hhplus.be.server.domain.repository.ReservationRepository;
-import kr.hhplus.be.server.domain.service.ConcertService;
-import kr.hhplus.be.server.domain.service.QueueService;
-import kr.hhplus.be.server.domain.service.ReservationService;
 import kr.hhplus.be.server.infra.repository.jpa.ConcertJpaRepository;
 import kr.hhplus.be.server.infra.repository.jpa.ConcertScheduleJpaRepository;
 import kr.hhplus.be.server.infra.repository.jpa.SeatJpaRepository;
@@ -18,6 +12,7 @@ import kr.hhplus.be.server.support.exception.ErrorType;
 import kr.hhplus.be.server.support.type.ConcertStatus;
 import kr.hhplus.be.server.support.type.ReservationStatus;
 import kr.hhplus.be.server.support.type.SeatStatus;
+import kr.hhplus.be.server.util.DatabaseCleanUp;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,29 +26,12 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 @SpringBootTest
 public class ReservationFacadeTest {
 
+    private User user;
+    private Concert concert;
+
     @Autowired
     private ReservationFacade reservationFacade;
 
-    @Autowired
-    private QueueService queueService;
-
-    @Autowired
-    private ReservationService reservationService;
-
-    @Autowired
-    private ConcertService concertService;
-
-    @Autowired
-    private ConcertRepository concertRepository;
-
-    @Autowired
-    private QueueRepository queueRepository;
-
-    @Autowired
-    private ReservationRepository reservationRepository;
-
-    private String token;
-    private final Long USER_ID = 1L;
     @Autowired
     private ConcertJpaRepository concertJpaRepository;
     @Autowired
@@ -62,24 +40,20 @@ public class ReservationFacadeTest {
     private UserJpaRepository userJpaRepository;
     @Autowired
     private SeatJpaRepository seatJpaRepository;
+    @Autowired
+    private DatabaseCleanUp databaseCleanUp;
 
     @BeforeEach
     void setUp() {
-        Queue queue = queueService.createToken();
-        token = queue.getToken(); // 토큰 검증 통과를 위한 토큰 생성
-    }
+        databaseCleanUp.execute();
 
-
-    @Test
-    void 예약_가능_시간_이전_예약_요청_시_예외를_반환() {
-        // given
-        User user = User.builder()
+        user = User.builder()
                 .name("이름")
                 .build();
 
         userJpaRepository.save(user);
 
-        Concert concert = Concert.builder()
+        concert = Concert.builder()
                 .title("콘서트")
                 .description("콘서트내용")
                 .status(ConcertStatus.OPEN)
@@ -87,9 +61,17 @@ public class ReservationFacadeTest {
 
         concertJpaRepository.save(concert);
 
+    }
+
+
+    @Test
+    void 예약_가능_시간_이전_예약_요청_시_예외를_반환() {
+        // given
+        LocalDateTime beforeAvailableReservationTime = LocalDateTime.now().plusDays(5);
+
         ConcertSchedule concertSchedule = ConcertSchedule.builder()
                 .concertId(concert.getId())
-                .availableReservationTime(LocalDateTime.now().plusDays(5))
+                .availableReservationTime(beforeAvailableReservationTime)
                 .concertTime(LocalDateTime.now().plusDays(30))
                 .build();
 
@@ -107,7 +89,7 @@ public class ReservationFacadeTest {
 
 
         ReservationHttpDto.ReservationRequest reservationRequest = ReservationHttpDto.ReservationRequest.builder()
-                .userId(USER_ID)
+                .userId(user.getId())
                 .concertId(concert.getId())
                 .concertScheduleId(concertSchedule.getId())
                 .seatId(seat.getId())
@@ -124,24 +106,12 @@ public class ReservationFacadeTest {
     @Test
     void 예약_마감_시간_이후_예약_요청_시_예외를_반환() {
         // given
-        User user = User.builder()
-                .name("이름")
-                .build();
-
-        userJpaRepository.save(user);
-
-        Concert concert = Concert.builder()
-                .title("콘서트")
-                .description("콘서트내용")
-                .status(ConcertStatus.OPEN)
-                .build();
-
-        concertJpaRepository.save(concert);
+        LocalDateTime afterAvailableReservationTime = LocalDateTime.now().minusMinutes(1L);
 
         ConcertSchedule concertSchedule = ConcertSchedule.builder()
                 .concertId(concert.getId())
                 .availableReservationTime(LocalDateTime.now().minusDays(5))
-                .concertTime(LocalDateTime.now().minusMinutes(1L))
+                .concertTime(afterAvailableReservationTime)
                 .build();
 
         concertScheduleJpaRepository.save(concertSchedule);
@@ -158,7 +128,7 @@ public class ReservationFacadeTest {
 
 
         ReservationHttpDto.ReservationRequest reservationRequest = ReservationHttpDto.ReservationRequest.builder()
-                .userId(USER_ID)
+                .userId(user.getId())
                 .concertId(concert.getId())
                 .concertScheduleId(concertSchedule.getId())
                 .seatId(seat.getId())
@@ -176,19 +146,7 @@ public class ReservationFacadeTest {
     @Test
     void 좌석의_상태가_UNAVAILABLE_이라면_예외를_반환() {
         // given
-        User user = User.builder()
-                .name("이름")
-                .build();
-
-        userJpaRepository.save(user);
-
-        Concert concert = Concert.builder()
-                .title("콘서트")
-                .description("콘서트내용")
-                .status(ConcertStatus.OPEN)
-                .build();
-
-        concertJpaRepository.save(concert);
+        SeatStatus unavailableSeatStatus = SeatStatus.UNAVAILABLE;
 
         ConcertSchedule concertSchedule = ConcertSchedule.builder()
                 .concertId(concert.getId())
@@ -201,7 +159,7 @@ public class ReservationFacadeTest {
         Seat seat = Seat.builder()
                 .seatNumber(1L)
                 .seatPrice(100000L)
-                .seatStatus(SeatStatus.UNAVAILABLE)
+                .seatStatus(unavailableSeatStatus)
                 .reservedAt(null)
                 .concertScheduleId(concertSchedule.getId())
                 .build();
@@ -210,7 +168,7 @@ public class ReservationFacadeTest {
 
 
         ReservationHttpDto.ReservationRequest reservationRequest = ReservationHttpDto.ReservationRequest.builder()
-                .userId(USER_ID)
+                .userId(user.getId())
                 .concertId(concert.getId())
                 .concertScheduleId(concertSchedule.getId())
                 .seatId(seat.getId())
@@ -227,20 +185,6 @@ public class ReservationFacadeTest {
     @Test
     void 예약처리_정상_성공() {
         // given
-        User user = User.builder()
-                .name("이름")
-                .build();
-
-        userJpaRepository.save(user);
-
-        Concert concert = Concert.builder()
-                .title("콘서트")
-                .description("콘서트내용")
-                .status(ConcertStatus.OPEN)
-                .build();
-
-        concertJpaRepository.save(concert);
-
         ConcertSchedule concertSchedule = ConcertSchedule.builder()
                 .concertId(concert.getId())
                 .availableReservationTime(LocalDateTime.now().minusDays(5))
@@ -261,7 +205,7 @@ public class ReservationFacadeTest {
 
 
         ReservationHttpDto.ReservationRequest reservationRequest = ReservationHttpDto.ReservationRequest.builder()
-                .userId(USER_ID)
+                .userId(user.getId())
                 .concertId(concert.getId())
                 .concertScheduleId(concertSchedule.getId())
                 .seatId(seat.getId())

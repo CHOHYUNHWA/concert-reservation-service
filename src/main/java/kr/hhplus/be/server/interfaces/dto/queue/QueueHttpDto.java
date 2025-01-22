@@ -25,6 +25,7 @@ public class QueueHttpDto {
 
 
     @Getter
+    @Builder
     public static class CreateTokenRequestDto{
         private Long userId;
     }

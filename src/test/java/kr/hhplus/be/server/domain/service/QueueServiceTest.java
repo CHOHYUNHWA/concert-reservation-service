@@ -11,6 +11,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.time.LocalDateTime;
+
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
@@ -49,14 +51,28 @@ public class QueueServiceTest {
     @Test
     void 토큰_만료_성공(){
         //given
-        Queue token = mock(Queue.class);
-        Queue expiredToken = mock(Queue.class);
-        given(token.expiredToken()).willReturn(expiredToken);
+        Queue activeToken = Queue.builder()
+                .token("active")
+                .createdAt(LocalDateTime.now())
+                .enteredAt(LocalDateTime.now())
+                .expiredAt(LocalDateTime.now().plusMinutes(5))
+                .status(QueueStatus.WAITING)
+                .build();
+
+        Queue expiredToken = Queue.builder()
+                .token("expired")
+                .createdAt(LocalDateTime.now().minusMinutes(10))
+                .enteredAt(LocalDateTime.now().minusMinutes(10))
+                .expiredAt(LocalDateTime.now().minusMinutes(5))
+                .status(QueueStatus.EXPIRED)
+                .build();
+
+        given(queueRepository.save(activeToken)).willReturn(expiredToken);
         //when
-        queueService.expireToken(token);
+        queueService.expireToken(activeToken);
 
         //then
-        verify(queueRepository, times(1)).expireToken(expiredToken);
+        verify(queueRepository, times(1)).save(activeToken);
 
     }
 

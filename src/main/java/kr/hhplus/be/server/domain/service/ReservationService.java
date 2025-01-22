@@ -34,7 +34,7 @@ public class ReservationService {
 
     //예약 완료 변경
     public Reservation changeCompletedStatus(Reservation reservation){
-        Reservation completedReservation = reservation.changeCompletedStatus();
-        return reservationRepository.save(completedReservation);
+        reservation.changeCompletedStatus();
+        return reservationRepository.save(reservation);
     }
 }

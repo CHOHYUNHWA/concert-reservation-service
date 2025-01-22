@@ -46,11 +46,11 @@ public class SeatTest {
                 .build();
 
         //when
-        Seat assignedSeat = seat.assign();
+        seat.assign();
 
         // then
-        assertThat(assignedSeat).isNotNull();
-        assertThat(assignedSeat.getSeatStatus()).isEqualTo(expectedSeatStatus);
-        assertThat(assignedSeat.getReservedAt()).isBefore(LocalDateTime.now().plusSeconds(1));
+        assertThat(seat).isNotNull();
+        assertThat(seat.getSeatStatus()).isEqualTo(expectedSeatStatus);
+        assertThat(seat.getReservedAt()).isBefore(LocalDateTime.now().plusSeconds(1));
     }
 }

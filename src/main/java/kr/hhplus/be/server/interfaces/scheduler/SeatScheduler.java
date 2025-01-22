@@ -29,11 +29,11 @@ public class SeatScheduler {
         for (Reservation notPaidReservation : notPaidReservations) {
             Seat seat = concertRepository.findSeatByIdWithLock(notPaidReservation.getSeatId());
 
-            Seat availableUpdateSeat = seat.toAvailable();
-            concertRepository.saveSeat(availableUpdateSeat);
+            seat.toAvailable();
+            concertRepository.saveSeat(seat);
 
-            Reservation expiredReservation = notPaidReservation.changeExpiredStatus();
-            reservationRepository.save(expiredReservation);
+            notPaidReservation.changeExpiredStatus();
+            reservationRepository.save(notPaidReservation);
         }
     }
 

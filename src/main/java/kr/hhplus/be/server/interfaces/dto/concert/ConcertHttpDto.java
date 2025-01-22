@@ -56,6 +56,7 @@ public class ConcertHttpDto {
             return AvailableReservationConcertSeatResponse.builder()
                     .concertId(concertId)
                     .concertTime(concertTime)
+                    .totalSeats((long) seats.size())
                     .seats(seats)
                     .build();
         }

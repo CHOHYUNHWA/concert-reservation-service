@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "RESERVATION")
+@Table(name = "reservation")
 @Getter
 @Builder
 @NoArgsConstructor
@@ -69,13 +69,11 @@ public class Reservation {
     }
 
     //상태 변경
-    public Reservation changeCompletedStatus(){
+    public void changeCompletedStatus(){
         this.status = ReservationStatus.PAYMENT_COMPLETED;
-        return this;
     }
 
-    public Reservation changeExpiredStatus() {
+    public void changeExpiredStatus() {
         this.status = ReservationStatus.EXPIRED;
-        return this;
     }
 }

@@ -8,6 +8,7 @@ import lombok.Getter;
 public class PointHttpDto {
 
     @Getter
+    @Builder
     public static class ChargePointRequestDto{
         private Long amount;
     }
