@@ -5,7 +5,7 @@ import kr.hhplus.be.server.domain.entity.ConcertSchedule;
 import kr.hhplus.be.server.domain.entity.Seat;
 import kr.hhplus.be.server.domain.repository.ConcertRepository;
 import kr.hhplus.be.server.support.exception.CustomException;
-import kr.hhplus.be.server.support.exception.ErrorType;
+import kr.hhplus.be.server.support.exception.ErrorCode;
 import kr.hhplus.be.server.support.type.ConcertStatus;
 import kr.hhplus.be.server.support.type.SeatStatus;
 import org.junit.jupiter.api.BeforeEach;
@@ -137,7 +137,7 @@ public class ConcertServiceTest {
         //when //then
         assertThatThrownBy(() -> concertService.isAvailableReservationSeat(concertSchedule, seat))
                 .isInstanceOf(CustomException.class)
-                .hasMessage(ErrorType.ALREADY_CONCERT_START.getMessage());
+                .hasMessage(ErrorCode.ALREADY_CONCERT_START.getMessage());
     }
 
     @Test
@@ -166,7 +166,7 @@ public class ConcertServiceTest {
         //when //then
         assertThatThrownBy(() -> concertService.isAvailableReservationSeat(concertSchedule, seat))
                 .isInstanceOf(CustomException.class)
-                .hasMessage(ErrorType.BEFORE_AVAILABLE_RESERVATION_AT.getMessage());
+                .hasMessage(ErrorCode.BEFORE_AVAILABLE_RESERVATION_AT.getMessage());
     }
 
 
@@ -195,7 +195,7 @@ public class ConcertServiceTest {
         //when //then
         assertThatThrownBy(() -> concertService.isAvailableReservationSeat(concertSchedule, seat))
                 .isInstanceOf(CustomException.class)
-                .hasMessage(ErrorType.ALREADY_RESERVED_SEAT.getMessage());
+                .hasMessage(ErrorCode.ALREADY_RESERVED_SEAT.getMessage());
     }
 
 }

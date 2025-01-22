@@ -2,7 +2,7 @@ package kr.hhplus.be.server.domain.entity;
 
 import jakarta.persistence.*;
 import kr.hhplus.be.server.support.exception.CustomException;
-import kr.hhplus.be.server.support.exception.ErrorType;
+import kr.hhplus.be.server.support.exception.ErrorCode;
 import kr.hhplus.be.server.support.type.QueueStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -65,14 +65,14 @@ public class Queue {
 
     public boolean checkStatus() {
         if(this.status.equals(QueueStatus.EXPIRED)) {
-            throw new CustomException(ErrorType.INVALID_TOKEN, "현재 토큰 상태: " +this.status);
+            throw new CustomException(ErrorCode.UNAUTHORIZED);
         }
         return this.getStatus() == QueueStatus.ACTIVE;
     }
 
     public void validateToken(){
         if(this.expiredAt == null || this.expiredAt.isBefore(LocalDateTime.now())) {
-            throw new CustomException(ErrorType.INVALID_TOKEN, "현재 토큰 상태: " +this.status);
+            throw new CustomException(ErrorCode.UNAUTHORIZED);
         }
     }
 

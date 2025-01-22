@@ -2,7 +2,7 @@ package kr.hhplus.be.server.domain.entity;
 
 import jakarta.persistence.*;
 import kr.hhplus.be.server.support.exception.CustomException;
-import kr.hhplus.be.server.support.exception.ErrorType;
+import kr.hhplus.be.server.support.exception.ErrorCode;
 import kr.hhplus.be.server.support.type.SeatStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -41,7 +41,7 @@ public class Seat {
 
     public void checkStatus() {
         if(this.seatStatus.equals(SeatStatus.UNAVAILABLE)){
-            throw new CustomException(ErrorType.ALREADY_RESERVED_SEAT, "현재 좌석 상태: " + this.seatStatus);
+            throw new CustomException(ErrorCode.ALREADY_RESERVED_SEAT);
         }
     }
 

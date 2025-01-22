@@ -4,7 +4,6 @@ import jakarta.transaction.Transactional;
 import kr.hhplus.be.server.domain.entity.*;
 import kr.hhplus.be.server.domain.repository.ConcertRepository;
 import kr.hhplus.be.server.domain.repository.ReservationRepository;
-import kr.hhplus.be.server.interfaces.scheduler.SeatScheduler;
 import kr.hhplus.be.server.support.type.ReservationStatus;
 import kr.hhplus.be.server.support.type.SeatStatus;
 import org.junit.jupiter.api.Test;

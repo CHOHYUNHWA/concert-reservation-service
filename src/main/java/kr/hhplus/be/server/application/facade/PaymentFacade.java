@@ -19,7 +19,7 @@ public class PaymentFacade {
 
     @Transactional
     public PaymentHttpDto.PaymentCompletedResponse payment(String token, Long reservationId, Long userId) {
-        Queue queue = queueService.getToken(token);
+        Queue queue = queueService.validateToken(token);
         Reservation reservation = reservationService.validateReservation(reservationId, userId);
         Seat seat = concertService.getSeat(reservation.getSeatId());
         Point point = pointService.getPoint(userId);

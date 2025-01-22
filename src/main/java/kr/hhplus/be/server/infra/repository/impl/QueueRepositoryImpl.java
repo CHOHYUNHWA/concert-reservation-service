@@ -4,7 +4,7 @@ import kr.hhplus.be.server.domain.entity.Queue;
 import kr.hhplus.be.server.domain.repository.QueueRepository;
 import kr.hhplus.be.server.infra.repository.jpa.QueueJpaRepository;
 import kr.hhplus.be.server.support.exception.CustomException;
-import kr.hhplus.be.server.support.exception.ErrorType;
+import kr.hhplus.be.server.support.exception.ErrorCode;
 import kr.hhplus.be.server.support.type.QueueStatus;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
@@ -23,7 +23,12 @@ public class QueueRepositoryImpl implements QueueRepository {
 
     @Override
     public Queue findQueue(String token) {
-        return queueJpaRepository.findByToken(token).orElseThrow(() -> new CustomException(ErrorType.TOKEN_NOT_FOUND, "토큰: " + token));
+        Queue queue = queueJpaRepository.findByToken(token).orElseThrow(() -> new CustomException(ErrorCode.TOKEN_NOT_FOUND));
+
+        if(queue.getStatus().equals(QueueStatus.EXPIRED)){
+            throw new CustomException(ErrorCode.UNAUTHORIZED);
+        }
+        return queue;
     }
 
     @Override

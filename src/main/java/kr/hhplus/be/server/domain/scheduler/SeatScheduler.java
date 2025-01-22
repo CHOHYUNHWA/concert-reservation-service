@@ -1,4 +1,4 @@
-package kr.hhplus.be.server.interfaces.scheduler;
+package kr.hhplus.be.server.domain.scheduler;
 
 import jakarta.transaction.Transactional;
 import kr.hhplus.be.server.domain.entity.Reservation;
@@ -7,7 +7,6 @@ import kr.hhplus.be.server.domain.repository.ConcertRepository;
 import kr.hhplus.be.server.domain.repository.ReservationRepository;
 import kr.hhplus.be.server.support.type.ReservationStatus;
 import lombok.RequiredArgsConstructor;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
@@ -21,7 +20,6 @@ public class SeatScheduler {
     private final ReservationRepository reservationRepository;
 
     @Transactional
-    @Scheduled(cron = "0 * * * * *")
     public void changeAvailableSeat(){
         List<Reservation> notPaidReservations =
                 concertRepository.findExpiredReservation(ReservationStatus.PAYMENT_WAITING, LocalDateTime.now().minusMinutes(5));

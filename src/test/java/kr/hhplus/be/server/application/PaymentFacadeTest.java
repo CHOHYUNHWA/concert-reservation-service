@@ -10,7 +10,7 @@ import kr.hhplus.be.server.domain.service.QueueService;
 import kr.hhplus.be.server.infra.repository.jpa.*;
 import kr.hhplus.be.server.interfaces.dto.payment.PaymentHttpDto;
 import kr.hhplus.be.server.support.exception.CustomException;
-import kr.hhplus.be.server.support.exception.ErrorType;
+import kr.hhplus.be.server.support.exception.ErrorCode;
 import kr.hhplus.be.server.support.type.ConcertStatus;
 import kr.hhplus.be.server.support.type.ReservationStatus;
 import kr.hhplus.be.server.support.type.SeatStatus;
@@ -138,7 +138,7 @@ public class PaymentFacadeTest {
         //when then
         assertThatThrownBy(() -> paymentFacade.payment(token, reservation.getId(), user.getId()))
                 .isInstanceOf(CustomException.class)
-                .hasMessage(ErrorType.INVALID_AMOUNT.getMessage());
+                .hasMessage(ErrorCode.INVALID_AMOUNT.getMessage());
 
     }
 
@@ -147,7 +147,7 @@ public class PaymentFacadeTest {
     void 예약자_결제자_불_일치_시_예외_반환(){
         assertThatThrownBy(() -> paymentFacade.payment(token, reservation.getId(), 2L))
                 .isInstanceOf(CustomException.class)
-                .hasMessage(ErrorType.PAYMENT_USER_MISMATCH.getMessage());
+                .hasMessage(ErrorCode.PAYMENT_USER_MISMATCH.getMessage());
     }
 
     @Test
@@ -169,7 +169,7 @@ public class PaymentFacadeTest {
         //when //then
         assertThatThrownBy(() -> paymentFacade.payment(token, savedTimeoutReservation.getId(), user.getId()))
                 .isInstanceOf(CustomException.class)
-                .hasMessage(ErrorType.PAYMENT_TIMEOUT.getMessage());
+                .hasMessage(ErrorCode.PAYMENT_TIMEOUT.getMessage());
     }
 
     @Test
@@ -191,7 +191,7 @@ public class PaymentFacadeTest {
         //when //then
         assertThatThrownBy(() -> paymentFacade.payment(token, savedAlreadyPaymentCompletedReservation.getId(), user.getId()))
                 .isInstanceOf(CustomException.class)
-                .hasMessage(ErrorType.ALREADY_PAID.getMessage());
+                .hasMessage(ErrorCode.ALREADY_PAID.getMessage());
 
     }
 }

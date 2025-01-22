@@ -22,7 +22,9 @@ public class ReservationFacade {
     private final ConcertService concertService;
     private final ReservationService reservationService;
 
-    public ReservationHttpDto.ReservationCompletedResponse reservation(ReservationHttpDto.ReservationRequest reservationRequest) {
+    public ReservationHttpDto.ReservationCompletedResponse reservation(ReservationHttpDto.ReservationRequest reservationRequest, String token) {
+        //토큰 검증
+        queueService.validateToken(token);
 
         //콘서트 조회
         Concert concert = concertService.getConcert(reservationRequest.getConcertId());

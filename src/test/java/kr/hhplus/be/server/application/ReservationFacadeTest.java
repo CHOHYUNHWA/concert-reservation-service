@@ -14,7 +14,7 @@ import kr.hhplus.be.server.infra.repository.jpa.SeatJpaRepository;
 import kr.hhplus.be.server.infra.repository.jpa.UserJpaRepository;
 import kr.hhplus.be.server.interfaces.dto.reservation.ReservationHttpDto;
 import kr.hhplus.be.server.support.exception.CustomException;
-import kr.hhplus.be.server.support.exception.ErrorType;
+import kr.hhplus.be.server.support.exception.ErrorCode;
 import kr.hhplus.be.server.support.type.ConcertStatus;
 import kr.hhplus.be.server.support.type.ReservationStatus;
 import kr.hhplus.be.server.support.type.SeatStatus;
@@ -115,9 +115,9 @@ public class ReservationFacadeTest {
 
 
         // when & then
-        assertThatThrownBy(() -> reservationFacade.reservation(reservationRequest))
+        assertThatThrownBy(() -> reservationFacade.reservation(reservationRequest, token))
                 .isInstanceOf(CustomException.class)
-                .hasMessage(ErrorType.BEFORE_AVAILABLE_RESERVATION_AT.getMessage());
+                .hasMessage(ErrorCode.BEFORE_AVAILABLE_RESERVATION_AT.getMessage());
 
     }
 
@@ -166,9 +166,9 @@ public class ReservationFacadeTest {
 
 
         // when & then
-        assertThatThrownBy(() -> reservationFacade.reservation(reservationRequest))
+        assertThatThrownBy(() -> reservationFacade.reservation(reservationRequest, token))
                 .isInstanceOf(CustomException.class)
-                .hasMessage(ErrorType.ALREADY_CONCERT_START.getMessage());
+                .hasMessage(ErrorCode.ALREADY_CONCERT_START.getMessage());
 
 
     }
@@ -218,9 +218,9 @@ public class ReservationFacadeTest {
 
 
         // when & then
-        assertThatThrownBy(() -> reservationFacade.reservation(reservationRequest))
+        assertThatThrownBy(() -> reservationFacade.reservation(reservationRequest, token))
                 .isInstanceOf(CustomException.class)
-                .hasMessage(ErrorType.ALREADY_RESERVED_SEAT.getMessage());
+                .hasMessage(ErrorCode.ALREADY_RESERVED_SEAT.getMessage());
 
     }
 
@@ -268,7 +268,7 @@ public class ReservationFacadeTest {
                 .build();
 
         // when
-        ReservationHttpDto.ReservationCompletedResponse reservation = reservationFacade.reservation(reservationRequest);
+        ReservationHttpDto.ReservationCompletedResponse reservation = reservationFacade.reservation(reservationRequest, token);
 
         //then
         assertThat(reservation).isNotNull();

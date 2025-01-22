@@ -9,7 +9,7 @@ import kr.hhplus.be.server.infra.repository.jpa.QueueJpaRepository;
 import kr.hhplus.be.server.infra.repository.jpa.UserJpaRepository;
 import kr.hhplus.be.server.interfaces.dto.queue.QueueHttpDto;
 import kr.hhplus.be.server.support.exception.CustomException;
-import kr.hhplus.be.server.support.exception.ErrorType;
+import kr.hhplus.be.server.support.exception.ErrorCode;
 import kr.hhplus.be.server.support.type.QueueStatus;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -135,9 +135,9 @@ public class QueueFacadeTest {
 
         Queue token = Queue.builder()
                 .token("test")
-                .createdAt(LocalDateTime.now().minusMinutes(10))
+                .createdAt(LocalDateTime.now().minusMinutes(5))
                 .enteredAt(LocalDateTime.now().minusMinutes(5))
-                .expiredAt(LocalDateTime.now().minusMinutes(5))
+                .expiredAt(LocalDateTime.now())
                 .status(QueueStatus.EXPIRED)
                 .build();
 
@@ -146,7 +146,7 @@ public class QueueFacadeTest {
         //when //then
         assertThatThrownBy(() -> queueFacade.getQueueRemainingCount(expiredToken.getToken(), savedUser.getId()))
                 .isInstanceOf(CustomException.class)
-                .hasMessage(ErrorType.INVALID_TOKEN.getMessage());
+                .hasMessage(ErrorCode.UNAUTHORIZED.getMessage());
     }
 
 }

@@ -19,13 +19,15 @@ public class ConcertFacade {
     private final QueueService queueService;
 
     //콘서트 가져오기
-    public List<ConcertHttpDto.AvailableReservationConcertResponse> getConcerts(){
+    public List<ConcertHttpDto.AvailableReservationConcertResponse> getConcerts(String token){
+        queueService.validateToken(token);
         List<Concert> concerts = concertService.getConcerts();
         return concerts.stream().map(ConcertHttpDto.AvailableReservationConcertResponse::of).toList();
     }
 
     //콘서트 스케쥴 리스트 가져오기
-    public ConcertHttpDto.AvailableReservationConcertDateResponse getConcertSchedules(Long concertId){
+    public ConcertHttpDto.AvailableReservationConcertDateResponse getConcertSchedules(String token, Long concertId){
+        queueService.validateToken(token);
         Concert concert = concertService.getConcert(concertId);
         List<ConcertSchedule> concertSchedules = concertService.getConcertSchedules(concert);
 
@@ -34,7 +36,8 @@ public class ConcertFacade {
     }
 
     //좌석리스트 결과 가져오기
-    public ConcertHttpDto.AvailableReservationConcertSeatResponse getConcertSeats(Long concertId, Long concertScheduleId){
+    public ConcertHttpDto.AvailableReservationConcertSeatResponse getConcertSeats(String token, Long concertId, Long concertScheduleId){
+        queueService.validateToken(token);
         Concert concert = concertService.getConcert(concertId);
         ConcertSchedule concertScheduleInfo = concertService.getConcertScheduleInfo(concertScheduleId);
         List<Seat> seats = concertService.getSeats(concertScheduleInfo.getConcertId());
