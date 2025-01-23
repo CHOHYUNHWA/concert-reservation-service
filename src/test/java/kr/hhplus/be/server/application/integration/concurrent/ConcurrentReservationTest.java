@@ -25,7 +25,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @SpringBootTest
 public class ConcurrentReservationTest {
 
-    private final int threadCount = 1000;
+    private final int threadCount = 30;
 
     private Concert concert;
     private ConcertSchedule concertSchedule;

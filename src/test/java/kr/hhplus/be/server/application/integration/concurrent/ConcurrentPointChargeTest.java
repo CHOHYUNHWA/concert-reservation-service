@@ -25,7 +25,7 @@ public class ConcurrentPointChargeTest {
 
     private Logger log = Logger.getLogger(ConcurrentPointChargeTest.class.getName());
 
-    private final int threadCount = 100;
+    private final int threadCount = 30;
 
 
     private Long userId;

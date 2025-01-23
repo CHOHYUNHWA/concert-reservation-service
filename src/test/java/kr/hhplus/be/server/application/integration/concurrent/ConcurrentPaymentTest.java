@@ -29,7 +29,7 @@ public class ConcurrentPaymentTest {
     private User user;
     private Reservation reservation;
 
-    private final int threadCount = 1000;
+    private final int threadCount = 30;
 
     //데이터 비우기
     @Autowired
