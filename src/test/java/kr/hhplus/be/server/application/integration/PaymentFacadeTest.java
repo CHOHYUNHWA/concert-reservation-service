@@ -124,7 +124,7 @@ public class PaymentFacadeTest {
         //then
         assertThat(payment).isNotNull();
         assertThat(payment.getAmount()).isEqualTo(seat.getSeatPrice());
-        assertThat(reservationRepository.findByIdWithLock(reservation.getId()).getStatus()).isEqualTo(ReservationStatus.PAYMENT_COMPLETED);
+        assertThat(reservationRepository.findById(reservation.getId()).getStatus()).isEqualTo(ReservationStatus.PAYMENT_COMPLETED);
         assertThat(payment.getPaymentStatus()).isEqualTo(PaymentStatus.COMPLETED);
     }
 

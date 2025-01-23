@@ -16,7 +16,7 @@ public class PointRepositoryImpl implements PointRepository {
 
     @Override
     public Point findPointWithLock(Long userId) {
-        return pointJpaRepository.findByUserId(userId).orElseThrow(() -> new CustomException(ErrorType.RESOURCE_NOT_FOUND, "검색한 USER ID: "+ userId));
+        return pointJpaRepository.findByUserIdWithPessimisticLock(userId).orElseThrow(() -> new CustomException(ErrorType.RESOURCE_NOT_FOUND, "검색한 USER ID: "+ userId));
     }
 
     @Override

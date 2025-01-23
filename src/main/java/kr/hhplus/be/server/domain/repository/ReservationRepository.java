@@ -11,6 +11,8 @@ public interface ReservationRepository {
 
     Reservation findByIdWithLock(Long reservationId);
 
+    Reservation findById(Long reservationId);
+
     List<Reservation> findByConcertIdAndConcertScheduleIdAndSeatId(long concertId, long concertScheduleId, long seatId);
 
     Reservation findByIdWithoutLock(Long reservationId);

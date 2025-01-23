@@ -28,6 +28,11 @@ public class ReservationRepositoryImpl implements ReservationRepository {
 
     @Override
     public Reservation findByIdWithLock(Long reservationId) {
+        return reservationJpaRepository.findByIdWithPessimisticLock(reservationId).orElseThrow(() -> new CustomException(ErrorType.RESOURCE_NOT_FOUND, "검색한 RESERVATION ID: " +reservationId));
+    }
+
+    @Override
+    public Reservation findById(Long reservationId) {
         return reservationJpaRepository.findById(reservationId).orElseThrow(() -> new CustomException(ErrorType.RESOURCE_NOT_FOUND, "검색한 RESERVATION ID: " +reservationId));
     }
 

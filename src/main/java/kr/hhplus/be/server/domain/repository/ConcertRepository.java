@@ -28,4 +28,8 @@ public interface ConcertRepository {
     List<Reservation> findExpiredReservation(ReservationStatus reservationStatus, LocalDateTime localDateTime);
 
     Seat findSeatByIdWithoutLock(Long seatId);
+
+
+    //테스트용
+    Seat findBySeatId(Long seatId);
 }

@@ -63,7 +63,7 @@ public class ConcertRepositoryImpl implements ConcertRepository {
 
     @Override
     public Seat findSeatByIdWithLock(Long seatId) {
-        return seatJpaRepository.findById(seatId).orElseThrow(() -> new CustomException(ErrorType.RESOURCE_NOT_FOUND,"검색한 SEAT ID: " + seatId));
+        return seatJpaRepository.findByIdWithPessimisticLock(seatId).orElseThrow(() -> new CustomException(ErrorType.RESOURCE_NOT_FOUND,"검색한 SEAT ID: " + seatId));
     }
 
     @Override
@@ -74,6 +74,11 @@ public class ConcertRepositoryImpl implements ConcertRepository {
     @Override
     public Seat findSeatByIdWithoutLock(Long seatId) {
         return seatJpaRepository.findByIdWithoutLock(seatId).orElseThrow(() -> new CustomException(ErrorType.RESOURCE_NOT_FOUND,"검색한 SEAT ID: " + seatId));
+    }
+
+    @Override
+    public Seat findBySeatId(Long seatId) {
+        return seatJpaRepository.findById(seatId).orElseThrow(() -> new CustomException(ErrorType.RESOURCE_NOT_FOUND,"검색한 SEAT ID: " + seatId));
     }
 
 }

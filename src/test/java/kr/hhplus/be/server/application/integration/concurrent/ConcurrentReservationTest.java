@@ -123,7 +123,7 @@ public class ConcurrentReservationTest {
 
         List<Reservation> reservations = reservationRepository.findByConcertIdAndConcertScheduleIdAndSeatId(concert.getId(), concertSchedule.getId(), seat.getId());
         assertThat(reservations.size()).isOne();
-        assertThat(concertRepository.findSeatByIdWithLock(seat.getId()).getSeatStatus()).isEqualTo(SeatStatus.UNAVAILABLE);
+        assertThat(concertRepository.findBySeatId(seat.getId()).getSeatStatus()).isEqualTo(SeatStatus.UNAVAILABLE);
     }
 
 
@@ -159,7 +159,7 @@ public class ConcurrentReservationTest {
 
         List<Reservation> reservations = reservationRepository.findByConcertIdAndConcertScheduleIdAndSeatId(concert.getId(), concertSchedule.getId(), seat.getId());
         assertThat(reservations.size()).isOne();
-        assertThat(concertRepository.findSeatByIdWithLock(seat.getId()).getSeatStatus()).isEqualTo(SeatStatus.UNAVAILABLE);
+        assertThat(concertRepository.findBySeatId(seat.getId()).getSeatStatus()).isEqualTo(SeatStatus.UNAVAILABLE);
     }
 
 }
