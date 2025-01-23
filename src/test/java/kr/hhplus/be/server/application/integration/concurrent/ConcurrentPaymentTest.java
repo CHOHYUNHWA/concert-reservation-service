@@ -117,9 +117,8 @@ public class ConcurrentPaymentTest {
 
     }
 
-
     @Test
-    void 사용자가_동시에_여러_번_결제를_요청하면_한_번만_성공한다() throws InterruptedException {
+    void 낙관적락_사용자가_동시에_여러_번_결제를_요청하면_한_번만_성공한다() throws InterruptedException {
         // given
 
         // when
@@ -133,7 +132,41 @@ public class ConcurrentPaymentTest {
         for (int i = 0; i < threadCount; i++) {
             executorService.submit(() -> {
                 try {
-                    paymentFacade.payment(token.getToken(), reservation.getId(), user.getId());
+                    paymentFacade.paymentWithOptimisticLock(token.getToken(), reservation.getId(), user.getId());
+                    successCnt.incrementAndGet();
+                } catch (Exception e) {
+                    failCnt.incrementAndGet();
+                } finally {
+                    countDownLatch.countDown();
+                }
+            });
+        }
+
+
+        countDownLatch.await();
+        // 결제 요청이 한번만 성공했는지 검증
+        assertThat(successCnt.intValue()).isOne();
+        // 실패한 횟수가 threadCount 에서 성공한 횟수를 뺀 값과 같은지 검증
+        assertThat(failCnt.intValue()).isEqualTo(threadCount - successCnt.intValue());
+    }
+
+
+    @Test
+    void 비관적락_사용자가_동시에_여러_번_결제를_요청하면_한_번만_성공한다() throws InterruptedException {
+        // given
+
+        // when
+        AtomicInteger successCnt = new AtomicInteger(0);
+        AtomicInteger failCnt = new AtomicInteger(0);
+
+        final int threadCount = 5;
+        final CountDownLatch countDownLatch = new CountDownLatch(threadCount);
+        final ExecutorService executorService = Executors.newFixedThreadPool(threadCount);
+
+        for (int i = 0; i < threadCount; i++) {
+            executorService.submit(() -> {
+                try {
+                    paymentFacade.paymentWithPessimisticLock(token.getToken(), reservation.getId(), user.getId());
                     successCnt.incrementAndGet();
                 } catch (Exception e) {
                     failCnt.incrementAndGet();

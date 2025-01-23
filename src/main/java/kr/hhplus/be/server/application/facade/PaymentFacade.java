@@ -21,9 +21,9 @@ public class PaymentFacade {
     private final PointService pointService;
 
     @Transactional
-    public PaymentHttpDto.PaymentCompletedResponse payment(String token, Long reservationId, Long userId) {
+    public PaymentHttpDto.PaymentCompletedResponse paymentWithPessimisticLock(String token, Long reservationId, Long userId) {
         Queue queue = queueService.getToken(token);
-        Reservation reservation = reservationService.validateReservation(reservationId, userId);
+        Reservation reservation = reservationService.validateReservationWithPessimisticLock(reservationId, userId);
         Seat seat = concertService.getSeatWithPessimisticLock(reservation.getSeatId());
         Point point = pointService.getPoint(userId);
 
@@ -52,4 +52,19 @@ public class PaymentFacade {
         return PaymentHttpDto.PaymentCompletedResponse.of(completedPayment.getId(), completedPayment.getAmount(), completedPayment.getPaymentStatus());
     }
 
+    @Transactional
+    public PaymentHttpDto.PaymentCompletedResponse paymentWithOptimisticLock(String token, Long reservationId, Long userId) {
+        Queue queue = queueService.getToken(token);
+        Reservation reservation = reservationService.validateReservationWithOptimisticLock(reservationId, userId);
+        Seat seat = concertService.getSeatWithoutLock(reservation.getSeatId());
+        Point point = pointService.getPoint(userId);
+
+        point.usePoint(seat.getSeatPrice());
+        reservation.changeCompletedStatus();
+        queueService.expireToken(queue);
+
+        Payment completedPayment = paymentService.createPayment(reservationId, userId, seat.getSeatPrice());
+
+        return PaymentHttpDto.PaymentCompletedResponse.of(completedPayment.getId(), completedPayment.getAmount(), completedPayment.getPaymentStatus());
+    }
 }

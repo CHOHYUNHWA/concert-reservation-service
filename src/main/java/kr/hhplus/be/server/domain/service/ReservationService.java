@@ -26,9 +26,9 @@ public class ReservationService {
         return reservationRepository.findByUserId(userId);
     }
 
-    //예약 상태 검증
-    public Reservation validateReservation(Long reservationId, Long userId){
-        Reservation reservation = reservationRepository.findByIdWithLock(reservationId);
+    //예약 상태 검증 - 비관적 락
+    public Reservation validateReservationWithPessimisticLock(Long reservationId, Long userId){
+        Reservation reservation = reservationRepository.findByIdWithPessimisticLock(reservationId);
         reservation.validateReservation(userId);
 
         return reservation;
@@ -45,6 +45,13 @@ public class ReservationService {
 
         log.info("Reservation Status = {}", reservation.getStatus());
 
+        reservation.validateReservation(userId);
+
+        return reservation;
+    }
+
+    public Reservation validateReservationWithOptimisticLock(Long reservationId, Long userId) {
+        Reservation reservation = reservationRepository.findByIdWithOptimisticLock(reservationId);
         reservation.validateReservation(userId);
 
         return reservation;

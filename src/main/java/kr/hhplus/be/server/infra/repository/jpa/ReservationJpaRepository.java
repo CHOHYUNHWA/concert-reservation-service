@@ -25,4 +25,8 @@ public interface ReservationJpaRepository extends JpaRepository<Reservation, Lon
 
     @Query("select r from Reservation r where r.id = ?1")
     Optional<Reservation> findByIdWithoutLock(Long reservationId);
+
+    @Lock(LockModeType.OPTIMISTIC)
+    @Query("select r from Reservation r where r.id = ?1")
+    Optional<Reservation> findByIdWithOptimisticLock(Long reservationId);
 }

@@ -9,11 +9,13 @@ public interface ReservationRepository {
 
     Reservation findByUserId(Long userId);
 
-    Reservation findByIdWithLock(Long reservationId);
+    Reservation findByIdWithPessimisticLock(Long reservationId);
 
     Reservation findById(Long reservationId);
 
     List<Reservation> findByConcertIdAndConcertScheduleIdAndSeatId(long concertId, long concertScheduleId, long seatId);
 
     Reservation findByIdWithoutLock(Long reservationId);
+
+    Reservation findByIdWithOptimisticLock(Long reservationId);
 }
