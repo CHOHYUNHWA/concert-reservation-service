@@ -41,7 +41,7 @@ public class PaymentFacade {
         Queue queue = queueService.getToken(token);
         Reservation reservation = reservationService.validateReservationWithoutLock(reservationId, userId);
         Seat seat = concertService.getSeatWithoutLock(reservation.getSeatId());
-        Point point = pointService.getPointWithPessimisticLock(userId);
+        Point point = pointService.getPointWithoutLock(userId);
 
         point.usePoint(seat.getSeatPrice());
         reservation.changeCompletedStatus();
