@@ -21,6 +21,7 @@ public class RedisDistributedLockAspect {
     private static final String REDISSON_LOCK_PREFIX = "LOCK:";
 
     private final RedissonClient redissonClient;
+    private final AopForTransaction aopForTransaction;
 
     @Around("@annotation(kr.hhplus.be.server.support.aop.RedisDistributedLock)")
     public Object redisDistributedLock(ProceedingJoinPoint joinPoint) throws Throwable {
@@ -40,7 +41,7 @@ public class RedisDistributedLockAspect {
                 return false;
             }
             log.info("Lock 획득 성공 = {}", key);
-            return joinPoint.proceed();
+            return aopForTransaction.proceed(joinPoint);
         } catch (InterruptedException e){
             throw new InterruptedException();
         } finally {

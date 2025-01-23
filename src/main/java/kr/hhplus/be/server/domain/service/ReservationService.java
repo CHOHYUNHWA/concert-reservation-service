@@ -5,10 +5,12 @@ import kr.hhplus.be.server.domain.entity.Reservation;
 import kr.hhplus.be.server.domain.entity.Seat;
 import kr.hhplus.be.server.domain.repository.ReservationRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class ReservationService {
 
     private final ReservationRepository reservationRepository;
@@ -40,6 +42,9 @@ public class ReservationService {
 
     public Reservation validateReservationWithoutLock(Long reservationId, Long userId) {
         Reservation reservation = reservationRepository.findByIdWithoutLock(reservationId);
+
+        log.info("Reservation Status = {}", reservation.getStatus());
+
         reservation.validateReservation(userId);
 
         return reservation;

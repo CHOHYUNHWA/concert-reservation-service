@@ -37,13 +37,9 @@ public class PaymentFacade {
     }
 
     @RedisDistributedLock(key = "'payment userId :' + #userId")
-    @Transactional
     public PaymentHttpDto.PaymentCompletedResponse paymentWithDistributedLock(String token, Long reservationId, Long userId) {
         Queue queue = queueService.getToken(token);
         Reservation reservation = reservationService.validateReservationWithoutLock(reservationId, userId);
-
-        log.info("Reservation Status = {}", reservation.getStatus());
-
         Seat seat = concertService.getSeat(reservation.getSeatId());
         Point point = pointService.getPoint(userId);
 
