@@ -71,4 +71,9 @@ public class ConcertRepositoryImpl implements ConcertRepository {
         return reservationJpaRepository.findByStatusAndReservedAtBefore(reservationStatus, localDateTime);
     }
 
+    @Override
+    public Seat findSeatByIdWithoutLock(Long seatId) {
+        return seatJpaRepository.findByIdWithoutLock(seatId).orElseThrow(() -> new CustomException(ErrorType.RESOURCE_NOT_FOUND,"검색한 SEAT ID: " + seatId));
+    }
+
 }

@@ -61,4 +61,7 @@ public class ConcertService {
         concertRepository.saveSeat(seat);
     }
 
+    public Seat getSeatWithoutLock(Long seatId) {
+        return concertRepository.findSeatByIdWithoutLock(seatId);
+    }
 }

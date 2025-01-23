@@ -26,4 +26,6 @@ public interface ConcertRepository {
     Seat findSeatByIdWithLock(Long seatId);
 
     List<Reservation> findExpiredReservation(ReservationStatus reservationStatus, LocalDateTime localDateTime);
+
+    Seat findSeatByIdWithoutLock(Long seatId);
 }
