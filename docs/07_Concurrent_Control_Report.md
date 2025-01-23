@@ -147,6 +147,7 @@
 
 #### 성능 및 효율성 테스트
 - 소요시간: 낙관적락 > 분산락 > 비관적락
+
 ![PointChargeTest](https://github.com/user-attachments/assets/e99b6219-bb7b-4f61-bda6-df3f427eda08)
 
 
@@ -164,6 +165,7 @@
 
 #### 성능 및 효율성 테스트
 - 소요시간: 분산락 > 비관적락 > 낙관적락
+
 ![PaymentTest](https://github.com/user-attachments/assets/e3e423e6-1292-42eb-b5f3-8aff13514e62)
 
 ### 3. 좌석 예약
@@ -180,6 +182,7 @@
 
 #### 성능 및 효율성 테스트
 - 소요시간: 분산락 > 비관적락 > 낙관적락
+
 ![ReservationTest](https://github.com/user-attachments/assets/9d96402e-0f9d-4c38-8ee6-f8cd50bc5918)
 
 ### 결론 및 정리
