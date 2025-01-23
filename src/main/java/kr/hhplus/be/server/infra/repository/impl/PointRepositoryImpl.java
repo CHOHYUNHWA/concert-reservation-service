@@ -23,4 +23,9 @@ public class PointRepositoryImpl implements PointRepository {
     public Point save(Point point) {
         return pointJpaRepository.save(point);
     }
+
+    @Override
+    public Point findPointWithoutLock(Long userId) {
+        return pointJpaRepository.findByUserIdWithoutLock(userId).orElseThrow(() -> new CustomException(ErrorType.RESOURCE_NOT_FOUND, "검색한 USER ID: "+ userId));
+    }
 }

@@ -36,4 +36,7 @@ public class PointService {
         return pointRepository.save(point);
     }
 
+    public Point getPointWithoutLock(Long userId) {
+        return pointRepository.findPointWithoutLock(userId);
+    }
 }
