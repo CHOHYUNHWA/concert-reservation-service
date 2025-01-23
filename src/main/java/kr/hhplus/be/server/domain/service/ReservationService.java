@@ -37,4 +37,11 @@ public class ReservationService {
         reservation.changeCompletedStatus();
         return reservationRepository.save(reservation);
     }
+
+    public Reservation validateReservationWithoutLock(Long reservationId, Long userId) {
+        Reservation reservation = reservationRepository.findByIdWithoutLock(reservationId);
+        reservation.validateReservation(userId);
+
+        return reservation;
+    }
 }

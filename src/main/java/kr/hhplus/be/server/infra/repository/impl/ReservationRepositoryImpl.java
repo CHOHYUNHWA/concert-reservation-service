@@ -35,4 +35,9 @@ public class ReservationRepositoryImpl implements ReservationRepository {
     public List<Reservation> findByConcertIdAndConcertScheduleIdAndSeatId(long concertId, long concertScheduleId, long seatId) {
         return reservationJpaRepository.findByConcertIdAndConcertScheduleIdAndSeatId(concertId, concertScheduleId, seatId);
     }
+
+    @Override
+    public Reservation findByIdWithoutLock(Long reservationId) {
+        return reservationJpaRepository.findByIdWithoutLock(reservationId).orElseThrow(() -> new CustomException(ErrorType.RESOURCE_NOT_FOUND, "검색한 RESERVATION ID: " +reservationId));
+    }
 }
