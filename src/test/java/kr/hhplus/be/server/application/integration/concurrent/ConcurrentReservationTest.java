@@ -25,6 +25,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 @SpringBootTest
 public class ConcurrentReservationTest {
 
+    private final int threadCount = 1000;
+
     private Concert concert;
     private ConcertSchedule concertSchedule;
     private Seat seat;
@@ -95,8 +97,7 @@ public class ConcurrentReservationTest {
     @Test
     void 비관적_락_다수의_사용자가_1개의_좌석을_동시에_예약하면_한_명만_성공한다() throws InterruptedException {
         // when
-        final int threadCount = 5;
-        final ExecutorService executorService = Executors.newFixedThreadPool(5);
+        final ExecutorService executorService = Executors.newFixedThreadPool(threadCount);
         final CountDownLatch countDownLatch = new CountDownLatch(threadCount);
 
         for (long l = 1; l <= threadCount; l++) {
@@ -129,8 +130,7 @@ public class ConcurrentReservationTest {
     @Test
     void 낙관적_락_다수의_사용자가_1개의_좌석을_동시에_예약하면_한_명만_성공한다() throws InterruptedException {
         // when
-        final int threadCount = 5;
-        final ExecutorService executorService = Executors.newFixedThreadPool(5);
+        final ExecutorService executorService = Executors.newFixedThreadPool(threadCount);
         final CountDownLatch countDownLatch = new CountDownLatch(threadCount);
 
         for (long l = 1; l <= threadCount; l++) {
@@ -165,8 +165,7 @@ public class ConcurrentReservationTest {
     @Test
     void Redis_분산락_다수의_사용자가_1개의_좌석을_동시에_예약하면_한_명만_성공한다() throws InterruptedException {
         // when
-        final int threadCount = 5;
-        final ExecutorService executorService = Executors.newFixedThreadPool(5);
+        final ExecutorService executorService = Executors.newFixedThreadPool(threadCount);
         final CountDownLatch countDownLatch = new CountDownLatch(threadCount);
 
         for (long l = 1; l <= threadCount; l++) {

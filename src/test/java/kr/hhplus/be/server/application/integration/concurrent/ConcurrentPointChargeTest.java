@@ -25,6 +25,9 @@ public class ConcurrentPointChargeTest {
 
     private Logger log = Logger.getLogger(ConcurrentPointChargeTest.class.getName());
 
+    private final int threadCount = 100;
+
+
     private Long userId;
 
     @Autowired
@@ -65,7 +68,6 @@ public class ConcurrentPointChargeTest {
         AtomicInteger successCnt = new AtomicInteger(0);
         AtomicInteger failCnt = new AtomicInteger(0);
 
-        final int threadCount = 100;
         final CountDownLatch countDownLatch = new CountDownLatch(threadCount);
         final ExecutorService executorService = Executors.newFixedThreadPool(threadCount);
 
@@ -104,7 +106,6 @@ public class ConcurrentPointChargeTest {
         AtomicInteger successCnt = new AtomicInteger(0);
         AtomicInteger failCnt = new AtomicInteger(0);
 
-        final int threadCount = 100;
         final CountDownLatch countDownLatch = new CountDownLatch(threadCount);
         final ExecutorService executorService = Executors.newFixedThreadPool(threadCount);
 
@@ -143,7 +144,6 @@ public class ConcurrentPointChargeTest {
         AtomicInteger successCnt = new AtomicInteger(0);
         AtomicInteger failCnt = new AtomicInteger(0);
 
-        final int threadCount = 100;
         final CountDownLatch countDownLatch = new CountDownLatch(threadCount);
         final ExecutorService executorService = Executors.newFixedThreadPool(threadCount);
 

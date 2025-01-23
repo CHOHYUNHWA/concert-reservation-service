@@ -29,6 +29,8 @@ public class ConcurrentPaymentTest {
     private User user;
     private Reservation reservation;
 
+    private final int threadCount = 1000;
+
     //데이터 비우기
     @Autowired
     private DatabaseCleanUp databaseCleanUp;
@@ -125,7 +127,6 @@ public class ConcurrentPaymentTest {
         AtomicInteger successCnt = new AtomicInteger(0);
         AtomicInteger failCnt = new AtomicInteger(0);
 
-        final int threadCount = 5;
         final CountDownLatch countDownLatch = new CountDownLatch(threadCount);
         final ExecutorService executorService = Executors.newFixedThreadPool(threadCount);
 
@@ -159,7 +160,6 @@ public class ConcurrentPaymentTest {
         AtomicInteger successCnt = new AtomicInteger(0);
         AtomicInteger failCnt = new AtomicInteger(0);
 
-        final int threadCount = 5;
         final CountDownLatch countDownLatch = new CountDownLatch(threadCount);
         final ExecutorService executorService = Executors.newFixedThreadPool(threadCount);
 
@@ -193,7 +193,6 @@ public class ConcurrentPaymentTest {
         AtomicInteger successCnt = new AtomicInteger(0);
         AtomicInteger failCnt = new AtomicInteger(0);
 
-        final int threadCount = 5;
         final CountDownLatch countDownLatch = new CountDownLatch(threadCount);
         final ExecutorService executorService = Executors.newFixedThreadPool(threadCount);
 
