@@ -18,6 +18,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -101,8 +102,8 @@ public class ReservationControllerIntegrationTest {
 
         concertSchedule = ConcertSchedule.builder()
                 .concertId(concert.getId())
-                .availableReservationTime(LocalDateTime.now().minusDays(5))
-                .concertTime(LocalDateTime.now().plusDays(30))
+                .availableReservationTime(LocalDateTime.now().minusDays(5).truncatedTo(ChronoUnit.SECONDS))
+                .concertTime(LocalDateTime.now().plusDays(30).truncatedTo(ChronoUnit.SECONDS))
                 .build();
 
         concertScheduleJpaRepository.save(concertSchedule);
@@ -129,6 +130,8 @@ public class ReservationControllerIntegrationTest {
     @Test
     void 정상_토큰인_경우_예약_성공() throws Exception {
         //given
+        String formattedConcertTime = concertSchedule.getConcertTime().truncatedTo(ChronoUnit.SECONDS).toString();
+
 
         //when//then
         mvc.perform(post("/api/reservations")
@@ -139,7 +142,7 @@ public class ReservationControllerIntegrationTest {
                 .andExpect(jsonPath("$.reservationId").value(1L))
                 .andExpect(jsonPath("$.concertId").value(concert.getId()))
                 .andExpect(jsonPath("$.title").value(concert.getTitle()))
-                .andExpect(jsonPath("$.concertTime").value(concertSchedule.getConcertTime().toString()))
+                .andExpect(jsonPath("$.concertTime").value(formattedConcertTime))
                 .andExpect(jsonPath("$.seat.seatPrice").value(seat.getSeatPrice()))
                 .andExpect(jsonPath("$.seat.seatNumber").value(seat.getSeatNumber()))
                 .andExpect(jsonPath("$.totalPrice").value(seat.getSeatPrice()))
