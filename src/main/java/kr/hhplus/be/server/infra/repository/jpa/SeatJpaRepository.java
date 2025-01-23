@@ -16,6 +16,10 @@ public interface SeatJpaRepository extends JpaRepository<Seat, Long> {
     @Query("select s from Seat s where s.id = ?1")
     Optional<Seat> findByIdWithPessimisticLock(Long seatId);
 
+    @Lock(LockModeType.OPTIMISTIC)
+    @Query("select s from Seat s where s.id = ?1")
+    Optional<Seat> findSeatByIdWithOptimisticLock(Long seatId);
+
     @Query("select s from Seat s where s.id = ?1")
     Optional<Seat> findByIdWithoutLock(Long seatId);
 

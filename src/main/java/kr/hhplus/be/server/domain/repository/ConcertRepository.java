@@ -23,7 +23,7 @@ public interface ConcertRepository {
 
     Seat saveSeat(Seat assignedSeat);
 
-    Seat findSeatByIdWithLock(Long seatId);
+    Seat findSeatByIdWithPessimisticLock(Long seatId);
 
     List<Reservation> findExpiredReservation(ReservationStatus reservationStatus, LocalDateTime localDateTime);
 
@@ -32,4 +32,6 @@ public interface ConcertRepository {
 
     //테스트용
     Seat findBySeatId(Long seatId);
+
+    Seat findSeatByIdWithOptimisticLock(Long seatId);
 }

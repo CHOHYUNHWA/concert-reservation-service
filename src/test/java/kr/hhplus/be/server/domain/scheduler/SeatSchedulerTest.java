@@ -56,7 +56,7 @@ public class SeatSchedulerTest {
         seatScheduler.changeAvailableSeat();
 
         // then
-        Seat updatedSeat = concertRepository.findSeatByIdWithLock(savedSeat.getId());
+        Seat updatedSeat = concertRepository.findSeatByIdWithPessimisticLock(savedSeat.getId());
         assertThat(updatedSeat.getSeatStatus()).isEqualTo(SeatStatus.AVAILABLE);
 
         Reservation updatedReservation = reservationRepository.findByIdWithLock(savedReservation.getId());

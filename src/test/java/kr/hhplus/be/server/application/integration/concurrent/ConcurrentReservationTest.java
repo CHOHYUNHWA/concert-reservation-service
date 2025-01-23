@@ -93,7 +93,7 @@ public class ConcurrentReservationTest {
 
 
     @Test
-    void 다수의_사용자가_1개의_좌석을_동시에_예약하면_한_명만_성공한다() throws InterruptedException {
+    void 비관적_락_다수의_사용자가_1개의_좌석을_동시에_예약하면_한_명만_성공한다() throws InterruptedException {
         // when
         final int threadCount = 5;
         final ExecutorService executorService = Executors.newFixedThreadPool(5);
@@ -111,7 +111,41 @@ public class ConcurrentReservationTest {
 
             executorService.submit(() -> {
                 try {
-                    reservationFacade.reservation(reservationRequest);
+                    reservationFacade.reservationWithPessimisticLock(reservationRequest);
+                } catch (Exception e) {
+                } finally {
+                    countDownLatch.countDown();
+                }
+            });
+
+        }
+        countDownLatch.await();
+
+        List<Reservation> reservations = reservationRepository.findByConcertIdAndConcertScheduleIdAndSeatId(concert.getId(), concertSchedule.getId(), seat.getId());
+        assertThat(reservations.size()).isOne();
+        assertThat(concertRepository.findBySeatId(seat.getId()).getSeatStatus()).isEqualTo(SeatStatus.UNAVAILABLE);
+    }
+
+    @Test
+    void 낙관적_락_다수의_사용자가_1개의_좌석을_동시에_예약하면_한_명만_성공한다() throws InterruptedException {
+        // when
+        final int threadCount = 5;
+        final ExecutorService executorService = Executors.newFixedThreadPool(5);
+        final CountDownLatch countDownLatch = new CountDownLatch(threadCount);
+
+        for (long l = 1; l <= threadCount; l++) {
+
+            ReservationHttpDto.ReservationRequest reservationRequest = ReservationHttpDto.ReservationRequest.builder()
+                    .userId(l)
+                    .concertId(concert.getId())
+                    .concertScheduleId(concertSchedule.getId())
+                    .seatId(seat.getId())
+                    .build();
+
+
+            executorService.submit(() -> {
+                try {
+                    reservationFacade.reservationWithOptimisticLock(reservationRequest);
                 } catch (Exception e) {
                 } finally {
                     countDownLatch.countDown();
