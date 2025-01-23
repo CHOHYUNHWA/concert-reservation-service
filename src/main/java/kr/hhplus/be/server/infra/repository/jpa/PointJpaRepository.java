@@ -16,4 +16,7 @@ public interface PointJpaRepository extends JpaRepository<Point, Long> {
 
     @Query("select p from Point p where p.userId = ?1")
     Optional<Point> findByUserIdWithoutLock(Long userId);
+
+    @Query("select p from Point p where p.userId = ?1")
+    Optional<Point> findByUserIdWithOptimisticLock(Long userId);
 }

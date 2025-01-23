@@ -22,7 +22,7 @@ public class PointController {
             @PathVariable("userId") Long userId,
             @RequestBody PointHttpDto.ChargePointRequestDto chargePointRequestDto
     ){
-        PointHttpDto.ChargePointResponseDto chargePointResponseDto = pointFacade.chargePoint(userId, chargePointRequestDto.getAmount());
+        PointHttpDto.ChargePointResponseDto chargePointResponseDto = pointFacade.chargePointWithPessimisticLock(userId, chargePointRequestDto.getAmount());
         return new ResponseEntity<>(chargePointResponseDto, HttpStatus.OK);
     }
 

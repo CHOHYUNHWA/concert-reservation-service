@@ -117,7 +117,7 @@ public class PaymentFacadeTest {
     @Test
     void 결제_성공(){
         //given
-        pointService.chargePoint(user.getId(), 10_000L);
+        pointService.chargePointWithoutLock(user.getId(), 10_000L);
 
         //when
         PaymentHttpDto.PaymentCompletedResponse payment = paymentFacade.paymentWithPessimisticLock(queue.getToken(), reservation.getId(), user.getId());
@@ -148,7 +148,7 @@ public class PaymentFacadeTest {
     @Transactional
     void 임시_예약_후_5분_경과시_예외_반환(){
         //given
-        pointService.chargePoint(user.getId(), 10_000L);
+        pointService.chargePointWithPessimisticLock(user.getId(), 10_000L);
         Reservation timeOutReservation = Reservation.builder()
                 .concertId(concert.getId())
                 .concertScheduleId(concertSchedule.getId())
@@ -169,7 +169,7 @@ public class PaymentFacadeTest {
     @Test
     void 이미_결제된_예약의_경우_예외_반환(){
         //given
-        pointService.chargePoint(user.getId(), 10_000L);
+        pointService.chargePointWithoutLock(user.getId(), 10_000L);
         Reservation alreadyPaymentCompletedReservation = Reservation.builder()
                 .concertId(concert.getId())
                 .concertScheduleId(concertSchedule.getId())

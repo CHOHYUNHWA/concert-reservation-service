@@ -19,18 +19,28 @@ public class PointFacade {
     private final UserService userService;
 
     @Transactional
-    public PointHttpDto.ChargePointResponseDto chargePoint(Long userId, Long chargeAmount) {
+    public PointHttpDto.ChargePointResponseDto chargePointWithPessimisticLock(Long userId, Long chargeAmount) {
         userService.existsUser(userId);
 
-        Point point = pointService.getPoint(userId);
-        Point chargedPoint = pointService.chargePoint(userId, chargeAmount);
+        Point chargedPoint = pointService.chargePointWithPessimisticLock(userId, chargeAmount);
 
         return PointHttpDto.ChargePointResponseDto.of(chargedPoint);
     }
 
-    public PointHttpDto.GetPointResponseDto getPoint(Long userId) {
-        Point point = pointService.getPoint(userId);
-        return PointHttpDto.GetPointResponseDto.of(point.getId(),point.getAmount());
+    public PointHttpDto.ChargePointResponseDto chargePointWithOptimisticLock(Long userId, Long chargeAmount) {
+
+        while (true) {
+
+            try {
+                userService.existsUser(userId);
+
+                Point chargedPoint = pointService.chargePointWithOptimisticLock(userId, chargeAmount);
+
+                return PointHttpDto.ChargePointResponseDto.of(chargedPoint);
+            } catch (Exception e) {
+                log.error("낙관적락 충전 실패 재 시도 : {}", e.getMessage());
+            }
+        }
     }
 
 
@@ -38,12 +48,14 @@ public class PointFacade {
     public PointHttpDto.ChargePointResponseDto chargePointWithDistributedLock(Long userId, Long chargeAmount) {
         userService.existsUser(userId);
 
-        Point point = pointService.getPointWithoutLock(userId);
-
-        log.info("userId Of Point ={}", point.getUserId());
-
-        Point chargedPoint = pointService.chargePoint(userId, chargeAmount);
+        Point chargedPoint = pointService.chargePointWithoutLock(userId, chargeAmount);
+        log.info("userId Of Point ={}", chargedPoint.getUserId());
 
         return PointHttpDto.ChargePointResponseDto.of(chargedPoint);
+    }
+
+    public PointHttpDto.GetPointResponseDto getPoint(Long userId) {
+        Point point = pointService.getPointWithoutLock(userId);
+        return PointHttpDto.GetPointResponseDto.of(point.getId(),point.getAmount());
     }
 }

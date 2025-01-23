@@ -112,7 +112,7 @@ public class ConcurrentPaymentTest {
         reservationJpaRepository.save(reservation);
 
 
-        pointService.chargePoint(user.getId(), 100_000L);
+        pointService.chargePointWithoutLock(user.getId(), 100_000L);
 
 
     }

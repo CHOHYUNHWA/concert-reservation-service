@@ -61,7 +61,7 @@ public class PointFacadeTest {
         Long chargeAmount = 1000L;
         Long expectedAmount = 1000L;
         //when
-        PointHttpDto.ChargePointResponseDto chargePointResponseDto = pointFacade.chargePoint(user.getId(), chargeAmount);
+        PointHttpDto.ChargePointResponseDto chargePointResponseDto = pointFacade.chargePointWithPessimisticLock(user.getId(), chargeAmount);
 
         //then
         assertThat(chargePointResponseDto).isNotNull();
@@ -74,7 +74,7 @@ public class PointFacadeTest {
     @Test
     void 유저의_잔액을_조회(){
         //given
-        Point chargedPoint = pointService.chargePoint(user.getId(), 1000L);
+        Point chargedPoint = pointService.chargePointWithPessimisticLock(user.getId(), 1000L);
 
 
         //when
