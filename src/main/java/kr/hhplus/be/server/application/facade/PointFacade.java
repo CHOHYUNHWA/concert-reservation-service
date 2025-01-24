@@ -48,7 +48,7 @@ public class PointFacade {
     public PointHttpDto.ChargePointResponseDto chargePointWithDistributedLock(Long userId, Long chargeAmount) {
         userService.existsUser(userId);
 
-        Point chargedPoint = pointService.chargePointWithoutLock(userId, chargeAmount);
+        Point chargedPoint = pointService.chargePointWithPessimisticLock(userId, chargeAmount);
         log.info("userId Of Point ={}", chargedPoint.getUserId());
 
         return PointHttpDto.ChargePointResponseDto.of(chargedPoint);

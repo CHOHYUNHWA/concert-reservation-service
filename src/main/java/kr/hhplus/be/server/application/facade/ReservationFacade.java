@@ -103,7 +103,7 @@ public class ReservationFacade {
         ConcertSchedule concertScheduleInfo = concertService.getConcertScheduleInfo(reservationRequest.getConcertScheduleId());
 
         //좌석 조회
-        Seat findSeat = concertService.getSeatWithoutLock(reservationRequest.getSeatId());
+        Seat findSeat = concertService.getSeatWithPessimisticLock(reservationRequest.getSeatId());
 
         log.info("Seat Status ={}", findSeat.getSeatStatus());
 
