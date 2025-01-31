@@ -1,5 +1,7 @@
 package kr.hhplus.be.server.support.aop;
 
+import kr.hhplus.be.server.support.exception.CustomException;
+import kr.hhplus.be.server.support.exception.ErrorType;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
@@ -41,8 +43,8 @@ public class RedisDistributedLockAspect {
             boolean available = rLock.tryLock(redisDistributedLock.waitTime(), redisDistributedLock.leaseTime(), redisDistributedLock.timeUnit());
 
             if(!available){
-                log.info("Lock 획득 실패 = {}", key);
-                return false;
+                log.error("Lock 획득 실패 = {}", key);
+                throw new CustomException(ErrorType.FAIL_GET_LOCK, "락 획득 실패 메서드: " + method.getName());
             }
             log.info("Lock 획득 성공 = {}", key);
             return joinPoint.proceed();
