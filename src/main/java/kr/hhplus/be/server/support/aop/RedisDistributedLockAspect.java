@@ -1,5 +1,7 @@
 package kr.hhplus.be.server.support.aop;
 
+import kr.hhplus.be.server.support.exception.CustomException;
+import kr.hhplus.be.server.support.exception.ErrorType;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
@@ -8,20 +10,24 @@ import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
+import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
 import java.lang.reflect.Method;
+
+import static org.springframework.core.Ordered.HIGHEST_PRECEDENCE;
 
 @Slf4j
 @Aspect
 @Component
 @RequiredArgsConstructor
+@Order(HIGHEST_PRECEDENCE)
 public class RedisDistributedLockAspect {
 
     private static final String REDISSON_LOCK_PREFIX = "LOCK:";
 
     private final RedissonClient redissonClient;
-    private final AopForTransaction aopForTransaction;
+//    private final AopForTransaction aopForTransaction;
 
     @Around("@annotation(kr.hhplus.be.server.support.aop.RedisDistributedLock)")
     public Object redisDistributedLock(ProceedingJoinPoint joinPoint) throws Throwable {
@@ -37,11 +43,11 @@ public class RedisDistributedLockAspect {
             boolean available = rLock.tryLock(redisDistributedLock.waitTime(), redisDistributedLock.leaseTime(), redisDistributedLock.timeUnit());
 
             if(!available){
-                log.info("Lock 획득 실패 = {}", key);
-                return false;
+                log.error("Lock 획득 실패 = {}", key);
+                throw new CustomException(ErrorType.FAIL_GET_LOCK, "락 획득 실패 메서드: " + method.getName());
             }
             log.info("Lock 획득 성공 = {}", key);
-            return aopForTransaction.proceed(joinPoint);
+            return joinPoint.proceed();
         } catch (InterruptedException e){
             throw new InterruptedException();
         } finally {

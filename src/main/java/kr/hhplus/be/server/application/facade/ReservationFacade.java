@@ -94,6 +94,7 @@ public class ReservationFacade {
 
 
     @RedisDistributedLock(key = "'reservation:' + #reservationRequest.seatId")
+    @Transactional
     public ReservationHttpDto.ReservationCompletedResponse reservationWithDistributedLock(ReservationHttpDto.ReservationRequest reservationRequest) {
 
         //콘서트 조회

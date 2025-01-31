@@ -11,6 +11,8 @@ public enum ErrorType {
 
     //서버에러
     INTERNAL_SERVER_ERROR(ErrorCode.SERVER_ERROR, "서버 에러가 발생하였습니다.", LogLevel.ERROR),
+    //Redis
+    FAIL_GET_LOCK(ErrorCode.SERVER_ERROR, "락 획득에 실패하였습니다.", LogLevel.ERROR),
 
     //JPA
     RESOURCE_NOT_FOUND(ErrorCode.NOT_FOUND, "리소스를 찾을 수 없습니다.", LogLevel.WARN ),

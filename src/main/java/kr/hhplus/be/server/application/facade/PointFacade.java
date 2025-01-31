@@ -45,6 +45,7 @@ public class PointFacade {
 
 
     @RedisDistributedLock(key = "'chargePoint:' + #userId")
+    @Transactional
     public PointHttpDto.ChargePointResponseDto chargePointWithDistributedLock(Long userId, Long chargeAmount) {
         userService.existsUser(userId);
 
