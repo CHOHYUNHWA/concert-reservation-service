@@ -17,6 +17,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
+import java.util.logging.Logger;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -25,6 +28,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @AutoConfigureMockMvc
 public class ConcertControllerIntegrationTest {
+
+    private Logger log = Logger.getLogger(ConcertControllerIntegrationTest.class.getName());
 
     private Queue queue;
     private Queue expiredQueue;
@@ -102,8 +107,8 @@ public class ConcertControllerIntegrationTest {
 
         concertSchedule = ConcertSchedule.builder()
                 .concertId(concert.getId())
-                .availableReservationTime(LocalDateTime.now().minusDays(5))
-                .concertTime(LocalDateTime.now().plusDays(30))
+                .availableReservationTime(LocalDateTime.now().minusDays(5).truncatedTo(ChronoUnit.SECONDS))
+                .concertTime(LocalDateTime.now().plusDays(30).truncatedTo(ChronoUnit.SECONDS))
                 .build();
 
         concertScheduleJpaRepository.save(concertSchedule);
@@ -172,6 +177,9 @@ public class ConcertControllerIntegrationTest {
     @Test
     void 정상_토큰인_경우_콘서트스케쥴_조회_성공() throws Exception {
         //given
+        String formattedConcertTime = concertSchedule.getConcertTime().truncatedTo(ChronoUnit.SECONDS).toString();
+
+
 
         //when//then
         mvc.perform(get("/api/concerts/{concertId}/schedules", concert.getId())
@@ -179,8 +187,9 @@ public class ConcertControllerIntegrationTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.concertId").value(concert.getId()))
                 .andExpect(jsonPath("$.schedules[0].scheduleId").value(concertSchedule.getId()))
-                .andExpect(jsonPath("$.schedules[0].concertTime").value(concertSchedule.getConcertTime().toString()))
+                .andExpect(jsonPath("$.schedules[0].concertTime").value(formattedConcertTime))
                 .andExpect(jsonPath("$.schedules[0].availableReservationTime").value(concertSchedule.getAvailableReservationTime().toString()));
+
     }
 
     @Test

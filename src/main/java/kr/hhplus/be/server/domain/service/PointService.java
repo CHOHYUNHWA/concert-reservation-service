@@ -14,26 +14,43 @@ public class PointService {
     private final PointRepository pointRepository;
 
     //포인트 조회
-    public Point getPoint(Long userId) {
-        return pointRepository.findPointWithLock(userId);
+    public Point getPointWithPessimisticLock(Long userId) {
+        return pointRepository.findByUserIdWithPessimisticLock(userId);
     }
 
     //포인트 사용
     public Point usePoint(Long userId, Long useAmount) {
 
-        Point point = pointRepository.findPointWithLock(userId);
+        Point point = pointRepository.findByUserIdWithPessimisticLock(userId);
         point.usePoint(useAmount);
 
         return pointRepository.save(point);
     }
 
     //포인트 충전
-    public Point chargePoint(Long userId, Long chargeAmount) {
+    public Point chargePointWithPessimisticLock(Long userId, Long chargeAmount) {
 
-        Point point = pointRepository.findPointWithLock(userId);
+        Point point = pointRepository.findByUserIdWithPessimisticLock(userId);
         point.charge(chargeAmount);
 
         return pointRepository.save(point);
     }
 
+    public Point getPointWithoutLock(Long userId) {
+        return pointRepository.findByUserIdWithoutLock(userId);
+    }
+
+    public Point chargePointWithOptimisticLock(Long userId, Long chargeAmount) {
+        Point point = pointRepository.findByUserIdWithOptimisticLock(userId);
+        point.charge(chargeAmount);
+
+        return pointRepository.save(point);
+    }
+
+    public Point chargePointWithoutLock(Long userId, Long chargeAmount) {
+        Point point = pointRepository.findByUserIdWithoutLock(userId);
+        point.charge(chargeAmount);
+
+        return pointRepository.save(point);
+    }
 }

@@ -39,6 +39,9 @@ public class Seat {
     @Column(name = "CONCERT_SCHEDULE_ID", nullable = false)
     private Long concertScheduleId;
 
+    @Version
+    private Long version;
+
     public void checkStatus() {
         if(this.seatStatus.equals(SeatStatus.UNAVAILABLE)){
             throw new CustomException(ErrorType.ALREADY_RESERVED_SEAT, "현재 좌석 상태: " + this.seatStatus);

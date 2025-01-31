@@ -5,10 +5,12 @@ import kr.hhplus.be.server.domain.entity.Reservation;
 import kr.hhplus.be.server.domain.entity.Seat;
 import kr.hhplus.be.server.domain.repository.ReservationRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class ReservationService {
 
     private final ReservationRepository reservationRepository;
@@ -24,9 +26,9 @@ public class ReservationService {
         return reservationRepository.findByUserId(userId);
     }
 
-    //예약 상태 검증
-    public Reservation validateReservation(Long reservationId, Long userId){
-        Reservation reservation = reservationRepository.findByIdWithLock(reservationId);
+    //예약 상태 검증 - 비관적 락
+    public Reservation validateReservationWithPessimisticLock(Long reservationId, Long userId){
+        Reservation reservation = reservationRepository.findByIdWithPessimisticLock(reservationId);
         reservation.validateReservation(userId);
 
         return reservation;
@@ -36,5 +38,22 @@ public class ReservationService {
     public Reservation changeCompletedStatus(Reservation reservation){
         reservation.changeCompletedStatus();
         return reservationRepository.save(reservation);
+    }
+
+    public Reservation validateReservationWithoutLock(Long reservationId, Long userId) {
+        Reservation reservation = reservationRepository.findByIdWithoutLock(reservationId);
+
+        log.info("Reservation Status = {}", reservation.getStatus());
+
+        reservation.validateReservation(userId);
+
+        return reservation;
+    }
+
+    public Reservation validateReservationWithOptimisticLock(Long reservationId, Long userId) {
+        Reservation reservation = reservationRepository.findByIdWithOptimisticLock(reservationId);
+        reservation.validateReservation(userId);
+
+        return reservation;
     }
 }

@@ -21,5 +21,6 @@ docker-compose up -d
 ### [4. Flow Chart](docs/04_FlowChart.md)
 ### [5. API_Specification.md](docs/05_API_Specification.md)
 ### [6. Swagger_UI.md](docs/06_Swagger_UI.md)
+### [7. Concurrent_Control_Report.md](docs/07_Concurrent_Control_Report.md)
 
 ---

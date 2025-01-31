@@ -23,7 +23,15 @@ public interface ConcertRepository {
 
     Seat saveSeat(Seat assignedSeat);
 
-    Seat findSeatByIdWithLock(Long seatId);
+    Seat findSeatByIdWithPessimisticLock(Long seatId);
 
     List<Reservation> findExpiredReservation(ReservationStatus reservationStatus, LocalDateTime localDateTime);
+
+    Seat findSeatByIdWithoutLock(Long seatId);
+
+
+    //테스트용
+    Seat findBySeatId(Long seatId);
+
+    Seat findSeatByIdWithOptimisticLock(Long seatId);
 }

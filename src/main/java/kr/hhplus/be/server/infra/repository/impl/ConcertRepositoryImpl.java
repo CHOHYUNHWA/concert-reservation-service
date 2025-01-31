@@ -5,10 +5,7 @@ import kr.hhplus.be.server.domain.entity.ConcertSchedule;
 import kr.hhplus.be.server.domain.entity.Reservation;
 import kr.hhplus.be.server.domain.entity.Seat;
 import kr.hhplus.be.server.domain.repository.ConcertRepository;
-import kr.hhplus.be.server.infra.repository.jpa.ConcertJpaRepository;
-import kr.hhplus.be.server.infra.repository.jpa.ConcertScheduleJpaRepository;
-import kr.hhplus.be.server.infra.repository.jpa.ReservationJpaRepository;
-import kr.hhplus.be.server.infra.repository.jpa.SeatJpaRepository;
+import kr.hhplus.be.server.infra.repository.jpa.*;
 import kr.hhplus.be.server.support.exception.CustomException;
 import kr.hhplus.be.server.support.exception.ErrorType;
 import kr.hhplus.be.server.support.type.ReservationStatus;
@@ -61,14 +58,28 @@ public class ConcertRepositoryImpl implements ConcertRepository {
         return assignedSeat;
     }
 
-    @Override
-    public Seat findSeatByIdWithLock(Long seatId) {
-        return seatJpaRepository.findById(seatId).orElseThrow(() -> new CustomException(ErrorType.RESOURCE_NOT_FOUND,"검색한 SEAT ID: " + seatId));
+    public Seat findSeatByIdWithPessimisticLock(Long seatId) {
+        return seatJpaRepository.findByIdWithPessimisticLock(seatId).orElseThrow(() -> new CustomException(ErrorType.RESOURCE_NOT_FOUND,"검색한 SEAT ID: " + seatId));
     }
 
     @Override
     public List<Reservation> findExpiredReservation(ReservationStatus reservationStatus, LocalDateTime localDateTime) {
         return reservationJpaRepository.findByStatusAndReservedAtBefore(reservationStatus, localDateTime);
+    }
+
+    @Override
+    public Seat findSeatByIdWithoutLock(Long seatId) {
+        return seatJpaRepository.findByIdWithoutLock(seatId).orElseThrow(() -> new CustomException(ErrorType.RESOURCE_NOT_FOUND,"검색한 SEAT ID: " + seatId));
+    }
+
+    @Override
+    public Seat findBySeatId(Long seatId) {
+        return seatJpaRepository.findById(seatId).orElseThrow(() -> new CustomException(ErrorType.RESOURCE_NOT_FOUND,"검색한 SEAT ID: " + seatId));
+    }
+
+    @Override
+    public Seat findSeatByIdWithOptimisticLock(Long seatId) {
+        return seatJpaRepository.findSeatByIdWithOptimisticLock(seatId).orElseThrow(() -> new CustomException(ErrorType.RESOURCE_NOT_FOUND,"검색한 SEAT ID: " + seatId));
     }
 
 }
