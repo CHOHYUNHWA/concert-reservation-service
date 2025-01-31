@@ -128,36 +128,95 @@
 <br>
 
 ## 동시성 이슈 발생 시나리오와 해결방법
-
+> **참고 사항**
+> - 컴퓨터 고성능 이슈로 인하여, 성능 테스트의 수치를 가시화하기 위해서 극적인 환경으로 테스트를 진행하였습니다.
+> - DBCP: 100
+> - 예약,결제 ThreadCount:1000
+> - 포인트 충전 ThreadCount: 100
+> - 분산락 락 획득 대기시간 10초 (테스트 시간 내 무조건 대기 후 획득을 위해)
 ### 1. 포인트 충전
 
-#### 동시성 이슈 발생 시나리오 및 분석
+#### 동시성 이슈 발생 시나리오 및 예측/분석
 ```text
-
+- 계정을 공유하여, 포인트를 충전해서사용하는 경우 한 계정에 여러 사용자가 포인트를 충전할 수 있다.
+- 그러므로, 동시에 여러 포인트 충전 요청의 경우 모두 성공하여야 한다.
 ```
+- #### 분석
+  - 포인트 충전의 경우,모든 요청이 성공해야만 함으로 낙관적 락을 사용하여 성공할 때 까지 재시도 하는 것보다 요청별로 락을 획득하고, 반환하는 형태가 적합해보인다.
+  - 낙관적락 사용 시 Version 충돌로 인하여, 불 필요하게 많은 재시도가 발생하고 그 과정에서 성능이 저하 될 수 있다.
 
 #### 성능 및 효율성 테스트
+- 소요시간: 낙관적락 > 분산락 > 비관적락
 
-#### 
+![PointChargeTest](https://github.com/user-attachments/assets/e99b6219-bb7b-4f61-bda6-df3f427eda08)
+
 
 ### 2. 결제
 
 #### 동시성 이슈 발생 시나리오 및 분석
 ```text
-
+- 예상치 못한 더블클릭이나 사용자의 여러 요청이 존재할 수 있다.
+- 동시성 문제 발생 시 하나의 결제 요청만 성공해야만 한다.
 ```
+- ##### 분석
+  - 비관적락,분산락과 같이 락을 점유하여 다음 요청이 대기하는 것 보다 낙관적락을 사용하여, 하나의 요청이 성공하면 이후 요청은 재시도하지 않고 실패하도록 하는 것이 적합해 보인다.
+  - 비관적락,분산락 사용 시 락을 획득하기 위한 시간 소요로 인한 성능이 저하 될 수 잇다.
+
 
 #### 성능 및 효율성 테스트
+- 소요시간: 분산락 > 비관적락 > 낙관적락
+
+![PaymentTest](https://github.com/user-attachments/assets/e3e423e6-1292-42eb-b5f3-8aff13514e62)
 
 ### 3. 좌석 예약
 
 #### 동시성 이슈 발생 시나리오 및 분석
 ```text
-
+- 예상치 못한 더블클릭이나 사용자의 여러 요청이 존재할 수 있다.
+- 동시성 문제 발생 시 하나의 좌석 예약 요청만 성공해야 한다.
 ```
 
-#### 성능 및 효율성 테스트
+- ##### 분석
+    - 비관적락,분산락과 같이 락을 점유하여 다음 요청이 대기하는 것 보다 낙관적락을 사용하여, 하나의 요청이 성공하면 이후 요청은 재시도하지 않고 실패하도록 하는 것이 적합해 보인다.
+    - 비관적락,분산락 사용 시 락을 획득하기 위한 시간 소요로 인한 성능이 저하 될 수 잇다.
 
-### 결론
+#### 성능 및 효율성 테스트
+- 소요시간: 분산락 > 비관적락 > 낙관적락
+
+![ReservationTest](https://github.com/user-attachments/assets/9d96402e-0f9d-4c38-8ee6-f8cd50bc5918)
+
+### 결론 및 정리
+- 낙관적 락
+  - 동시에 발생한 모든 요청이 성공해야하는 경우 가장 높은 성능을 보였다.
+- 비관적 락
+  - 동시에 발생한 요청 중 일부 또는 하나만 성공해야하는 경우 가장 높은 성능을 보였다.
+- 레디스 분산락(Redisson)
+  - 모든 테스트에서 가장 낮은 성능을 보였다.
+    - Application과 Redis와의 통신 시간(비용) 그리고 Redisson의 Pub/Sub방식을 통한 대기시간 소요
+  - 서비스 구조가 분산환경일 경우 적합하다.
+
+분산락의 경우 아래와 같이 Redis Lock을 획득하고 해제해야 다음 요청이 다시 Lock을 획득하고 해제하는 것을 확인할 수 있다.
+여기서 말하는 Lock은 DB락이 아닌, Redis의 RLock이다.
+
+```text
+2025-01-23T15:35:03.776Z  INFO 7450 --- [hhplus] [ool-2-thread-91] k.h.b.s.s.a.RedisDistributedLockAspect   : Lock 획득 성공 = LOCK:chargePoint:1
+2025-01-23T15:35:03.815Z  INFO 7450 --- [hhplus] [ool-2-thread-91] k.h.b.s.application.facade.PointFacade   : userId Of Point =1
+2025-01-23T15:35:03.822Z  INFO 7450 --- [hhplus] [ool-2-thread-91] k.h.b.s.s.a.RedisDistributedLockAspect   : Lock 해제 성공 = LOCK:chargePoint:1
+2025-01-23T15:35:03.831Z  INFO 7450 --- [hhplus] [ool-2-thread-69] k.h.b.s.s.a.RedisDistributedLockAspect   : Lock 획득 성공 = LOCK:chargePoint:1
+2025-01-23T15:35:03.834Z  INFO 7450 --- [hhplus] [ool-2-thread-69] k.h.b.s.application.facade.PointFacade   : userId Of Point =1
+2025-01-23T15:35:03.836Z  INFO 7450 --- [hhplus] [ool-2-thread-69] k.h.b.s.s.a.RedisDistributedLockAspect   : Lock 해제 성공 = LOCK:chargePoint:1
+2025-01-23T15:35:03.837Z  INFO 7450 --- [hhplus] [ool-2-thread-59] k.h.b.s.s.a.RedisDistributedLockAspect   : Lock 획득 성공 = LOCK:chargePoint:1
+2025-01-23T15:35:03.840Z  INFO 7450 --- [hhplus] [ool-2-thread-59] k.h.b.s.application.facade.PointFacade   : userId Of Point =1
+2025-01-23T15:35:03.842Z  INFO 7450 --- [hhplus] [ool-2-thread-59] k.h.b.s.s.a.RedisDistributedLockAspect   : Lock 해제 성공 = LOCK:chargePoint:1
+2025-01-23T15:35:03.843Z  INFO 7450 --- [hhplus] [ool-2-thread-98] k.h.b.s.s.a.RedisDistributedLockAspect   : Lock 획득 성공 = LOCK:chargePoint:1
+2025-01-23T15:35:03.845Z  INFO 7450 --- [hhplus] [ool-2-thread-98] k.h.b.s.application.facade.PointFacade   : userId Of Point =1
+2025-01-23T15:35:03.847Z  INFO 7450 --- [hhplus] [ool-2-thread-98] k.h.b.s.s.a.RedisDistributedLockAspect   : Lock 해제 성공 = LOCK:chargePoint:1
+2025-01-23T15:35:03.848Z  INFO 7450 --- [hhplus] [ool-2-thread-43] k.h.b.s.s.a.RedisDistributedLockAspect   : Lock 획득 성공 = LOCK:chargePoint:1
+2025-01-23T15:35:03.851Z  INFO 7450 --- [hhplus] [ool-2-thread-43] k.h.b.s.application.facade.PointFacade   : userId Of Point =1
+2025-01-23T15:35:03.853Z  INFO 7450 --- [hhplus] [ool-2-thread-43] k.h.b.s.s.a.RedisDistributedLockAspect   : Lock 해제 성공 = LOCK:chargePoint:1
+2025-01-23T15:35:03.853Z  INFO 7450 --- [hhplus] [ool-2-thread-13] k.h.b.s.s.a.RedisDistributedLockAspect   : Lock 획득 성공 = LOCK:chargePoint:1
+2025-01-23T15:35:03.855Z  INFO 7450 --- [hhplus] [ool-2-thread-13] k.h.b.s.application.facade.PointFacade   : userId Of Point =1
+2025-01-23T15:35:03.858Z  INFO 7450 --- [hhplus] [ool-2-thread-13] k.h.b.s.s.a.RedisDistributedLockAspect   : Lock 해제 성공 = LOCK:chargePoint:1
+```
 
 ---

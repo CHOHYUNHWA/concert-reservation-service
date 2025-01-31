@@ -117,21 +117,21 @@ public class PaymentFacadeTest {
     @Test
     void 결제_성공(){
         //given
-        pointService.chargePoint(user.getId(), 10_000L);
+        pointService.chargePointWithoutLock(user.getId(), 10_000L);
 
         //when
-        PaymentHttpDto.PaymentCompletedResponse payment = paymentFacade.payment(queue.getToken(), reservation.getId(), user.getId());
+        PaymentHttpDto.PaymentCompletedResponse payment = paymentFacade.paymentWithPessimisticLock(queue.getToken(), reservation.getId(), user.getId());
         //then
         assertThat(payment).isNotNull();
         assertThat(payment.getAmount()).isEqualTo(seat.getSeatPrice());
-        assertThat(reservationRepository.findByIdWithLock(reservation.getId()).getStatus()).isEqualTo(ReservationStatus.PAYMENT_COMPLETED);
+        assertThat(reservationRepository.findById(reservation.getId()).getStatus()).isEqualTo(ReservationStatus.PAYMENT_COMPLETED);
         assertThat(payment.getPaymentStatus()).isEqualTo(PaymentStatus.COMPLETED);
     }
 
     @Test
     void 잔액_부족시_결제_예외_반환(){
         //when then
-        assertThatThrownBy(() -> paymentFacade.payment(queue.getToken(), reservation.getId(), user.getId()))
+        assertThatThrownBy(() -> paymentFacade.paymentWithPessimisticLock(queue.getToken(), reservation.getId(), user.getId()))
                 .isInstanceOf(CustomException.class)
                 .hasMessage(ErrorType.INVALID_AMOUNT.getMessage());
 
@@ -139,7 +139,7 @@ public class PaymentFacadeTest {
 
     @Test
     void 예약자_결제자_불_일치_시_예외_반환(){
-        assertThatThrownBy(() -> paymentFacade.payment(queue.getToken(), reservation.getId(), 2L))
+        assertThatThrownBy(() -> paymentFacade.paymentWithPessimisticLock(queue.getToken(), reservation.getId(), 2L))
                 .isInstanceOf(CustomException.class)
                 .hasMessage(ErrorType.PAYMENT_USER_MISMATCH.getMessage());
     }
@@ -148,7 +148,7 @@ public class PaymentFacadeTest {
     @Transactional
     void 임시_예약_후_5분_경과시_예외_반환(){
         //given
-        pointService.chargePoint(user.getId(), 10_000L);
+        pointService.chargePointWithPessimisticLock(user.getId(), 10_000L);
         Reservation timeOutReservation = Reservation.builder()
                 .concertId(concert.getId())
                 .concertScheduleId(concertSchedule.getId())
@@ -161,7 +161,7 @@ public class PaymentFacadeTest {
         Reservation savedTimeoutReservation = reservationRepository.save(timeOutReservation);
 
         //when //then
-        assertThatThrownBy(() -> paymentFacade.payment(queue.getToken(), savedTimeoutReservation.getId(), user.getId()))
+        assertThatThrownBy(() -> paymentFacade.paymentWithPessimisticLock(queue.getToken(), savedTimeoutReservation.getId(), user.getId()))
                 .isInstanceOf(CustomException.class)
                 .hasMessage(ErrorType.PAYMENT_TIMEOUT.getMessage());
     }
@@ -169,7 +169,7 @@ public class PaymentFacadeTest {
     @Test
     void 이미_결제된_예약의_경우_예외_반환(){
         //given
-        pointService.chargePoint(user.getId(), 10_000L);
+        pointService.chargePointWithoutLock(user.getId(), 10_000L);
         Reservation alreadyPaymentCompletedReservation = Reservation.builder()
                 .concertId(concert.getId())
                 .concertScheduleId(concertSchedule.getId())
@@ -182,7 +182,7 @@ public class PaymentFacadeTest {
         Reservation savedAlreadyPaymentCompletedReservation = reservationRepository.save(alreadyPaymentCompletedReservation);
 
         //when //then
-        assertThatThrownBy(() -> paymentFacade.payment(queue.getToken(), savedAlreadyPaymentCompletedReservation.getId(), user.getId()))
+        assertThatThrownBy(() -> paymentFacade.paymentWithPessimisticLock(queue.getToken(), savedAlreadyPaymentCompletedReservation.getId(), user.getId()))
                 .isInstanceOf(CustomException.class)
                 .hasMessage(ErrorType.ALREADY_PAID.getMessage());
 

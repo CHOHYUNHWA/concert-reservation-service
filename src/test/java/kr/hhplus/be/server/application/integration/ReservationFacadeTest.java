@@ -97,7 +97,7 @@ public class ReservationFacadeTest {
 
 
         // when & then
-        assertThatThrownBy(() -> reservationFacade.reservation(reservationRequest))
+        assertThatThrownBy(() -> reservationFacade.reservationWithPessimisticLock(reservationRequest))
                 .isInstanceOf(CustomException.class)
                 .hasMessage(ErrorType.BEFORE_AVAILABLE_RESERVATION_AT.getMessage());
 
@@ -136,7 +136,7 @@ public class ReservationFacadeTest {
 
 
         // when & then
-        assertThatThrownBy(() -> reservationFacade.reservation(reservationRequest))
+        assertThatThrownBy(() -> reservationFacade.reservationWithPessimisticLock(reservationRequest))
                 .isInstanceOf(CustomException.class)
                 .hasMessage(ErrorType.ALREADY_CONCERT_START.getMessage());
 
@@ -176,7 +176,7 @@ public class ReservationFacadeTest {
 
 
         // when & then
-        assertThatThrownBy(() -> reservationFacade.reservation(reservationRequest))
+        assertThatThrownBy(() -> reservationFacade.reservationWithPessimisticLock(reservationRequest))
                 .isInstanceOf(CustomException.class)
                 .hasMessage(ErrorType.ALREADY_RESERVED_SEAT.getMessage());
 
@@ -212,7 +212,7 @@ public class ReservationFacadeTest {
                 .build();
 
         // when
-        ReservationHttpDto.ReservationCompletedResponse reservation = reservationFacade.reservation(reservationRequest);
+        ReservationHttpDto.ReservationCompletedResponse reservation = reservationFacade.reservationWithPessimisticLock(reservationRequest);
 
         //then
         assertThat(reservation).isNotNull();

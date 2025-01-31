@@ -38,6 +38,9 @@ dependencies {
 	//spring Doc
 	implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.2.0")
 
+	//redis client redisson 추가
+	implementation("org.redisson:redisson-spring-boot-starter:3.37.0")
+
 
 	// Lombok 의존성 추가
 	implementation("org.projectlombok:lombok") // 최신 버전 사용

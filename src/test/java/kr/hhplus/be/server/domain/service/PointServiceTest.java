@@ -36,14 +36,14 @@ public class PointServiceTest {
                 .updatedAt(LocalDateTime.now())
                 .build();
 
-        given(pointRepository.findPointWithLock(userId)).willReturn(point);
+        given(pointRepository.findByUserIdWithoutLock(userId)).willReturn(point);
 
         //when
-        Point result = pointService.getPoint(userId);
+        Point result = pointService.getPointWithoutLock(userId);
 
         //then
         assertThat(result).isEqualTo(point);
-        verify(pointRepository, times(1)).findPointWithLock(userId);
+        verify(pointRepository, times(1)).findByUserIdWithoutLock(userId);
     }
 
     @Test
@@ -60,7 +60,7 @@ public class PointServiceTest {
         Long useAmount = 400L;
         Long expectedAmount = point.getAmount() - useAmount;
 
-        given(pointRepository.findPointWithLock(userId)).willReturn(point);
+        given(pointRepository.findByUserIdWithPessimisticLock(userId)).willReturn(point);
         given(pointRepository.save(point)).willReturn(point);
 
         //when
@@ -68,7 +68,7 @@ public class PointServiceTest {
 
         //then
         assertThat(result.getAmount()).isEqualTo(expectedAmount);
-        verify(pointRepository, times(1)).findPointWithLock(userId);
+        verify(pointRepository, times(1)).findByUserIdWithPessimisticLock(userId);
         verify(pointRepository, times(1)).save(point);
     }
 
@@ -89,15 +89,15 @@ public class PointServiceTest {
 
         Long expectedAmount = point.getAmount() + chargeAmount;
 
-        given(pointRepository.findPointWithLock(userId)).willReturn(point);
+        given(pointRepository.findByUserIdWithoutLock(userId)).willReturn(point);
         given(pointRepository.save(point)).willReturn(point);
         //when
 
-        Point result = pointService.chargePoint(userId, chargeAmount);
+        Point result = pointService.chargePointWithoutLock(userId, chargeAmount);
 
         //then
         assertThat(result.getAmount()).isEqualTo(expectedAmount);
-        verify(pointRepository, times(1)).findPointWithLock(userId);
+        verify(pointRepository, times(1)).findByUserIdWithoutLock(userId);
         verify(pointRepository, times(1)).save(point);
     }
 

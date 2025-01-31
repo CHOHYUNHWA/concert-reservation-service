@@ -31,6 +31,9 @@ public class Point {
     @Column(name = "USER_ID", nullable = false)
     private Long userId;
 
+    @Version
+    private Long version;
+
 
     public void charge(Long chargeAmount) {
 

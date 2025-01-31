@@ -45,8 +45,8 @@ public class ConcertService {
     }
 
     //좌석 단건 조회
-    public Seat getSeat(Long seatId){
-        return concertRepository.findSeatByIdWithLock(seatId);
+    public Seat getSeatWithPessimisticLock(Long seatId){
+        return concertRepository.findSeatByIdWithPessimisticLock(seatId);
     }
 
     //예약 가능 좌석 인지 확인
@@ -61,4 +61,10 @@ public class ConcertService {
         concertRepository.saveSeat(seat);
     }
 
+    public Seat getSeatWithoutLock(Long seatId) {
+        return concertRepository.findSeatByIdWithoutLock(seatId);
+    }
+
+    public Seat getSeatWithOptimisticLock(Long seatId) {
+        return concertRepository.findSeatByIdWithOptimisticLock(seatId);    }
 }

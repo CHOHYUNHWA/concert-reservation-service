@@ -42,6 +42,9 @@ public class Reservation {
     @Column(name = "SEAT_ID", nullable = false)
     private Long seatId;
 
+    @Version
+    private Long version;
+
     //예약 생성
     public static Reservation create(ConcertSchedule schedule, Long seatId, Long userId) {
         return Reservation.builder()

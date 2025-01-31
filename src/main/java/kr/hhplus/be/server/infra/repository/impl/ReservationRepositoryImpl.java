@@ -27,12 +27,27 @@ public class ReservationRepositoryImpl implements ReservationRepository {
     }
 
     @Override
-    public Reservation findByIdWithLock(Long reservationId) {
+    public Reservation findByIdWithPessimisticLock(Long reservationId) {
+        return reservationJpaRepository.findByIdWithPessimisticLock(reservationId).orElseThrow(() -> new CustomException(ErrorType.RESOURCE_NOT_FOUND, "검색한 RESERVATION ID: " +reservationId));
+    }
+
+    @Override
+    public Reservation findById(Long reservationId) {
         return reservationJpaRepository.findById(reservationId).orElseThrow(() -> new CustomException(ErrorType.RESOURCE_NOT_FOUND, "검색한 RESERVATION ID: " +reservationId));
     }
 
     @Override
     public List<Reservation> findByConcertIdAndConcertScheduleIdAndSeatId(long concertId, long concertScheduleId, long seatId) {
         return reservationJpaRepository.findByConcertIdAndConcertScheduleIdAndSeatId(concertId, concertScheduleId, seatId);
+    }
+
+    @Override
+    public Reservation findByIdWithoutLock(Long reservationId) {
+        return reservationJpaRepository.findByIdWithoutLock(reservationId).orElseThrow(() -> new CustomException(ErrorType.RESOURCE_NOT_FOUND, "검색한 RESERVATION ID: " +reservationId));
+    }
+
+    @Override
+    public Reservation findByIdWithOptimisticLock(Long reservationId) {
+        return reservationJpaRepository.findByIdWithOptimisticLock(reservationId).orElseThrow(() -> new CustomException(ErrorType.RESOURCE_NOT_FOUND, "검색한 RESERVATION ID: " +reservationId));
     }
 }
