@@ -174,12 +174,365 @@
 
 ### Redis란?
 
-### Redis의 자료구조
+- **Remote Dictionary Server**의 약자로, 고성능 오픈 소스 **인메모리 키-값 데이터 구조 저장소**이다.
+- **데이터베이스, 캐시, 메시지 브로커** 등으로 사용되며, 주로 **빠른 데이터 액세스가 필요한 애플리케이션**에서 활용된다.
 
 
+- **Redis 특징**
+  - **인메모리 저장**: 모든 데이터를 메모리에 저장하여 **빠른 읽기와 쓰기 성능**을 제공
+  - **다양한 자료 구조**: String, Lists, Sets, Hash, Sorted Set 등 다양한 자료 구조를 지원
+  - **영속성(AOF, RDB 지원)**: 데이터를 디스크에 저장하여 **서버 장애 발생 시에도 복구 가능**
+  - **싱글 스레드**: 기본적으로 **단일 스레드 이벤트 루프**로 동작하며, **원자적 연산을 보장**하여 데이터의 일관성 유지에 용이
+  - **고가용성 및 확장성 지원**: Redis Sentinel을 통한 **고가용성(HA)** 및 Redis Cluster를 통한 **수평적 확장(Sharding)** 가능
+
+### Redis 자료구조
+
+- Redis는 다양한 자료 구조를 제공하여 데이터 저장 및 처리를 효율적으로 수행할 수 있도록 지원한다. 각 자료 구조는 특정한 용도와 장점을 가지고 있으며, 애플리케이션의 요구사항에 따라 적절하게 선택할 수있다.
+
+<figure>
+  <img src="/docs/img/cache/RedisDataStructure.png" style="background: white" alt="Redis Data Structure" width="670">
+  <figcaption style="text-align: center; font-size: 14px; color: gray;">
+    출처: <a href="https://ryu-e.tistory.com/9/" target="_blank">Tistory-Blog</a>
+  </figcaption>
+</figure>
+
+#### 대표적으로 사용되는 Redis 자료 구조
+
+1. String
+   - 가장 기본적인 자료 구조로, 일반적인 키-값 저장 방식
+   - 최대 512MB까지 저장 가능
+   - 사용 예: 캐싱, 세션 저장, 카운터 등
+2. List
+   - 순서가 있는 문자열 리스트(Linked List 기반)
+   - 요소를 왼쪽(LPUSH, LPOP) 또는 오른쪽(RPUSH, RPOP) 에서 추가/저게 가능
+   - 사용 예: 작업 대기열(Queue), 메시지 브로커 등
+3. Set
+   - 중복을 허용하지 않는 고유한 값들의 집합
+   - 요소 추가/삭제가 빠르고, 교집합/합집합 등의 집합 연산 지원
+   - 사용 예: 태그 저장, 팔로우/팔로워 관계 관리 등
+4. Sorted Set(ZSet)
+   - Set과 유사하지만, 각 요소에 점수를(score)를 부여하여 정렬된 상태로 저장
+   - 높은 성능의 랭킹 시스템 구현 가능
+   - 사용 예: 리더보드, 추천 시스템
+5. Hash
+   - Key-Value 쌍을 저장하는 자료 구조 (JSON과 유사)
+   - 하나의 키에 여러 필드와 값을 저장 가능 (HSET, HGET)
+   - 사용 예: 사용자 프로필 정보 저장
+6. Bitmap
+   - 비트(bit) 단위로 데이터를 저장하는 구조
+   - 매우 효율적인 공간 활용이 가능하며, 개별 비트를 설정/조회할 수 있음
+   - 사용 예: 출석 체크, 활성 유저 기록
+7. HyperLogLog
+   - 대략적인 유니크 카운팅(Approximate Counting) 알고리즘을 사용
+   - 매우 작은 공간(12KB)으로 수십억 개의 고유 항목을 추정 가능
+   - 사용 예: 방문자 수 계산, 로그 데이터 분석
+
+  
 ---
 
-## Redis 활용해보기
+## Redis 주요 자료구조 및 명령어 실습
+
+### 1. String
+- String 주요 명령어
+  - `SET {key} {value}`
+    - 키와 문자열 값 저장
+  - `GET {key} {value}`
+    - 가져온 키의 문자열 값 반환
+  - `INCR {key}`
+    - 키의 숫자 증가(only integer)
+  - `DECR {key}`
+    - 키의 숫자 감소(only integer)
+```
+//키와 값 저장
+127.0.0.1:6379> SET redisKey "redisValue"
+OK
+
+//키에 해당하는 값 불러오기
+127.0.0.1:6379> GET redisKey
+"redisValue"
+
+//숫자 값 저장
+127.0.0.1:6379> SET counter 100
+OK
+
+//값 증가
+127.0.0.1:6379> INCR counter
+(integer) 101
+
+//값 감소
+127.0.0.1:6379> DECR counter
+(integer) 100
+
+//값이 문자열일 경우 에러가 난다.
+127.0.0.1:6379> SET test key
+127.0.0.1:6379> INCR test
+(error) ERR value is not an integer or out of range
+```
+
+
+### 2. List
+
+
+- **List 주요 명령어**
+  - `LPUSH {key} {value}`
+    - 왼쪽(앞)에 값 추가
+  - `RPUSH {key} {value}`
+    - 오른쪽(뒤)에 값 추가
+  - `LPOP {key}`
+    - 왼쪽에서 값 꺼내기
+  - `RPOP {key}`
+    - 오른쪽에서 값 꺼내기
+  - `LRANGE {key} {start} {stop}`
+    - 전체 범위 값 조회
+    - 0은 첫 번째 요소(왼쪽)
+      - 0, 1, 2 순으로 왼쪽으로부터 범위를 좁힐 수 있다.
+    - -1은 마지막 요소(오른쪽)
+      - -1, -2, -3 순으로 오른쪽으로부터 범위를 좁힐 수 있다.
+  - `LLEN {key}`
+    - 리스트의 길이 조회
+```
+
+//List의 왼쪽(앞)에 값 추가
+127.0.0.1:6379> LPUSH mylist "Task 1"
+(integer) 1
+
+//List의 왼쪽(앞)에 값 추가
+127.0.0.1:6379> LPUSH mylist "Task 2"
+(integer) 2
+
+//List의 오른쪽(뒤)에 값 추가
+127.0.0.1:6379> RPUSH mylist "Task 3"
+(integer) 3
+
+//List 의 0(왼쪽으로 부터 처음) 부터 -1(오른쪽으로 부터 처음) 까지 조회
+//0 -1 은 왼쪽을 기준으로 처음부터 끝까지 이다.
+127.0.0.1:6379> LRANGE mylist 0 -1
+1) "Task 2"
+2) "Task 1"
+3) "Task 3"
+
+//0번째 인덱스 값 조회
+127.0.0.1:6379> LINDEX mylist 0
+"Task 2"
+
+//리스트의 길이 조회
+127.0.0.1:6379> LLEN mylist
+(integer) 3
+
+//가장 왼쪽(앞) 값 반환 후 제거
+127.0.0.1:6379> LPOP mylist
+"Task 2"
+
+//기존 가장 왼쪽(앞) 값 "Task 2"가 제거 되었다.
+127.0.0.1:6379> LRANGE mylist 0 -1
+1) "Task 1"
+2) "Task 3"
+
+//가장 오른쪽(뒤) 값 반환 후 제거
+127.0.0.1:6379> RPOP mylist
+"Task 3"
+
+//기존 가장 오른쪽(뒤) 값 "Task 1"가 제거 되었다.
+127.0.0.1:6379> LRANGE mylist 0 -1
+1) "Task 1"
+
+// 왼쪽으로 부터 "Task 1"이 1개 삭제됨(2일 경우 2개가 삭제됨)
+// -1은 오른쪽부터 1개 삭제 이다. 
+// 2인 경우 -> 왼쪽에서 2개 삭제
+// -2인 경우 -> 오른쪽에서 2개 삭제
+127.0.0.1:6379> LREM mylist 1 "Task 1"
+(integer) 1
+
+//모든 데이터가 삭제되어 빈 배열을 반환
+127.0.0.1:6379> LRANGE mylist 0 -1
+(empty array)
+```
+
+
+### 3. Set
+- **Set 주요 명령어**
+  - `SADD {key} {value}`
+    - 값 추가
+  - `SREM {key} {value}`
+    - 값 제거
+  - `SMEMBERS {key}`
+    - 모든 요소 가져오기
+  - `SCARD {key}`
+    - 요소 개수 확인
+  - `SISMEMBER {key} {value}`
+    - 값 존재 확인
+```
+
+//Set 값 추가
+127.0.0.1:6379> SADD setKey "setValue1"
+(integer) 1
+
+//Set은 중복을 허용하지 않기때문에 0을 반환
+127.0.0.1:6379> SADD setKey "setValue1"
+(integer) 0
+
+//Set 값 추가
+127.0.0.1:6379> SADD setKey "setValue2"
+(integer) 1
+
+//Set 값 추가
+127.0.0.1:6379> SADD setKey "setValue3"
+(integer) 1
+
+//Set의 모든 값 조회
+127.0.0.1:6379> SMEMBERS setKey
+1) "setValue1"
+2) "setValue2"
+3) "setValue3"
+
+//"setValue2"를 삭제
+127.0.0.1:6379> SREM setKey "setValue2"
+(integer) 1
+
+//Set의 모든 값 조회 "setValue2"가 삭제 되었다.
+127.0.0.1:6379> SMEMBERS setKey
+1) "setValue1"
+2) "setValue3"
+
+//Set의 크기 조회
+127.0.0.1:6379> SCARD setKey
+(integer) 2
+
+//Set에 해당 "setValue1"가 존재하는 지 조회 
+127.0.0.1:6379> SISMEMBER setKey "setValue1"
+(integer) 1
+
+//Set에 해당 "setValue2"가 존재하는 지 조회
+//SREM으로 삭제 되었으므로 0을 반환
+127.0.0.1:6379> SISMEMBER setKey "setValue2"
+(integer) 0
+```
+
+### 4. Sorted Set(ZSet)
+- **Sorted Set(ZSet) 주요 명령어**
+  - `ZADD {key} {score} {value}`
+    - 값 추가(점수 포함)
+  - `ZREM {key} {value}`
+    - 값 제거
+  - `ZRANGE {key} {start} {stop} WITHSCORES`
+    - 점수가 낮은 순으로 정렬하여 조회
+  - `ZREVRANGE {key} {start} {stop} WITHSCORES`
+    - 점수가 높은 순으로 정렬하여 조회
+  - `ZSCORE {key} {value}`
+    - 값의 점수 조회
+  - `ZCARD {key}`
+    - 요소 개수 확인
+  - `ZRANK {key} {value}`
+    - 값의 순위(오름차순)
+  - `ZREVRANK {key} {value}`
+    - 값의 순위(내림차순)
+```
+
+//SortedSet에 스코어는 1 값은 "score1" 저장
+127.0.0.1:6379> ZADD sortedSetKey 1 "score1"
+(integer) 1
+
+//SortedSet에 스코어는 2 값은 "score2" 저장
+127.0.0.1:6379> ZADD sortedSetKey 2 "score2"
+(integer) 1
+
+//SortedSet에 스코어는 3 값은 "score3" 저장
+127.0.0.1:6379> ZADD sortedSetKey 3 "score3"
+(integer) 1
+
+//SortedSet에 스코어는 100 값은 "score100" 저장
+127.0.0.1:6379> ZADD sortedSetKey 100 "score100"
+(integer) 1
+
+//SortedSet을 오름차순으로 조회
+// 0은 왼쪽 시작
+// -1은 오른쪽 시작
+127.0.0.1:6379> ZRANGE sortedSetKey 0 -1 WITHSCORES
+1) "score1"
+2) "1"
+3) "score2"
+4) "2"
+5) "score3"
+6) "3"
+7) "score100"
+8) "100"
+
+//SortedSet을 내림차순으로 조회
+// 0은 왼쪽 시작
+// -1은 오른쪽 시작
+127.0.0.1:6379> ZREVRANGE sortedSetKey 0 -1 WITHSCORES
+1) "score100"
+2) "100"
+3) "score3"
+4) "3"
+5) "score2"
+6) "2"
+7) "score1"
+8) "1"
+
+//SortedSet 요소 크기 확인
+127.0.0.1:6379> ZCARD sortedSetKey
+(integer) 4
+
+//"score100"의 score 조회
+127.0.0.1:6379> ZSCORE sortedSetKey "score100"
+"100"
+
+//"score100"의 순위 확인(내림차순)
+127.0.0.1:6379> ZRANK sortedSetKey "score100"
+(integer) 3
+
+//"score100"의 순위 확인(오름차순)
+127.0.0.1:6379> ZREVRANK sortedSetKey "score100"
+(integer) 0
+
+//"score100" 제거
+127.0.0.1:6379> ZREM sortedSetKey "score100"
+(integer) 1
+
+//"score100"이 제거되어 내림차순 정렬시 사라짐
+127.0.0.1:6379> ZRANGE sortedSetKey 0 -1 WITHSCORES
+1) "score1"
+2) "1"
+3) "score2"
+4) "2"
+5) "score3"
+6) "3"
+```
+
+### 5. Hash
+- **Hash 주요 명령어**
+  - `HSET {key} {field} {value}`
+    - 특정 필드에 값 저장
+  - `HGET {key} {field}`
+    - 특정 필드 값 가져오기
+  - `HGETALL {key}`
+    - 모든 필드 가져오기
+```
+
+//특정 필드와 값을 등록
+127.0.0.1:6379> HSET hashKey name "valueName"
+(integer) 1
+
+//name 필드를 조회
+127.0.0.1:6379> HGET hashKey name
+"valueName"
+
+//필드-age 와 값 30을 등록 
+127.0.0.1:6379> HSET hashKey age 30
+(integer) 1
+
+//age 필드 조회
+127.0.0.1:6379> HGET hashKey age
+"30"
+
+//모든 필드와 값을 조회
+127.0.0.1:6379> HGETALL hashKey
+1) "name"
+2) "valueName"
+3) "age"
+4) "30"
+```
 
 ---
 
