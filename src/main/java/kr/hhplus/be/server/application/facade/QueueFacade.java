@@ -5,6 +5,7 @@ import kr.hhplus.be.server.domain.service.QueueService;
 import kr.hhplus.be.server.domain.service.UserService;
 import kr.hhplus.be.server.interfaces.dto.queue.QueueHttpDto;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,12 +23,12 @@ public class QueueFacade {
         return queueService.createToken();
     }
 
+    @Cacheable(value = "queueStatus", key = "#tokenString", cacheManager = "redisCacheManager")
     public QueueHttpDto.QueueStatusResponseDto getQueueRemainingCount(String tokenString, Long userId){
         userService.existsUser(userId);
 
         Queue findToken = queueService.getToken(tokenString);
-        queueService.checkQueueStatus(findToken);
-        Long remainingQueueCount  = queueService.checkRemainingQueueCount(findToken);
+        Long remainingQueueCount  = queueService.getWaitingTokenCount(findToken.getToken());
 
         return QueueHttpDto.QueueStatusResponseDto.of(findToken.getStatus(), remainingQueueCount);
     }

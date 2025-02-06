@@ -67,7 +67,7 @@ public class CacheConfig {
     public RedisCacheManager redisCacheManager(RedisConnectionFactory redisConnectionFactory) {
         return RedisCacheManager.builder(redisConnectionFactory)
                 .cacheDefaults(redisCacheConfiguration(Duration.ofMinutes(5)))
-                .withInitialCacheConfigurations(Map.of("shortLivedCache", redisCacheConfiguration(Duration.ofSeconds(1))))
+                .withInitialCacheConfigurations(Map.of("queueStatus", redisCacheConfiguration(Duration.ofSeconds(1))))
                 .build();
     }
 }

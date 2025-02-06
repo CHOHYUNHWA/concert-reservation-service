@@ -2,6 +2,7 @@ package kr.hhplus.be.server.application.integration;
 
 import kr.hhplus.be.server.application.facade.ConcertFacade;
 import kr.hhplus.be.server.domain.entity.*;
+import kr.hhplus.be.server.domain.repository.ConcertRepository;
 import kr.hhplus.be.server.infra.repository.jpa.*;
 import kr.hhplus.be.server.interfaces.dto.concert.*;
 import kr.hhplus.be.server.support.type.ConcertStatus;
@@ -11,6 +12,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -18,12 +20,14 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.mockito.Mockito.*;
 
 @SpringBootTest
 public class ConcertFacadeTest {
 
     private Concert concert;
     private ConcertSchedule concertSchedule;
+    private Seat seat;
 
     @Autowired
     private DatabaseCleanUp databaseCleanUp;
@@ -40,6 +44,9 @@ public class ConcertFacadeTest {
     @Autowired
     private SeatJpaRepository seatJpaRepository;
 
+    @MockitoSpyBean
+    private ConcertRepository concertRepository;
+
     @BeforeEach
     void setUp(){
 
@@ -47,7 +54,7 @@ public class ConcertFacadeTest {
 
         concert = Concert.builder()
                 .title("콘서트")
-                .description("내용")
+                .description("콘서트내용")
                 .status(ConcertStatus.OPEN)
                 .build();
 
@@ -60,7 +67,7 @@ public class ConcertFacadeTest {
                 .build();
         concertScheduleJpaRepository.save(concertSchedule);
 
-        Seat seat = Seat.builder()
+        seat = Seat.builder()
                 .concertScheduleId(concertSchedule.getId())
                 .seatNumber(1L)
                 .seatPrice(10000L)
