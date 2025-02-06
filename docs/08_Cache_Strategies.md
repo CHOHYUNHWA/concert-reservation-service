@@ -534,6 +534,71 @@ OK
 4) "30"
 ```
 
+### 6. 유효기간(Time To Live)
+- **TTL 설정 주요 명령어**
+  - 데이터 생성과 동시에 TTL설정
+    - `SET {key} {value} EX {seconds}`
+      - 초 단위 유효시간 설정
+    - `SET {key} {value} PX {milliseconds}`
+      - 밀리초 단위 유효시간 설정
+  - 기존 키에 TTL 설정
+    - `EXPIRE key {seconds}`
+      - 초 단위 유효시간 설정
+    - `PEXPIRE key {milliseconds}`
+      - 밀리초 단위 유효시간 설정
+  - TTL 확인(남은 유효기간 조회)
+    - `TTL {key}`
+      - 초 단위 남은 유효시간 조회
+    - `PTTL {key}`
+      - 밀리초 단위 남은 유효시간 조회
+  - 유효시간 제거(영구저장)
+    - `PERSIST {key}`
+```
+//TTL이 없는 값 등록
+127.0.0.1:6379> SET noTTLKey "noTTLvalue"
+OK
+
+//TTL조회 시 영구저장임으로 -1을 반환 -2를 반환할 경우 키가 없는 경우
+127.0.0.1:6379> TTL noTTLKey
+(integer) -1
+
+//500SecondsTTL 키에 500초의 TTL 등록
+127.0.0.1:6379> SET 500SecondsTTL "500SecondsTTL" EX 500
+OK
+
+//TTL 조회시 남은 초 반환
+127.0.0.1:6379> TTL 500SecondsTTL
+(integer) 486
+
+//PTTL 조회시 남은 밀리초 반환
+127.0.0.1:6379> PTTL 500SecondsTTL
+(integer) 476903
+
+//PERSIST 명령어로 해당 key 영구저장 상태로 변경
+127.0.0.1:6379> PERSIST 500SecondsTTL
+(integer) 1
+
+//TTL조회 시 영구저장
+127.0.0.1:6379> TTL 500SecondsTTL
+(integer) -1
+
+//EXPIRE을 통해 이미 저장된 키에 TTL 등록
+127.0.0.1:6379> EXPIRE 500SecondsTTL 500
+(integer) 1
+
+//TTL 조회 시 TTL 설정 확인
+127.0.0.1:6379> TTL 500SecondsTTL
+(integer) 498
+
+//만약 해당 키에 다시 TTL을 적용하면
+127.0.0.1:6379> EXPIRE 500SecondsTTL 500
+(integer) 1
+
+//아래처럼 지정한 TTL이 Reset된다.
+127.0.0.1:6379> TTL 500SecondsTTL
+(integer) 499
+```
+
 ---
 
 ## Redis를 이용한 콘서트 대기열 기능 개선
