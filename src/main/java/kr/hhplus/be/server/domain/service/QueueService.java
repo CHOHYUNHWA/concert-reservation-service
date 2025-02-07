@@ -55,7 +55,7 @@ public class QueueService {
         if(activeCount < MAX_ACTIVE_TOKENS){
             long neededTokens = MAX_ACTIVE_TOKENS - activeCount;
             List<String> waitingTokens = queueRepository.retrieveAndRemoveWaitingToken(neededTokens);
-            waitingTokens.forEach(queueRepository::saveWaitingToken);
+            waitingTokens.forEach(queueRepository::saveActiveToken);
         }
     }
 }
