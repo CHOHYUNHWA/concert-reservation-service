@@ -724,7 +724,7 @@ public class TokenScheduler {
     public void updateActiveToken(){
       queueService.updateActiveToken(); 
     }
-  
+    
     @Scheduled(fixedRate = 30000)  // 30초마다 실행
     public void removeExpiredTokensScheduler() {
       queueService.removeExpiredTokens();   
@@ -776,7 +776,7 @@ public void removeExpiredTokens() {
 ```
 
 ### 5. 순번 계산: RDB -> Redis Sorted Set (zCard)
-- **변경사항**: 
+- **변경사항**: DB count() -> Redis Sorted Set (zCard)를 통한 계산 
 - **장점**
   - zCard(WAITING_TOKEN_KEY)는 O(1) 연산으로 활성 토큰 개수를 즉시 조회 가능.
   - 기존 RDB에서는 COUNT(*) 쿼리 실행 필요 (O(N)) → 성능 이점
