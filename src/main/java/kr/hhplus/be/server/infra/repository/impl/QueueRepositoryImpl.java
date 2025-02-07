@@ -24,22 +24,24 @@ public class QueueRepositoryImpl implements QueueRepository {
 
     @Override
     public boolean activeTokenExist(String token) {
-        return Boolean.TRUE.equals(redisTemplate.opsForSet().isMember(ACTIVE_TOKEN_KEY, token)); // ✅ Set에 존재하는지 확인 (SISMEMBER)
+        Double expireAt = redisTemplate.opsForZSet().score(ACTIVE_TOKEN_KEY, token);
+        return expireAt != null && expireAt > System.currentTimeMillis(); // 현재 시간과 비교
     }
 
     @Override
     public void removeActiveToken(String token) {
-        redisTemplate.opsForSet().remove(ACTIVE_TOKEN_KEY, token);
+        redisTemplate.opsForZSet().remove(ACTIVE_TOKEN_KEY, token);
     }
 
     @Override
     public Long getActiveTokenCount() {
-        return redisTemplate.opsForSet().size(ACTIVE_TOKEN_KEY);
+        return redisTemplate.opsForZSet().zCard(ACTIVE_TOKEN_KEY);
     }
 
     @Override
     public void saveActiveToken(String token) {
-        redisTemplate.opsForSet().add(ACTIVE_TOKEN_KEY, token);
+        long expireAt = System.currentTimeMillis() + TOKEN_TTL.toMillis(); // 현재 시간 + TTL(10분)
+        redisTemplate.opsForZSet().add(ACTIVE_TOKEN_KEY, token, expireAt);
     }
 
     @Override
@@ -66,13 +68,17 @@ public class QueueRepositoryImpl implements QueueRepository {
 
     @Override
     public Queue findToken(String token) {
-        boolean isActive = Boolean.TRUE.equals(redisTemplate.opsForSet().isMember(ACTIVE_TOKEN_KEY, token));
+        Double expireAt = redisTemplate.opsForZSet().score(ACTIVE_TOKEN_KEY, token);
 
-        if(isActive) {
-            return Queue.builder()
-                    .token(token)
-                    .status(QueueStatus.ACTIVE)
-                    .build();
+        if (expireAt != null) {
+            if (expireAt > System.currentTimeMillis()) {
+                return Queue.builder()
+                        .token(token)
+                        .status(QueueStatus.ACTIVE)
+                        .build();
+            } else {
+                redisTemplate.opsForZSet().remove(ACTIVE_TOKEN_KEY, token);
+            }
         }
 
         Long waitingRank = redisTemplate.opsForZSet().rank(WAITING_TOKEN_KEY, token);
@@ -82,11 +88,44 @@ public class QueueRepositoryImpl implements QueueRepository {
                     .status(QueueStatus.WAITING)
                     .build();
         }
-
         throw new CustomException(ErrorType.TOKEN_NOT_FOUND, "토큰: " + token);
     }
 
     public Long getWaitingRank(String token) {
         return redisTemplate.opsForZSet().rank(WAITING_TOKEN_KEY, token);
+    }
+
+    @Override
+    public void removeExpiredTokens() {
+        long now = System.currentTimeMillis();
+
+        Set<String> expiredTokens = redisTemplate.opsForZSet().rangeByScore(ACTIVE_TOKEN_KEY, 0, now);
+
+        if (expiredTokens != null && !expiredTokens.isEmpty()) {
+            redisTemplate.opsForZSet().remove(ACTIVE_TOKEN_KEY, expiredTokens.toArray());
+        }
+    }
+
+
+    //테스트용
+    @Override
+    public void removeOldestTwoActiveTokens() {
+        // 가장 오래된 2개의 토큰 조회 (ZRANGE: 정순 조회)
+        Set<String> oldestTokens = redisTemplate.opsForZSet().range(ACTIVE_TOKEN_KEY, 0, 1);
+
+        if (oldestTokens != null && !oldestTokens.isEmpty()) {
+            // 가장 오래된 2개의 토큰 삭제
+            redisTemplate.opsForZSet().remove(ACTIVE_TOKEN_KEY, oldestTokens.toArray());
+        }
+    }
+
+    //test용
+    @Override
+    public void expiredActiveToken(String token) {
+        // 현재 시간보다 이전으로 `score`(만료 시간) 설정하여 즉시 만료 처리
+        long expiredTime = System.currentTimeMillis() - 1000; // 1초 전으로 설정 (즉시 만료)
+
+        // 만료된 시간으로 업데이트
+        redisTemplate.opsForZSet().add(ACTIVE_TOKEN_KEY, token, expiredTime);
     }
 }

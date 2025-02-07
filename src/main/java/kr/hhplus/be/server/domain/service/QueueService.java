@@ -58,4 +58,8 @@ public class QueueService {
             waitingTokens.forEach(queueRepository::saveActiveToken);
         }
     }
+
+    public void removeExpiredTokens() {
+        queueRepository.removeExpiredTokens();
+    }
 }

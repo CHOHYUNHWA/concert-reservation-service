@@ -23,5 +23,11 @@ public interface QueueRepository {
     Queue findToken(String token);
 
     Long getWaitingRank(String token);
+
+    void removeExpiredTokens();
+
+    void removeOldestTwoActiveTokens();
+
+    void expiredActiveToken(String token);
 }
 

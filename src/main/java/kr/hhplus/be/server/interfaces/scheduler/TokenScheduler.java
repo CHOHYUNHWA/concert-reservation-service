@@ -11,6 +11,7 @@ import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Set;
 
 @Component
 @RequiredArgsConstructor
@@ -23,5 +24,10 @@ public class TokenScheduler {
     @Scheduled(fixedDelay = 5000)
     public void updateActiveToken(){
         queueService.updateActiveToken();
+    }
+
+    @Scheduled(fixedRate = 30000)  // 30초마다 실행
+    public void removeExpiredTokensScheduler() {
+        queueService.removeExpiredTokens();
     }
 }
