@@ -23,7 +23,7 @@ public class QueueFacade {
         return queueService.createToken();
     }
 
-    @Cacheable(value = "queueStatus", key = "#tokenString", cacheManager = "redisCacheManager")
+    @Cacheable(value = "queueStatus", key = "#tokenString", cacheManager = "caffeineCacheManager")
     public QueueHttpDto.QueueStatusResponseDto getQueueRemainingCount(String tokenString, Long userId){
         userService.existsUser(userId);
 

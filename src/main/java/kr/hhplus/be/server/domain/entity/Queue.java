@@ -24,8 +24,6 @@ public class Queue {
 
     private QueueStatus status;
 
-
-
     public static Queue createToken(Long activeCount){
         String token = UUID.randomUUID().toString();
 
@@ -35,25 +33,8 @@ public class Queue {
                 .build();
     }
 
-    public void activate(){
-        this.status = QueueStatus.ACTIVE;
-    }
-
-    public void expiredToken(){
-        this.status = QueueStatus.EXPIRED;
-    }
-
     public boolean checkStatus() {
-//        if(this.status.equals(QueueStatus.EXPIRED)) {
-//            throw new CustomException(ErrorType.INVALID_TOKEN, "현재 토큰 상태: " +this.status);
-//        }
         return this.getStatus() == QueueStatus.ACTIVE;
-    }
-
-    public void validateToken(){
-//        if(this.expiredAt == null || this.expiredAt.isBefore(LocalDateTime.now())) {
-//            throw new CustomException(ErrorType.INVALID_TOKEN, "현재 토큰 상태: " +this.status);
-//        }
     }
 
 }
