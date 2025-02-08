@@ -775,12 +775,24 @@ public void removeExpiredTokens() {
 }
 ```
 
-### 5. 순번 계산: RDB -> Redis Sorted Set (zCard)
+### 5. 순번 계산 및 대기열 순번 캐싱: RDB -> Redis Sorted Set (zCard)
 - **변경사항**: DB count() -> Redis Sorted Set (zCard)를 통한 계산 
 - **장점**
   - zCard(WAITING_TOKEN_KEY)는 O(1) 연산으로 활성 토큰 개수를 즉시 조회 가능.
   - 기존 RDB에서는 COUNT(*) 쿼리 실행 필요 (O(N)) → 성능 이점
+  - 대기열을 조회시 10초간 캐싱한다, 유저가 무분별하고 새로고침을 시도하여 대기열을 조회할 경우, 캐싱된 데이터를 10초간 로컬에서 보여주면서 Redis 서버의 부하를 낮출 있음
 ```java
+//QueueFacade
+@Cacheable(value = "queueStatus", key = "#tokenString", cacheManager = "caffeineCacheManager")
+public QueueHttpDto.QueueStatusResponseDto getQueueRemainingCount(String tokenString, Long userId){
+  userService.existsUser(userId);
+
+  Queue findToken = queueService.getToken(tokenString);
+  Long remainingQueueCount  = queueService.getWaitingTokenCount(findToken.getToken());
+
+  return QueueHttpDto.QueueStatusResponseDto.of(findToken.getStatus(), remainingQueueCount);
+}
+
 //QueueRepositoryImpl
 @Override
 public Long getWaitingTokenCount() {
