@@ -34,14 +34,10 @@ public class QueueHttpDto {
     @Builder
     public static class CreatedTokenResponseDto {
         private String token;
-        private LocalDateTime createdAt;
-        private LocalDateTime expiredAt;
 
         public static CreatedTokenResponseDto of(Queue queue) {
             return CreatedTokenResponseDto.builder()
                     .token(queue.getToken())
-                    .createdAt(queue.getCreatedAt())
-                    .expiredAt(queue.getExpiredAt())
                     .build();
         }
     }

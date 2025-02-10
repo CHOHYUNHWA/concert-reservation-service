@@ -1,98 +1,101 @@
 package kr.hhplus.be.server.domain.scheduler;
 
+import kr.hhplus.be.server.application.facade.QueueFacade;
 import kr.hhplus.be.server.domain.entity.Queue;
+import kr.hhplus.be.server.domain.entity.User;
 import kr.hhplus.be.server.domain.repository.QueueRepository;
+import kr.hhplus.be.server.domain.repository.UserRepository;
+import kr.hhplus.be.server.infra.repository.impl.QueueRepositoryImpl;
+import kr.hhplus.be.server.infra.repository.jpa.UserJpaRepository;
+import kr.hhplus.be.server.interfaces.dto.queue.QueueHttpDto;
 import kr.hhplus.be.server.interfaces.scheduler.TokenScheduler;
 import kr.hhplus.be.server.support.type.QueueStatus;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.Mockito;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.SpyBean;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
 
-import java.time.LocalDateTime;
-import java.util.List;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.*;
 
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-
-@ExtendWith(MockitoExtension.class)
+@SpringBootTest
 public class TokenSchedulerTest {
 
-    @InjectMocks
+    private Logger log = LoggerFactory.getLogger(TokenSchedulerTest.class);
+
+    @Autowired
     private TokenScheduler tokenScheduler;
 
-    @Mock
+    @Autowired
+    private QueueFacade queueFacade;
+
+    @Autowired
+    private UserRepository userRepository;
+    @Autowired
+    private UserJpaRepository userJpaRepository;
+    @Autowired
     private QueueRepository queueRepository;
 
+    @Autowired
+    private RedisTemplate<String, String> redisTemplate;
+
     @Test
-    void 만료시간이_지난_토큰들을_일괄_만료_변경(){
+    void 활성토큰이_30개_미만인_경우_WaitingToken이_ActiveToken으로_전환_성공(){
         //given
-        LocalDateTime now = LocalDateTime.now();
-        Queue token1 = Queue.builder()
-                .token("1번토큰")
-                .status(QueueStatus.ACTIVE)
-                .createdAt(now.minusMinutes(5))
-                .enteredAt(now.minusMinutes(5))
-                .expiredAt(now.minusMinutes(5))
+        User user = User
+                .builder()
+                .name("유저")
                 .build();
 
-        Queue token2 = Queue.builder()
-                .token("1번토큰")
-                .status(QueueStatus.ACTIVE)
-                .createdAt(now.minusMinutes(5))
-                .enteredAt(now.minusMinutes(5))
-                .expiredAt(now.minusMinutes(5))
-                .build();
+        User savedUser = userJpaRepository.save(user);
 
-        List<Queue> tokens = List.of(token1, token2);
+        for(long l = 0; l< 30; l++){
+            queueFacade.createToken(savedUser.getId());
+        }
 
-        given(queueRepository.findExpiredTokens(any(LocalDateTime.class), eq(QueueStatus.ACTIVE))).willReturn(tokens);
+        Long prevActiveTokenCount = queueRepository.getActiveTokenCount();
+        log.info("토큰 생성 직후 activeTokenCount: {}", prevActiveTokenCount);
+
+        queueRepository.removeOldestTwoActiveTokens();
+
+        Long nextActiveTokenCount = queueRepository.getActiveTokenCount();
+        log.info("2개 토큰 삭제 직후 activeTokenCount: {}", nextActiveTokenCount);
+        Queue waitingToken = queueFacade.createToken(savedUser.getId());
+        System.out.println("생성된 토큰 상태: " + waitingToken.getStatus());
 
         //when
-        tokenScheduler.expireTokens();
+        tokenScheduler.updateActiveToken();
 
         //then
-        verify(queueRepository, times(1)).findExpiredTokens(any(LocalDateTime.class), eq(QueueStatus.ACTIVE));
-        verify(queueRepository, times(2)).save(argThat(savedToken ->
-                savedToken.getStatus().equals(QueueStatus.EXPIRED)));
-
+        assertThat(waitingToken.getStatus()).isEqualTo(QueueStatus.ACTIVE);
     }
 
-
     @Test
-    void 부족한_ACTIVE_토큰_수_만큼_활성_상태_변경(){
+    void 만료시간이_지난_활성토큰의_경우_Redis에서_삭제_성공(){
         //given
-        LocalDateTime now = LocalDateTime.now();
-
-        Queue token1 = Queue.builder()
-                .token("1번토큰")
-                .status(QueueStatus.ACTIVE)
-                .createdAt(now.minusMinutes(5))
+        User user = User
+                .builder()
+                .name("유저")
                 .build();
 
-        Queue token2 = Queue.builder()
-                .token("1번토큰")
-                .status(QueueStatus.ACTIVE)
-                .createdAt(now.minusMinutes(5))
-                .build();
+        User savedUser = userJpaRepository.save(user);
+        Queue token = queueFacade.createToken(savedUser.getId());
+        Long prevActiveTokenCount = queueRepository.getActiveTokenCount();
+        log.info("토큰 생성 직후 activeTokenCount: {}", prevActiveTokenCount);
 
-        List<Queue> tokens = List.of(token1, token2);
-
-        given(queueRepository.countByStatus(QueueStatus.ACTIVE)).willReturn(28L);
-        given(queueRepository.findWaitingTokens(2L)).willReturn(tokens);
-
+        queueRepository.expiredActiveToken(token.getToken());
 
         //when
-        tokenScheduler.changeActiveTokens();
+        tokenScheduler.removeExpiredTokensScheduler();
+        Long nextActiveTokenCount = queueRepository.getActiveTokenCount();
+        log.info("토큰 스케쥴러 만료처리 직후 activeTokenCount: {}", nextActiveTokenCount);
 
         //then
-        verify(queueRepository, times(1)).countByStatus(QueueStatus.ACTIVE);
-        verify(queueRepository, times(1)).findWaitingTokens(2L); // 필요한 수만큼 조회
-        verify(queueRepository, times(2)).save(argThat(savedToken ->
-                savedToken.getStatus() == QueueStatus.ACTIVE
-        ));
+        assertThat(queueRepository.activeTokenExist(token.getToken())).isFalse();
     }
 }
