@@ -29,11 +29,19 @@ import java.util.concurrent.TimeUnit;
 public class CacheConfig {
 
     private RedisCacheConfiguration redisCacheConfiguration(Duration ttl){
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.registerModule(new JavaTimeModule());
+
+        objectMapper.activateDefaultTyping(
+                objectMapper.getPolymorphicTypeValidator(),
+                ObjectMapper.DefaultTyping.EVERYTHING
+        );
+
         return RedisCacheConfiguration.defaultCacheConfig()
                 .entryTtl(ttl)
                 .disableCachingNullValues()
                 .serializeKeysWith(RedisSerializationContext.SerializationPair.fromSerializer(new StringRedisSerializer()))
-                .serializeValuesWith(RedisSerializationContext.SerializationPair.fromSerializer(new GenericJackson2JsonRedisSerializer(customObjectMapper())));
+                .serializeValuesWith(RedisSerializationContext.SerializationPair.fromSerializer(new GenericJackson2JsonRedisSerializer(objectMapper)));
     }
 
     //Local Cache
@@ -57,17 +65,14 @@ public class CacheConfig {
                 .registerModule(new JavaTimeModule());
     }
 
-    PolymorphicTypeValidator polymorphicTypeValidator = BasicPolymorphicTypeValidator.builder()
-            .allowIfBaseType(Object.class)
-            .build();
-
-
     @Bean(name = "redisCacheManager")
     @Primary
     public RedisCacheManager redisCacheManager(RedisConnectionFactory redisConnectionFactory) {
         return RedisCacheManager.builder(redisConnectionFactory)
                 .cacheDefaults(redisCacheConfiguration(Duration.ofMinutes(5)))
-                .withInitialCacheConfigurations(Map.of("queueStatus", redisCacheConfiguration(Duration.ofSeconds(1))))
+                .withInitialCacheConfigurations(Map.of(
+                        "seatByScheduleId",redisCacheConfiguration(Duration.ofSeconds(5))
+                ))
                 .build();
     }
 }

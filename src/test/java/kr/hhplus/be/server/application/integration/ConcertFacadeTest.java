@@ -7,6 +7,7 @@ import kr.hhplus.be.server.infra.repository.jpa.*;
 import kr.hhplus.be.server.interfaces.dto.concert.*;
 import kr.hhplus.be.server.support.type.ConcertStatus;
 import kr.hhplus.be.server.support.type.SeatStatus;
+import kr.hhplus.be.server.util.CacheCleanUp;
 import kr.hhplus.be.server.util.DatabaseCleanUp;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -33,6 +34,9 @@ public class ConcertFacadeTest {
     private DatabaseCleanUp databaseCleanUp;
 
     @Autowired
+    private CacheCleanUp cacheCleanUp;
+
+    @Autowired
     private ConcertFacade concertFacade;
 
     @Autowired
@@ -51,6 +55,7 @@ public class ConcertFacadeTest {
     void setUp(){
 
         databaseCleanUp.execute();
+        cacheCleanUp.clearAllCaches();
 
         concert = Concert.builder()
                 .title("콘서트")
@@ -117,5 +122,45 @@ public class ConcertFacadeTest {
         for (ConcertHttpDto.SeatDto seat : seats) {
             assertThat(seat.getStatus()).isEqualTo(SeatStatus.AVAILABLE);
         }
+    }
+
+    @Test
+    void 동일한_콘서트_수초내_여러번_조회_시_두번째_응답은_캐싱에서_데이터_조회_성공(){
+        //given`
+
+        doReturn(List.of(concert)).when(concertRepository).findConcertsAll();
+
+        //when
+        List<ConcertHttpDto.AvailableReservationConcertResponse> concerts1 = concertFacade.getConcerts();
+        List<ConcertHttpDto.AvailableReservationConcertResponse> concerts2 = concertFacade.getConcerts();
+
+        //then
+        verify(concertRepository, times(1)).findConcertsAll();
+    }
+
+    @Test
+    void 동일한_콘서트_스케쥴을_수초내_여러번_조회_시_두번째_응답은_캐싱에서_데이터_조회_성공(){
+        //given
+        doReturn(List.of(concertSchedule)).when(concertRepository).findConcertSchedulesAllByConcertId(concert.getId());
+
+        //when
+        ConcertHttpDto.AvailableReservationConcertDateResponse concertSchedules1 = concertFacade.getConcertSchedules(concert.getId());
+        ConcertHttpDto.AvailableReservationConcertDateResponse concertSchedules2 = concertFacade.getConcertSchedules(concert.getId());
+
+        //then
+        verify(concertRepository, times(1)).findConcertSchedulesAllByConcertId(concert.getId());
+    }
+
+    @Test
+    void 동일한_좌석_수초내_여러번_조회_시_두번쪠_응답은_캐싱에서_데이터_조회_성공(){
+        //given
+        doReturn(List.of(seat)).when(concertRepository).findSeatsAllByConcertScheduleId(concertSchedule.getId());
+
+        //when
+        ConcertHttpDto.AvailableReservationConcertSeatResponse concertSeats1 = concertFacade.getConcertSeats(concert.getId(), concertSchedule.getId());
+        ConcertHttpDto.AvailableReservationConcertSeatResponse concertSeats2 = concertFacade.getConcertSeats(concert.getId(), concertSchedule.getId());
+
+        //then
+        verify(concertRepository, times(1)).findSeatsAllByConcertScheduleId(concertSchedule.getId());
     }
 }

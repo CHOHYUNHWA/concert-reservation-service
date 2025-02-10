@@ -16,6 +16,8 @@ import java.util.List;
 public class ConcertHttpDto {
 
     @Data
+    @NoArgsConstructor
+    @AllArgsConstructor
     @Builder
     public static class AvailableReservationConcertDateResponse {
         private Long concertId;
@@ -27,6 +29,8 @@ public class ConcertHttpDto {
     }
 
     @Data
+    @NoArgsConstructor
+    @AllArgsConstructor
     @Builder
     public static class AvailableReservationConcertResponse {
         private Long id;
@@ -45,6 +49,8 @@ public class ConcertHttpDto {
     }
 
     @Data
+    @NoArgsConstructor
+    @AllArgsConstructor
     @Builder
     public static class AvailableReservationConcertSeatResponse {
         private Long concertId;
@@ -63,6 +69,8 @@ public class ConcertHttpDto {
     }
 
     @Data
+    @NoArgsConstructor
+    @AllArgsConstructor
     @Builder
     public static class ScheduleDto {
         private Long scheduleId;
@@ -80,6 +88,8 @@ public class ConcertHttpDto {
     }
 
     @Data
+    @NoArgsConstructor
+    @AllArgsConstructor
     @Builder
     public static class SeatDto {
         private Long seatId;
