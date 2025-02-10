@@ -41,19 +41,6 @@ public class QueueTest {
         assertThat(token.getStatus()).isEqualTo(QueueStatus.WAITING);
     }
 
-    @Test
-    void 토큰_정상_만료(){
-        //given
-        Queue token = Queue.builder()
-                .status(QueueStatus.ACTIVE)
-                .expiredAt(LocalDateTime.now().minusMinutes(5))
-                .build();
-
-        token.expiredToken();
-
-        assertThat(token.getStatus()).isEqualTo(QueueStatus.EXPIRED);
-        assertThat(token.getExpiredAt()).isBeforeOrEqualTo(LocalDateTime.now());
-    }
 
     @Test
     void 토큰_상태_체크_ACTIVE면_TRUE_반환(){
@@ -66,31 +53,6 @@ public class QueueTest {
 
         //then
         assertThat(isActive).isTrue();
-    }
-
-    @Test
-    void 토큰_상태_체크_EXPIRED면_UNAUTHORIZED_에러반환(){
-        //given
-        Queue token = Queue.builder()
-                .status(QueueStatus.EXPIRED)
-                .build();
-        //when //then
-        assertThatThrownBy(token::checkStatus)
-                .isInstanceOf(CustomException.class)
-                .hasMessage(ErrorType.INVALID_TOKEN.getMessage());
-    }
-
-    @Test
-    void 토큰_검증_시_만료시간이_지난_경우_UNAUTHORIZED_에러반환(){
-        //given
-        Queue token = Queue.builder()
-                .expiredAt(LocalDateTime.now().minusMinutes(5))
-                .build();
-
-        //when //then
-        assertThatThrownBy(token::validateToken)
-                .isInstanceOf(CustomException.class)
-                .hasMessage(ErrorType.INVALID_TOKEN.getMessage());
     }
 
 }

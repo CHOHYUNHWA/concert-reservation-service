@@ -41,12 +41,13 @@ dependencies {
 	//redis client redisson 추가
 	implementation("org.redisson:redisson-spring-boot-starter:3.37.0")
 
+	//caffeine 캐시 추가
+	implementation("com.github.ben-manes.caffeine:caffeine:3.1.8")
+
 
 	// Lombok 의존성 추가
 	implementation("org.projectlombok:lombok") // 최신 버전 사용
 	annotationProcessor("org.projectlombok:lombok")
-
-	// 테스트에서 Lombok 사용
 
     // DB
 	runtimeOnly("com.mysql:mysql-connector-j")

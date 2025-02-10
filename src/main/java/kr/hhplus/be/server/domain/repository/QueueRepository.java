@@ -1,22 +1,33 @@
 package kr.hhplus.be.server.domain.repository;
 
-import kr.hhplus.be.server.domain.entity.Queue;
-import kr.hhplus.be.server.support.type.QueueStatus;
 
-import java.time.LocalDateTime;
+import kr.hhplus.be.server.domain.entity.Queue;
+
 import java.util.List;
 
 public interface QueueRepository {
-    Queue findQueue(String token);
+    boolean activeTokenExist(String token);
 
-    Long countByStatus(QueueStatus queueStatus);
+    void removeActiveToken(String token);
 
-    Queue save(Queue token);
+    Long getActiveTokenCount();
 
-    Long findLatestActiveQueueIdByStatus(Long queueId);
+    Long getWaitingTokenCount();
 
-    List<Queue> findExpiredTokens(LocalDateTime now, QueueStatus queueStatus);
+    void saveActiveToken(String token);
 
-    List<Queue> findWaitingTokens(long forChangeTokenCount);
+    void saveWaitingToken(String token);
+
+    List<String> retrieveAndRemoveWaitingToken(long neededTokens);
+
+    Queue findToken(String token);
+
+    Long getWaitingRank(String token);
+
+    void removeExpiredTokens();
+
+    void removeOldestTwoActiveTokens();
+
+    void expiredActiveToken(String token);
 }
 

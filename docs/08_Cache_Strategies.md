@@ -603,4 +603,201 @@ OK
 
 ## Redis를 이용한 콘서트 대기열 기능 개선
 
+### AS-IS
+
+**이전의 대기열은 RDB(MySql)을 데이터베이스로 사용하여 대기열 시스템을 관리**
+
+1. 대기열 토큰 생성
+   1. 사용자가 대기열 토큰생성을 요청
+   2. RDB에서 활성 토큰의 개수를 조회하여 30개 미만의 경우 활성토큰 발급, 이상의 경우 대기토큰 발급
+2. 대기열 토큰 정보 조회
+   1. 사용자가 대기열 정보 조회 요청
+   2. RDB에서 토큰 정보를 조회하고 반환
+      - 만료상태의 토큰일 경우 에러 반환
+      - 대기상태의 토큰일 경우 대기자 수를 조회 후 반환
+3. 대기열 토큰 -> 활성화 토큰 전환(스케쥴러)
+   1. 스케쥴러가 RDB에서 활성 상태의 토큰 수 조회
+   2. 활성 상태 토큰이 30개 미만인 경우, 필요 수 만큼 대기 중인 토큰을 RDB에서 조회
+   3. 대기열 토큰을 활성 상태로 변경
+4. 만료 토큰 처리(스케쥴러)
+   1. 스케쥴러가 RDB에서 주기적으로 만료된 토큰을 조회 후 만료 상태 변경
+5. 결제 완료
+   1. 결제완료 시 요청 시 받은 활성 토큰의 상태를 만료
+
+
+### TO-BE(Look Aside - Write Around 전략)
+
+### 기본적으로 대기열 토큰 저장소가 RDB -> Redis로 변경
+- 대기열을 조회하는 메서드를 5초간 로컬캐싱하고 로컬캐시 Cache Miss시 Redis를 조회후 캐시 저장(Look Aside 전략)
+- 활성상태 변경 시 Redis에 직접 쓰기가 실행되고, 조회는 캐싱이 만료되어 다시 Redis를 조회했을때 읽어올 수 있음(Write Around 전략)
+
+### 1. 대기열 관리: RDB -> Redis Sorted Set
+- **변경 사항**: Sorted Set을 활용하여, 대기열 토큰이 발급된 시간을 수치화(score)하여, score에 따라 순차적으로 데이터를 저장
+- **장점**
+  - Sorted Set은 데이터의 score에 따라 순서대로 저장되므로, 대기 상태의 토큰 순번을 계산하는데 용이
+  - Redis는 메모리 기반 데이터베이스로 빠른 읽기/쓰기를 제공하여, 대기열 관련 작업 성능 향상
+
+```java
+//QueueRepositoryImpl
+@Override
+public void saveWaitingToken(String token) {
+    redisTemplate.opsForZSet().add(WAITING_TOKEN_KEY, token, System.currentTimeMillis());
+}
+
+@Override
+public List<String> retrieveAndRemoveWaitingToken(long count) {
+
+    //Sorted Set으로 이미 정렬되어 저장되기 때문에 다음 순번으로 활성시킬 토큰 조회가 빠름
+    Set<String> tokens = redisTemplate.opsForZSet().range(WAITING_TOKEN_KEY, 0, count - 1);
+    if(tokens != null && !tokens.isEmpty()) {
+        redisTemplate.opsForZSet().remove(WAITING_TOKEN_KEY, tokens.toArray());
+        return tokens.stream().toList();
+    }
+    return List.of();
+}
+
+```
+
+### 2. 활성 토큰 관리: RDB -> Redis Sorted Set
+- **변경 사항**: 기존 RDB에서 관리하던 활성 토큰을 Redis ZSET(Sorted Set) 으로 변경하고 각 토큰의 만료 시간을 score값으로 저장하여 TTL을 관리
+- **장점**
+  - Redis는 메모리 기반 데이터베이스로 빠른 읽기/쓰기를 제공하여, 대기열 관련 작업 성능 향상
+  - ZSet의 score을 이용하여, 개별 만료 시간 설정으로 관리에 용이
+  - 활성 토큰을 Redis에서 실시간으로 변경할 수 있어 RDB에서 미 필요
+
+```java
+//QueueRepositoryImpl
+//토큰을 저장할때 ZSet에 TTL Score를 저장
+@Override
+public void saveActiveToken(String token) {
+    long expireAt = System.currentTimeMillis() + TOKEN_TTL.toMillis(); // 현재 시간 + TTL(10분)
+    redisTemplate.opsForZSet().add(ACTIVE_TOKEN_KEY, token, expireAt);
+}
+
+//토큰 검증 시 score로 설정된 TTL을 검증
+@Override
+public boolean activeTokenExist(String token) {
+    Double expireAt = redisTemplate.opsForZSet().score(ACTIVE_TOKEN_KEY, token);
+    return expireAt != null && expireAt > System.currentTimeMillis(); // 현재 시간과 비교
+}
+
+//스케쥴러에서 사용되는 메서드로 TTL 이 지난 토큰 제거
+@Override
+public void removeExpiredTokens() {
+    long now = System.currentTimeMillis();
+  
+    Set<String> expiredTokens = redisTemplate.opsForZSet().rangeByScore(ACTIVE_TOKEN_KEY, 0, now);
+  
+    if (expiredTokens != null && !expiredTokens.isEmpty()) {
+      redisTemplate.opsForZSet().remove(ACTIVE_TOKEN_KEY, expiredTokens.toArray());
+    }
+}
+```
+
+### 3. 카운터 관리: RDB -> 활성 토큰 추적 시 Redis Sorted Set(zCard)
+- **변경사항**: 기존 RDB에서 활성 토큰 개수를 관리하던 방식을 Redis ZSET(ZCARD)를 활용하여 관리
+- **장점**
+  - zCard(ACTIVE_TOKEN_KEY)는 O(1) 연산으로 활성 토큰 개수를 즉시 조회 가능.
+  - 기존 RDB에서는 COUNT(*) 쿼리 실행 필요 (O(N)) → 성능 이점
+```java
+//QueueRepositoryImpl
+@Override
+public Long getActiveTokenCount() {
+    return redisTemplate.opsForZSet().zCard(ACTIVE_TOKEN_KEY);
+}
+```
+
+### 4. 만료 토큰 처리(스케쥴러)
+- **변경사항**: RDB -> Redis Database로 관리
+- **장점**
+  - SET을 rangeByScore 활용하여 빠르게 조회 후만료된 항목 제거 (O(log N))
+  - RDB 부하 감소
+
+```java
+//TokenScheduler
+public class TokenScheduler {
+
+    private final QueueService queueService;
+  
+    //5초 마다 갱신
+    @Scheduled(fixedDelay = 5000)
+    public void updateActiveToken(){
+      queueService.updateActiveToken(); 
+    }
+    
+    @Scheduled(fixedRate = 30000)  // 30초마다 실행
+    public void removeExpiredTokensScheduler() {
+      queueService.removeExpiredTokens();   
+    }
+}
+
+//QueueService
+public void updateActiveToken(){
+    long activeCount = queueRepository.getActiveTokenCount();
+    if(activeCount < MAX_ACTIVE_TOKENS){
+        long neededTokens = MAX_ACTIVE_TOKENS - activeCount;
+        List<String> waitingTokens = queueRepository.retrieveAndRemoveWaitingToken(neededTokens);
+        waitingTokens.forEach(queueRepository::saveActiveToken);
+    }
+}
+
+public void removeExpiredTokens() {
+    queueRepository.removeExpiredTokens();
+}
+
+//QueueRepositoryImpl
+@Override
+public void saveActiveToken(String token) {
+    long expireAt = System.currentTimeMillis() + TOKEN_TTL.toMillis(); // 현재 시간 + TTL(10분)
+    redisTemplate.opsForZSet().add(ACTIVE_TOKEN_KEY, token, expireAt);
+}
+
+@Override
+public List<String> retrieveAndRemoveWaitingToken(long count) {
+
+    Set<String> tokens = redisTemplate.opsForZSet().range(WAITING_TOKEN_KEY, 0, count - 1);
+    if(tokens != null && !tokens.isEmpty()) {
+        redisTemplate.opsForZSet().remove(WAITING_TOKEN_KEY, tokens.toArray());
+        return tokens.stream().toList();
+    }
+    return List.of();
+}
+
+@Override
+public void removeExpiredTokens() {
+    long now = System.currentTimeMillis();
+  
+    Set<String> expiredTokens = redisTemplate.opsForZSet().rangeByScore(ACTIVE_TOKEN_KEY, 0, now);
+  
+    if (expiredTokens != null && !expiredTokens.isEmpty()) {
+        redisTemplate.opsForZSet().remove(ACTIVE_TOKEN_KEY, expiredTokens.toArray());
+    }
+}
+```
+
+### 5. 순번 계산 및 대기열 순번 캐싱: RDB -> Redis Sorted Set (zCard)
+- **변경사항**: DB count() -> Redis Sorted Set (zCard)를 통한 계산 
+- **장점**
+  - zCard(WAITING_TOKEN_KEY)는 O(1) 연산으로 활성 토큰 개수를 즉시 조회 가능.
+  - 기존 RDB에서는 COUNT(*) 쿼리 실행 필요 (O(N)) → 성능 이점
+  - 대기열을 조회시 10초간 캐싱한다, 유저가 무분별하고 새로고침을 시도하여 대기열을 조회할 경우, 캐싱된 데이터를 5초간 로컬캐시 스토리지에서 꺼내와 보여주면서 Redis 서버의 부하를 낮출 있음
+```java
+//QueueFacade
+@Cacheable(value = "queueStatus", key = "#tokenString", cacheManager = "caffeineCacheManager")
+public QueueHttpDto.QueueStatusResponseDto getQueueRemainingCount(String tokenString, Long userId){
+  userService.existsUser(userId);
+
+  Queue findToken = queueService.getToken(tokenString);
+  Long remainingQueueCount  = queueService.getWaitingTokenCount(findToken.getToken());
+
+  return QueueHttpDto.QueueStatusResponseDto.of(findToken.getStatus(), remainingQueueCount);
+}
+
+//QueueRepositoryImpl
+@Override
+public Long getWaitingTokenCount() {
+    return redisTemplate.opsForZSet().zCard(WAITING_TOKEN_KEY);
+}
+```
+
 ---
