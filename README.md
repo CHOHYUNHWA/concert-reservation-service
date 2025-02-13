@@ -23,5 +23,6 @@ docker-compose up -d
 ### [6. Swagger_UI.md](docs/06_Swagger_UI.md)
 ### [7. Concurrent_Control_Report.md](docs/07_Concurrent_Control_Report.md)
 ### [8. Cache Strategies.md](docs/08_Cache_Strategies.md)
+### [9. Database Indexing.md](docs/09_Database_Indexing.md)
 
 ---
