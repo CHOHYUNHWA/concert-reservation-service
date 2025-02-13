@@ -506,16 +506,16 @@ public class 엔티티{
 > 테스트 데이터로, 예약과 결제 및 좌석의 정합성이 일치하지 않을 수 있습니다.
 > - 콘서트: 50개
     >   - OPEN: 10개
-    >   - CLOSED: 40개
+>   - CLOSED: 40개
 > - 콘서트 일정: 1,000개
     >   - OPEN 콘서트 일정 : 200개
-    >   - CLOSED 콘서트 일정 : 800개
+>   - CLOSED 콘서트 일정 : 800개
 > - 좌석: 총 200,000개
     >   - AVAILABLE 좌석: 40,000개
-    >   - UN_AVAILABLE 좌석: 160,000개
+>   - UN_AVAILABLE 좌석: 160,000개
 > - 예약: 총 200,000개
     >   - EXPIRED 예약: 20,000개
-    >   - PAYMENT_COMPLETED 예약: 180,000개
+>   - PAYMENT_COMPLETED 예약: 180,000개
 > - 결제: 총 160,000개
     >   - COMPLETED 결제: 160,000개
 
@@ -523,9 +523,9 @@ public class 엔티티{
 
 1. **콘서트**
 - 콘서트 조회: `GET` `/api/concerts/`
-    - 실행 빈도: 매우높음
-    - 수행 복잡도: 낮음
-    - 실행 쿼리
+  - 실행 빈도: 매우높음
+  - 수행 복잡도: 낮음
+  - 실행 쿼리
 ```sql
 -- 콘서트 정보 조회
 select
@@ -538,9 +538,9 @@ from
 ```
 
 - 예약가능 콘서트스케쥴 조회: `GET` `/api/concerts/{concertId}/schedules`
-    - 실행 빈도: 매우높음
-    - 수행 복잡도: 보통
-    - 실행 쿼리
+  - 실행 빈도: 매우높음
+  - 수행 복잡도: 보통
+  - 실행 쿼리
 ```sql
 -- 콘서트 정보 조회
 select
@@ -563,9 +563,9 @@ where concert_id=? and
 ```
 
 - 예약가능 콘서트좌석 조회: `GET` `/api/concerts/{concertId}/schedules/{concertScheduleId}/seats`
-    - 실행 빈도: 매우높음
-    - 수행 복잡도: 높음
-    - 실행 쿼리
+  - 실행 빈도: 매우높음
+  - 수행 복잡도: 높음
+  - 실행 쿼리
 ```sql
 
 -- 콘서트 정보 조회
@@ -598,9 +598,9 @@ where concert_schedule_id = ? and status = ?
 ```
 2. **예약**
 - 콘서트 예약: `POST` `/api/reservations`
-    - 실행 빈도: 높음
-    - 수행 복잡도: 높음
-    - 실행 쿼리
+  - 실행 빈도: 높음
+  - 수행 복잡도: 높음
+  - 실행 쿼리
 ```sql
 -- 콘서트 정보 조회
 SELECT
@@ -654,9 +654,9 @@ WHERE id = ?
 ```
 3. **결제**
 - 콘서트 결제: `POST` `/api/payments/`
-    - 실행 빈도: 높음
-    - 수행 복잡도: 높음
-    - 실행 쿼리
+  - 실행 빈도: 높음
+  - 수행 복잡도: 높음
+  - 실행 쿼리
 ```sql
 -- 예약 정보 조회
 SELECT
@@ -721,9 +721,9 @@ WHERE id = ?
 
 4. **포인트**
 - 포인트 충전: `POST` `/api/users/{userId}/point`
-    - 실행 빈도: 보통
-    - 수행 복잡도: 낮음
-    - 실행 쿼리
+  - 실행 빈도: 보통
+  - 수행 복잡도: 낮음
+  - 실행 쿼리
 ```sql
 -- 사용자 존재 여부 확인
 SELECT COUNT(*)
@@ -749,9 +749,9 @@ SET
 WHERE id = ?
 ```
 - 포인트 조회: `GET` `/api/users/{userId}/point`
-    - 실행 빈도: 보통
-    - 수행 복잡도: 낮음
-    - 실행 쿼리
+  - 실행 빈도: 보통
+  - 수행 복잡도: 낮음
+  - 실행 쿼리
 ```sql
 -- 사용자 포인트 정보 조회
 SELECT
@@ -771,37 +771,37 @@ WHERE user_id = ?;
 - 콘서트 특성상 데이터 생성 빈도가 매우 낮아, 인덱스를 고려할 만큼의 상황은 나타나지 않을 가능성이 높다.
 - 제목 및 오픈 상태로 검색할 수 있는 경우를 대비한다면 title(제목) 또는 status(상태)의 단일 인덱스를 고려해볼 수 있다.
 - 사용되는 조건
-    - `where id = ?`
+  - `where id = ?`
 #### ConcertSchedule
 - 일정 검색의 경우, concert_id와 시간 범위의 조합을 통하여 매우 잦은 조회가 발생한다.
 - 사용되는 조건
-    - `where concert_id = ?`
-        - FK키 인덱싱 - `concert_id`
-    - `where concert_id=? and available_reservation_time < ? and concert_time > ?`
-        - 현재 시나리오에서는 콘서트의 데이터 범위가 1~50건으로, 매우 낮기 때문에 복합 인덱스를 설정할 떄
-        - `index(available_reservation_time , concert_time, concert_id)` 보단(Look-up)
-        - `index(concert_id, available_reservation_time , concert_time)` 가(Range Scan + Look-Up) 효율적이다.
+  - `where concert_id = ?`
+    - FK키 인덱싱 - `concert_id`
+  - `where concert_id=? and available_reservation_time < ? and concert_time > ?`
+    - 현재 시나리오에서는 콘서트의 데이터 범위가 1~50건으로, 매우 낮기 때문에 복합 인덱스를 설정할 떄
+    - `index(available_reservation_time , concert_time, concert_id)` 보단(Look-up)
+    - `index(concert_id, available_reservation_time , concert_time)` 가(Range Scan + Look-Up) 효율적이다.
 #### Seat
 - 사용되는 조건
-    - `WHERE id = ?`
-        - PK 조회임으로 인덱스 불필요
-    - `where concert_schedule_id = ? and status = ?`
-        - 현재, 데이터 시나리오 상 콘서트 스케쥴의 경우
-            - `index(status, concert_schedule_id, status)` 보단(Look-up)
-            - `index(concert_schedule_id, status)` 가(Range Scan + Look-Up) 효율적이다.
+  - `WHERE id = ?`
+    - PK 조회임으로 인덱스 불필요
+  - `where concert_schedule_id = ? and status = ?`
+    - 현재, 데이터 시나리오 상 콘서트 스케쥴의 경우
+      - `index(status, concert_schedule_id, status)` 보단(Look-up)
+      - `index(concert_schedule_id, status)` 가(Range Scan + Look-Up) 효율적이다.
 #### Point
 - 단순 user_id로 조회 쿼리만 존재
 - 사용되는 조건
-    - `where user_id = ?`
-        - FK키 인덱싱 - `user_id`
+  - `where user_id = ?`
+    - FK키 인덱싱 - `user_id`
 #### Reservation
 - 단순 PK 조회 쿼리만 존재함으로 별도 인덱싱 불 필요
 - 사용되는 조건
-    - `where id = ?`
+  - `where id = ?`
 #### Payment
 - 조회 쿼리 없음
 - 사용되는 조건
-    - 조회 쿼리 없음
+  - 조회 쿼리 없음
 
 ### 인덱스 성능 테스트
 
@@ -894,8 +894,8 @@ where concert_id= ? and
 
 **분석**
 - 예약 가능 콘서트 스케쥴을 조회하는 쿼리의 경우
-    - 복합 인덱스의 경우 where 조건의 순서가 중요하기 때문에, `concert_id, concert_time` 는 제대로 작동하지 않음
-    - 인덱스(`concert_id, available_reservation_time`) 와 인덱스(`concert_id, available_reservation_time, concert_time`)의 경우
-        - 인덱스(`concert_id, available_reservation_time`)가 더 나은 성능을 발휘 했다.
-        - 이유는, concert_id에서 필터링 된 결과 조건이 20개인 것과 available_reservation_time의 경우, 서비스 정책상 concert_time 보다 항상 2일 빠르기 때문에 별도의 정렬이 의미가 없기 때문
-            - 단, 여기서 concert_id의 결과가 20개가 아닌 수백개에 달하는 경우 인덱스(`concert_id, available_reservation_time, concert_time`)는 `concert_schedule`의 모든 필드 데이터를 다 가지고 있기때문에 `Covering Index`로 동작함으로 내부 데이터 적재 유형에 따라서 더 높은 성능을 나타낼 수도 있다.
+  - 복합 인덱스의 경우 where 조건의 순서가 중요하기 때문에, `concert_id, concert_time` 는 제대로 작동하지 않음
+  - 인덱스(`concert_id, available_reservation_time`) 와 인덱스(`concert_id, available_reservation_time, concert_time`)의 경우
+    - 인덱스(`concert_id, available_reservation_time`)가 더 나은 성능을 발휘 했다.
+    - 이유는, concert_id에서 필터링 된 결과 조건이 20개인 것과 available_reservation_time의 경우, 서비스 정책상 concert_time 보다 항상 2일 빠르기 때문에 별도의 정렬이 의미가 없기 때문
+      - 단, 여기서 concert_id의 결과가 20개가 아닌 수백개에 달하는 경우 인덱스(`concert_id, available_reservation_time, concert_time`)는 `concert_schedule`의 모든 필드 데이터를 다 가지고 있기때문에 `Covering Index`로 동작함으로 내부 데이터 적재 유형에 따라서 더 높은 성능을 나타낼 수도 있다.
