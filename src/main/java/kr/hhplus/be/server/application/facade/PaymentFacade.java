@@ -1,7 +1,9 @@
 package kr.hhplus.be.server.application.facade;
 
 import jakarta.transaction.Transactional;
+import kr.hhplus.be.server.application.event.payment.PaymentEventPublisher;
 import kr.hhplus.be.server.domain.entity.*;
+import kr.hhplus.be.server.domain.event.PaymentSuccessEvent;
 import kr.hhplus.be.server.domain.service.*;
 import kr.hhplus.be.server.interfaces.dto.payment.PaymentHttpDto;
 import kr.hhplus.be.server.support.aop.RedisDistributedLock;
@@ -19,6 +21,7 @@ public class PaymentFacade {
     private final PaymentService paymentService;
     private final ConcertService concertService;
     private final PointService pointService;
+    private final PaymentEventPublisher paymentEventPublisher;
 
     @Transactional
     public PaymentHttpDto.PaymentCompletedResponse paymentWithPessimisticLock(String token, Long reservationId, Long userId) {
@@ -32,6 +35,13 @@ public class PaymentFacade {
         queueService.expireToken(queue);
 
         Payment completedPayment = paymentService.createPayment(reservationId, userId, seat.getSeatPrice());
+
+        PaymentSuccessEvent successEvent = PaymentSuccessEvent.builder()
+                .reservationId(completedPayment.getReservationId())
+                .amount(completedPayment.getAmount())
+                .build();
+
+        paymentEventPublisher.send(successEvent);
 
         return PaymentHttpDto.PaymentCompletedResponse.of(completedPayment.getId(), completedPayment.getAmount(), completedPayment.getPaymentStatus());
     }
