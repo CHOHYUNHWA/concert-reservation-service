@@ -1,9 +1,9 @@
 package kr.hhplus.be.server.application.facade;
 
 import jakarta.transaction.Transactional;
-import kr.hhplus.be.server.application.event.payment.PaymentEventPublisher;
+import kr.hhplus.be.server.domain.event.payment.PaymentEventPublisher;
 import kr.hhplus.be.server.domain.entity.*;
-import kr.hhplus.be.server.domain.event.PaymentSuccessEvent;
+import kr.hhplus.be.server.domain.event.payment.PaymentSuccessEvent;
 import kr.hhplus.be.server.domain.service.*;
 import kr.hhplus.be.server.interfaces.dto.payment.PaymentHttpDto;
 import kr.hhplus.be.server.support.aop.RedisDistributedLock;

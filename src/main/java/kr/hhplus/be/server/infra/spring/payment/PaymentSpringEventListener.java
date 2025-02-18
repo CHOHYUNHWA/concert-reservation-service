@@ -1,8 +1,7 @@
-package kr.hhplus.be.server.application.event.payment.spring;
+package kr.hhplus.be.server.infra.spring.payment;
 
-import kr.hhplus.be.server.application.event.payment.PaymentEventListener;
-import kr.hhplus.be.server.domain.entity.Payment;
-import kr.hhplus.be.server.domain.event.PaymentSuccessEvent;
+import kr.hhplus.be.server.domain.event.payment.PaymentEventListener;
+import kr.hhplus.be.server.domain.event.payment.PaymentSuccessEvent;
 import kr.hhplus.be.server.infra.dataPlatform.DataPlatformSender;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

@@ -1,6 +1,5 @@
-package kr.hhplus.be.server.domain.event;
+package kr.hhplus.be.server.domain.event.payment;
 
-import kr.hhplus.be.server.support.type.PaymentStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
