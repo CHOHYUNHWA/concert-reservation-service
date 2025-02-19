@@ -40,7 +40,9 @@ spring:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.apache.kafka.common.serialization.StringDeserializer
 
-event.payment.topic: concert-payment
+event:
+  payment:
+    topic: concert-payment
 
 ---
 spring.config.activate.on-profile: local, test
