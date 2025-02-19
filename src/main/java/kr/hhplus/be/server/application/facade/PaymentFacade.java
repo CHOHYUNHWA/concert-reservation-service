@@ -36,12 +36,7 @@ public class PaymentFacade {
 
         Payment completedPayment = paymentService.createPayment(reservationId, userId, seat.getSeatPrice());
 
-        PaymentSuccessEvent successEvent = PaymentSuccessEvent.builder()
-                .reservationId(completedPayment.getReservationId())
-                .amount(completedPayment.getAmount())
-                .build();
-
-        paymentEventPublisher.send(successEvent);
+        paymentEventPublisher.send(PaymentSuccessEvent.of(completedPayment));
 
         return PaymentHttpDto.PaymentCompletedResponse.of(completedPayment.getId(), completedPayment.getAmount(), completedPayment.getPaymentStatus());
     }
