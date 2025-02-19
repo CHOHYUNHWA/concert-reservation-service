@@ -1,7 +1,7 @@
 package kr.hhplus.be.server.domain.entity;
 
 import jakarta.persistence.*;
-import kr.hhplus.be.server.domain.event.OutBoxEvent;
+import kr.hhplus.be.server.domain.event.OutboxEvent;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -9,7 +9,8 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
-@Entity(name = "outbox")
+@Entity
+@Table(name = "outbox")
 @Getter
 @Builder
 @NoArgsConstructor
@@ -45,7 +46,7 @@ public class Outbox {
     @Column(nullable = false)
     private String uuid;
 
-    public static Outbox from(OutBoxEvent event) {
+    public static Outbox from(OutboxEvent event) {
         return Outbox.builder()
                 .id(event.getId())
                 .topic(event.getTopic())
@@ -55,6 +56,19 @@ public class Outbox {
                 .status(event.getStatus())
                 .createdAt(event.getCreatedAt())
                 .uuid(event.getUuid())
+                .build();
+    }
+
+    public OutboxEvent of() {
+        return OutboxEvent.builder()
+                .id(this.id)
+                .topic(this.topic)
+                .key(this.eventKey)
+                .payload(this.payload)
+                .type(this.type)
+                .status(this.type)
+                .createdAt(this.createdAt)
+                .uuid(this.uuid)
                 .build();
     }
 }

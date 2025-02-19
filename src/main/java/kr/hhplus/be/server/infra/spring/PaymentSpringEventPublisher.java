@@ -1,4 +1,4 @@
-package kr.hhplus.be.server.infra.spring.payment;
+package kr.hhplus.be.server.infra.spring;
 
 import kr.hhplus.be.server.domain.event.payment.PaymentEventPublisher;
 import kr.hhplus.be.server.domain.event.payment.PaymentSuccessEvent;
