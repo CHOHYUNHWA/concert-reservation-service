@@ -24,14 +24,6 @@ public class PaymentMessageConsumer implements KafkaMessageConsumer{
     private final ObjectMapper objectMapper;
     private final AtomicReference<PaymentMessagePayload> lastReceivedMessage = new AtomicReference<>(); // ✅ 마지막 메시지 저장 변수
 
-//    private String receivedMessage;
-
-//    @KafkaListener(topics = "test-topic", groupId = "test-group")
-//    public void consume(String message){
-//        log.info("Received message: {}", message);
-//        this.receivedMessage = message;
-//    }
-
     @Override
     @KafkaListener(topics = "concert-payment", groupId = "concert")
     public void handle(Message<String> message, Acknowledgment acknowledgment) {
@@ -45,6 +37,7 @@ public class PaymentMessageConsumer implements KafkaMessageConsumer{
 
             if("COMPLETED".equals(paymentType)){
                 log.info("✅ 결제 완료 메시지 처리: {}", paymentMessagePayload);
+
                 //결제 완료 시
             } else if("CANCELLED".equals(paymentType)){
                 log.info("❌ 결제 취소 메시지 처리: {}", paymentMessagePayload);

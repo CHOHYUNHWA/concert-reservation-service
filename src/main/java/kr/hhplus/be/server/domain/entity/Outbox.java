@@ -1,7 +1,7 @@
 package kr.hhplus.be.server.domain.entity;
 
 import jakarta.persistence.*;
-import kr.hhplus.be.server.domain.event.OutboxEvent;
+import kr.hhplus.be.server.domain.event.outbox.OutboxEvent;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;

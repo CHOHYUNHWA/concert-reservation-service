@@ -5,8 +5,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import kr.hhplus.be.server.domain.dto.PaymentEventCommand;
-import kr.hhplus.be.server.domain.entity.Outbox;
-import kr.hhplus.be.server.domain.event.OutboxEvent;
+import kr.hhplus.be.server.domain.event.outbox.OutboxEvent;
 
 import kr.hhplus.be.server.support.type.OutboxStatus;
 import kr.hhplus.be.server.support.type.PaymentStatus;

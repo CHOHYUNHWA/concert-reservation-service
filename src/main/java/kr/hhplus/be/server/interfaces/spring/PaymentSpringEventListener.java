@@ -19,19 +19,13 @@ import org.springframework.transaction.event.TransactionalEventListener;
 public class PaymentSpringEventListener implements PaymentEventListener {
 
     private final DataPlatformSender dataPlatformSender;
-    private final OutboxRepository outboxRepository;
     private final KafkaMessageProducer kafkaMessageProducer;
 
 
-    @TransactionalEventListener(phase = TransactionPhase.BEFORE_COMMIT)
-    public void paymentInitHandler(PaymentEvent event) {
-        log.info("paymentInitHandler: {}", event);
-        outboxRepository.save(event);
-    }
-
+    @Override
     @Async
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
-    public void sendMessageHandler(PaymentEvent event){
+    public void sendMessageHandler(PaymentEvent event) {
         kafkaMessageProducer.send(event);
         log.info("Send event to Kafka: topic={}, key={}, payload={}", event.getTopic(), event.getKey(), event.getPayload());
     }

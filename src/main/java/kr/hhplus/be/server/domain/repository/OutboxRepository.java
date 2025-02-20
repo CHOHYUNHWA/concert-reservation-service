@@ -1,7 +1,7 @@
 package kr.hhplus.be.server.domain.repository;
 
 import kr.hhplus.be.server.domain.entity.Outbox;
-import kr.hhplus.be.server.domain.event.OutboxEvent;
+import kr.hhplus.be.server.domain.event.outbox.OutboxEvent;
 
 import java.util.List;
 

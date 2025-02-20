@@ -1,4 +1,4 @@
-package kr.hhplus.be.server.domain.event;
+package kr.hhplus.be.server.domain.event.outbox;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
