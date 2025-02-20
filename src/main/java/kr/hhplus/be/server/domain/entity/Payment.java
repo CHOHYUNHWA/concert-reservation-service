@@ -35,6 +35,7 @@ public class Payment {
     private Long reservationId;
 
     @Column(name = "PAYMENT_STATUS", nullable = false)
+    @Enumerated(EnumType.STRING)
     private PaymentStatus paymentStatus;
 
     public static Payment create(Long reservationId, Long userId, Long amount){
