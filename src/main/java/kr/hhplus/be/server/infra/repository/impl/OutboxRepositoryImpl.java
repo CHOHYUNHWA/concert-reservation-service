@@ -4,6 +4,8 @@ import kr.hhplus.be.server.domain.entity.Outbox;
 import kr.hhplus.be.server.domain.event.outbox.OutboxEvent;
 import kr.hhplus.be.server.domain.repository.OutboxRepository;
 import kr.hhplus.be.server.infra.repository.jpa.OutboxJpaRepository;
+import kr.hhplus.be.server.support.exception.CustomException;
+import kr.hhplus.be.server.support.exception.ErrorType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
@@ -22,6 +24,11 @@ public class OutboxRepositoryImpl implements OutboxRepository {
     @Override
     public List<Outbox> findByStatusNot(String outboxStatus) {
         return outboxJpaRepository.findByStatusNot(outboxStatus);
+    }
+
+    @Override
+    public Outbox findByUuid(String uuid) {
+        return outboxJpaRepository.findByUuid(uuid).orElseThrow(() -> new CustomException(ErrorType.RESOURCE_NOT_FOUND, "uuid: " + uuid));
     }
 
 }

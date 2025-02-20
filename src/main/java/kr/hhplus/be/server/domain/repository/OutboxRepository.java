@@ -10,4 +10,6 @@ public interface OutboxRepository {
     Outbox save(OutboxEvent outBoxEvent);
 
     List<Outbox> findByStatusNot(String outboxStatus);
+
+    Outbox findByUuid(String uuid);
 }
