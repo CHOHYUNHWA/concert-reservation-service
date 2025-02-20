@@ -25,5 +25,6 @@ docker-compose up -d
 ### [8. Cache Strategies.md](docs/08_Cache_Strategies.md)
 ### [9. Database Indexing.md](docs/09_Database_Indexing.md)
 ### [10. Distributed_Transaction.md](docs/10_Distributed_transaction.md)
+### [11. Kafka Setup And Practice Report.md](docs/11_Kafka_Setup_And_Practice_Report.md)
 
 ---
