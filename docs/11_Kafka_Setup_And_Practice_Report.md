@@ -1,5 +1,6 @@
 # 카프카 설정 및 실습 보고서
 
+<br/>
 
 ## 카프카 설정
 
@@ -117,6 +118,8 @@ services:
       kafka-topics --create --if-not-exists --bootstrap-server broker:29092 --partitions 2 --replication-factor 1 --topic concert-payment'"
 ```
 
+<br/>
+
   
 ## 통합테스트 연결 확인 및 결과
 ```text
@@ -226,6 +229,8 @@ services:
 // Kafka Consumer의 Metrics 모니터링이 종료됨.
 2025-02-20T04:12:00.097Z  INFO 16586 --- [hhplus] [ntainer#0-0-C-1] o.apache.kafka.common.metrics.Metrics    : Metrics scheduler closed
 ```
+
+<br/>
 
 - 메시지 Publish(Producer) 성공 로그
 ```java
