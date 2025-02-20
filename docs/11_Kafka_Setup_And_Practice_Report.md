@@ -298,3 +298,20 @@ services:
 2025-02-20T04:11:59.594Z  INFO 16586 --- [hhplus] [ntainer#0-0-C-1] k.h.b.s.i.kafka.PaymentMessageConsumer   : ✅ 결제 완료 메시지 처리: PaymentMessagePayload(id=1, reservationId=1, userId=1, amount=100, paymentAt=2025-02-20T04:11:56.098)
 ```
 
+
+## 카프카와 아웃박스 패턴을 이용한 설계도 및 헷갈렸던 부분
+
+### 설계도
+![Outbox_Pattern.jpg](img/kafka/Outbox_Pattern.jpg)
+
+### 헷갈렸던 부분
+- Outbox 패턴에서는 두가지 @TransactionEventListener 가 존재한다.
+  - BEFORE_COMMIT
+    - 결제 데이터 로직 수행 커밋 이전에 아웃박스 데이터 INIT 상태로 함께 INSERT 한다. 
+  - AFTER_COMMIT
+    - 결제 데이터 + 아웃박스 데이터가 커밋 처리되면, 해당 이벤트 리스터에서는 카프카 메시지를 생성하고 KafkaProducer 로 넘긴다.
+- 결제 서버에서는 셀프 컨슈밍을 통한 메시지 발행의 무결성을 보장한다.
+  - 아웃 박스는 해당 서버의 컨슈머 만이 메시지 발행의 무결성을 위해 조회하며, 타 서버 컨슈머는 접근하지 않는다.
+  - 셀프 컨슈밍과 함께 저장된 Outbox 데이터를 PROCESSED 로 UPDATE 하여, 메시지가 제대로 발행되었음을 알 수 있다.
+- 메시지 소비에 대한 무결성 보장을 위해선 InBox Pattern 을 고려해볼 수 있다.
+  - 해당 키워드만 접목하고, 세부 내용에 대해선 아직 모름
