@@ -44,6 +44,12 @@ event:
   payment:
     topic: concert-payment
 
+management:
+  endpoints:
+    web:
+      exposure:
+        include: prometheus
+
 ---
 spring.config.activate.on-profile: local, test
 

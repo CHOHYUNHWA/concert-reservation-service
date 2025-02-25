@@ -59,6 +59,10 @@ dependencies {
 	testImplementation("org.springframework.kafka:spring-kafka-test")
 	testImplementation("org.testcontainers:kafka")
 
+	//모니터링
+	implementation("org.springframework.boot:spring-boot-starter-actuator")
+	runtimeOnly("io.micrometer:micrometer-registry-prometheus")
+
     // Test
     testImplementation("org.springframework.boot:spring-boot-starter-test")
 	testImplementation("org.springframework.boot:spring-boot-testcontainers")
@@ -70,4 +74,12 @@ dependencies {
 tasks.withType<Test> {
 	useJUnitPlatform()
 	systemProperty("user.timezone", "UTC")
+}
+
+tasks.bootJar {
+	archiveFileName.set("concert-reservation-service-app.jar") // ✅ 실행 가능 JAR 이름 설정
+}
+
+tasks.jar {
+	enabled = false // ✅ Plain JAR (일반 JAR) 생성 방지
 }
