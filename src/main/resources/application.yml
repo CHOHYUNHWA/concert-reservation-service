@@ -22,7 +22,7 @@ spring:
       hibernate.jdbc.time_zone: UTC
   data:
     redis:
-      host: localhost
+      host: redis
       port: 6379
   kafka:
     bootstrap-servers: localhost:9092
@@ -44,11 +44,17 @@ event:
   payment:
     topic: concert-payment
 
+management:
+  endpoints:
+    web:
+      exposure:
+        include: prometheus
+
 ---
 spring.config.activate.on-profile: local, test
 
 spring:
   datasource:
-    url: jdbc:mysql://localhost:3306/hhplus?characterEncoding=UTF-8&serverTimezone=UTC
+    url: jdbc:mysql://mysql:3306/hhplus?characterEncoding=UTF-8&serverTimezone=UTC
     username: application
     password: application
